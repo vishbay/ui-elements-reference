@@ -1,0 +1,136 @@
+/* ============================================================
+   assistant-panel/panel.css
+   The complete visual language for an assistant tab: message bubbles,
+   thinking, tool-call traces, citations, suggested follow-ups, errors,
+   and the composer. Ported class-for-class from
+   ui-ref-07-ai-interface.html so a screen built from this package looks
+   identical to the reference.
+
+   Reads ONLY from CSS custom properties — nothing here is a literal
+   colour. Load tokens.css (or any stylesheet defining the same variable
+   names: --bg, --surface, --text, --accent, etc.) before this file.
+   Every animation is keyed off a data-attribute or class that reflects
+   STATE (running/done/error/streaming), never off the content, so the
+   same interaction plays regardless of which project or backend is
+   plugged in.
+   ============================================================ */
+
+.asst-panel{display:flex;flex-direction:column;height:100%;min-height:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:var(--text)}
+.asst-panel *{box-sizing:border-box}
+
+.asst-chat{flex:1;min-height:0;overflow-y:auto;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--surface);padding:14px}
+
+.asst-msg{display:flex;gap:10px;margin-bottom:16px}
+.asst-msg:last-child{margin-bottom:0}
+.asst-msg.u{flex-direction:row-reverse}
+.asst-av{width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--accent) 55%,white),var(--accent))}
+.asst-av.uu{background:var(--surface-3)}
+
+.asst-bub{max-width:82%;font-size:13px;line-height:1.6}
+.asst-msg.u .asst-bub{background:var(--text);color:var(--bg);border-radius:12px;padding:9px 13px;max-width:76%}
+.asst-msg.a .asst-bub{color:var(--text)}
+.asst-bub p{margin:0 0 9px}
+.asst-bub p:last-child{margin:0}
+.asst-bub h4{font-size:12.5px;margin:12px 0 5px;font-weight:700}
+.asst-bub ul{margin:0 0 9px;padding-left:17px}
+.asst-bub li{margin-bottom:4px}
+.asst-bub code{font-family:var(--mono);font-size:11.5px;background:var(--surface-2);padding:1px 5px;
+  border-radius:4px;color:var(--accent)}
+.asst-bub strong{font-weight:700}
+.asst-caret::after{content:"\258c";color:var(--accent);animation:asstBlink 1s step-end infinite}
+@keyframes asstBlink{50%{opacity:0}}
+
+/* thinking — collapsed by default; spinner only while status is streaming */
+.asst-think{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text-dim);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:8px 12px;
+  margin-bottom:9px;cursor:pointer}
+.asst-think .sp{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-strong);
+  border-top-color:var(--accent);flex-shrink:0;visibility:hidden}
+.asst-think[data-streaming="true"] .sp{visibility:visible;animation:asstSpin .7s linear infinite}
+@keyframes asstSpin{to{transform:rotate(360deg)}}
+.asst-think .cv{margin-left:auto;transition:transform var(--fast);color:var(--text-faint)}
+.asst-think.open .cv{transform:rotate(90deg)}
+.asst-think-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--base) var(--ease)}
+.asst-think.open + .asst-think-body{grid-template-rows:1fr}
+.asst-think-in{overflow:hidden}
+.asst-think-pad{font-size:11.5px;color:var(--text-faint);line-height:1.6;padding:2px 0 10px 12px;
+  border-left:1.5px solid var(--border);margin-left:5px}
+
+/* tool call — one row, animated in once, then only its status pill changes */
+.asst-tool{display:flex;align-items:center;gap:9px;border:1px solid var(--border);border-radius:9px;
+  padding:8px 11px;font-size:11.5px;background:var(--surface-2);margin-bottom:7px;
+  animation:asstToolIn .35s var(--ease-spring)}
+@keyframes asstToolIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.asst-tool .ic{width:20px;height:20px;border-radius:5px;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.asst-tool[data-status="running"] .ic{animation:asstSpin 1s linear infinite}
+.asst-tool[data-status="done"] .ic{background:var(--good-soft);color:var(--good)}
+.asst-tool[data-status="error"]{border-color:var(--danger-soft);background:var(--danger-soft)}
+.asst-tool[data-status="error"] .ic{background:transparent;color:var(--danger)}
+.asst-tool[data-status="error"] .nm{color:var(--danger)}
+.asst-tool .nm{font-family:var(--mono);font-weight:640;color:var(--text)}
+.asst-tool .ar{color:var(--text-faint);font-family:var(--mono);font-size:10.5px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.asst-tool .st{margin-left:auto;font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-pill);
+  flex-shrink:0}
+.asst-tool[data-status="running"] .st{background:var(--accent-soft);color:var(--accent)}
+.asst-tool[data-status="done"] .st{background:var(--good-soft);color:var(--good)}
+.asst-tool[data-status="error"] .st{background:var(--danger-soft);color:var(--danger)}
+
+/* error block with retry */
+.asst-errow{display:flex;gap:9px;margin-bottom:9px}
+.asst-errow-acts{display:flex;gap:7px;margin-top:8px}
+
+/* citations + sources */
+.asst-cite{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;
+  border-radius:4px;background:var(--accent-soft);color:var(--accent);font-size:9.5px;font-weight:700;
+  vertical-align:super;margin-left:2px;cursor:pointer;padding:0 4px;
+  transition:all var(--fast) var(--ease-spring)}
+.asst-cite:hover{background:var(--accent);color:#fff;transform:scale(1.14)}
+.asst-srcs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.asst-src{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:640;
+  border:1px solid var(--border);border-radius:var(--r-pill);padding:3px 9px;color:var(--text-dim);
+  cursor:pointer;transition:all var(--fast);text-decoration:none}
+.asst-src:hover{border-color:var(--accent);color:var(--accent)}
+.asst-src i{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* suggested follow-ups — reveal staggered once, after the turn completes */
+.asst-follow{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.asst-fu{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:9px;
+  padding:8px 11px;font-size:12px;cursor:pointer;background:var(--surface);
+  opacity:0;transform:translateY(7px);animation:asstFuIn .4s var(--ease) forwards;font:inherit;
+  color:var(--text);text-align:left;width:100%}
+@keyframes asstFuIn{to{opacity:1;transform:none}}
+.asst-fu:hover{border-color:var(--accent);color:var(--accent)}
+.asst-fu .ar{color:var(--accent);flex-shrink:0}
+
+/* composer */
+.asst-compose-wrap{margin-top:11px;flex-shrink:0}
+.asst-composer{display:flex;align-items:flex-end;gap:8px;border:1px solid var(--border);
+  border-radius:12px;background:var(--surface-2);padding:8px 8px 8px 13px;
+  transition:border-color var(--fast),box-shadow var(--fast)}
+.asst-composer:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.asst-input{flex:1;background:none;border:none;outline:none;color:var(--text);
+  font-size:12.5px;font-family:inherit;resize:none;min-height:19px;max-height:120px;line-height:1.5}
+.asst-send{width:29px;height:29px;border-radius:8px;border:none;background:var(--accent);
+  color:#fff;cursor:pointer;flex-shrink:0;transition:transform var(--fast),opacity var(--fast);font-size:13px}
+.asst-send:active{transform:scale(.92)}
+.asst-send:disabled{opacity:.4;cursor:not-allowed}
+.asst-stop{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);
+  background:var(--surface);border-radius:var(--r-pill);padding:6px 13px;font-size:11.5px;
+  font-weight:640;cursor:pointer;color:var(--text);font-family:inherit}
+.asst-stop i{width:9px;height:9px;border-radius:2px;background:var(--danger);display:inline-block}
+.asst-hint{font-size:10.5px;color:var(--text-faint);margin-top:6px}
+
+.asst-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:var(--r-sm);
+  padding:7px 13px;font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit}
+.asst-btn-p{background:var(--accent);color:#fff}
+.asst-btn-g{background:transparent;color:var(--text);border-color:var(--border-strong)}
+
+@media (prefers-reduced-motion: reduce){
+  .asst-panel *,.asst-panel *::before,.asst-panel *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}

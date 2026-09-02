@@ -12,6 +12,18 @@ It tells an AI coding tool how to build UI that matches the reference set at
   the matching file and port the pattern; do not invent a new one.
 - Rules: `ui-ref-18-signature-restraint.html` section 07 is the acceptance checklist.
 
+## Building an assistant / AI chat tab
+
+Do not design this from scratch. Copy `assistant-panel/` from the reference
+repo unchanged and read its README before writing any UI code. It is a
+working schema + renderer (vanilla JS and Vue), already built from file 07's
+patterns; the only project-specific code is a small adapter that turns your
+real backend's responses into the block shapes `assistant-panel/schema.js`
+defines, then calls `startTurn` / `upsertBlock` / `finishTurn`. If a real
+need can't be expressed in the existing block types, add the block type to
+`schema.js` and `renderer.js` — do not improvise one-off markup inside the
+project.
+
 ## Non-negotiables
 
 1. Ground is obsidian `#0b1215` on dark, `#f5f6f8` on light. Never pure black or pure grey.
@@ -54,6 +66,7 @@ It tells an AI coding tool how to build UI that matches the reference set at
 | Errors, buttons, empty-state copy, tone, number and date formatting | 17 | 01–07 |
 | Fingerprint, effect budget, type pairings, accent, grid, detail signatures, checklist | 18 | 01–07 |
 | Page grounds: solids, tonal gradients, ambient light, grids/contours, photo treatment, pairing rules | 19 | 01–06 |
+| A reusable assistant-tab UI (schema + vanilla-JS renderer + Vue wrapper) | 20 + `assistant-panel/` | — |
 
 ## Before reporting a screen as done
 

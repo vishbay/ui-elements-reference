@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" data-t="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 20 — Assistant Panel</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="assistant-panel/panel.css">
+<style>
+.head{padding:26px 24px 22px;border-bottom:1px solid var(--border);background:var(--bg-2);
+  display:flex;align-items:flex-start;gap:20px}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:var(--text-dim);max-width:640px;line-height:1.6}
+.head .side{margin-left:auto;display:flex;gap:8px;flex-shrink:0;align-items:center}
+.tglbtn{background:var(--surface);border:1px solid var(--border-strong);color:var(--text);
+  border-radius:8px;font-size:12px;font-weight:620;padding:7px 13px;cursor:pointer;font-family:inherit}
+.tglbtn:hover{border-color:var(--accent);color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:30px 24px;height:calc(100vh - 110px);min-height:520px;display:flex}
+.foot{max-width:760px;margin:0 auto;padding:0 24px 40px;font-size:12px;color:var(--text-faint);line-height:1.75}
+.foot b{color:var(--text-dim)}
+.foot a{color:var(--accent)}
+.warn-file{display:none;max-width:760px;margin:14px auto 0;padding:11px 16px;border-radius:10px;
+  background:var(--warn-soft);color:var(--warn);font-size:12.5px;line-height:1.6}
+.warn-file b{display:block;margin-bottom:2px}
+body[data-served-via-file] .warn-file{display:block}
+</style>
+</head>
+<body>
+<div class="head">
+  <div>
+    <div class="kicker">UI Reference &middot; File 20</div>
+    <h1>Assistant Panel</h1>
+    <p>The reusable core: a data schema, a vanilla-JS renderer and a Vue wrapper that calls the
+    same renderer, all in <code>assistant-panel/</code>. This page loads them exactly the way a
+    real project would &mdash; as ES modules &mdash; and drives them with mock data
+    (<code>demo.js</code>) that documents the block shapes a real backend needs to produce.</p>
+  </div>
+  <div class="side"><button class="tglbtn" onclick="toggleTheme()">Toggle theme</button></div>
+</div>
+<div class="warn-file" id="fileWarn"><b>Opened via file://</b> — ES module imports are blocked by the
+  browser here. Serve this folder instead, e.g. <code>python3 -m http.server</code> in
+  the repo root, then open <code>http://localhost:8000/ui-ref-20-assistant-panel.html</code>. GitHub
+  Pages and any real project's dev server already serve over http(s), so this only affects opening
+  the file directly by double-clicking it.</div>
+<div class="wrap"><div id="panel-root" style="width:100%;display:flex"></div></div>
+<div class="foot">
+  <b>What's reusable.</b> <code>schema.js</code>, <code>panel.css</code> and <code>renderer.js</code>
+  are the package — copy the <code>assistant-panel/</code> folder into any project unchanged.
+  <code>demo.js</code> is not part of it; it exists only to prove the renderer works and to show the
+  exact block shapes (see it running above: thinking, staggered tool calls, a failed tool with retry,
+  streamed text with citations, suggested follow-ups). For Vue, use
+  <code>assistant-panel/vue/AssistantPanel.vue</code> instead of calling <code>renderer.js</code>
+  directly &mdash; it wraps the identical controller, so the interactions and animations are the
+  same file in both stacks. Full wiring guide: <a href="assistant-panel/README.md">assistant-panel/README.md</a>.
+</div>
+<script>
+function toggleTheme(){
+  const html=document.documentElement;
+  html.dataset.t = html.dataset.t==='dark' ? 'light' : 'dark';
+}
+if (location.protocol === 'file:') document.body.setAttribute('data-served-via-file','');
+</script>
+<script type="module">
+  import { mountDemo } from './assistant-panel/demo.js';
+  mountDemo(document.getElementById('panel-root'));
+</script>
+</body>
+</html>

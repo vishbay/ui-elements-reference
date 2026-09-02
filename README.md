@@ -41,9 +41,22 @@ files, each self-contained with a light/dark toggle:
 | 17 | Content & Microcopy | Errors, buttons, empty states, tone, formatting |
 | 18 | Signature & Restraint | Effect budget, type pairings, accent, grid, detail signatures, checklist |
 | 19 | Backgrounds | Solid grounds, tonal gradients, ambient light, structure, photo treatment |
+| 20 | Assistant Panel | Live demo of the reusable `assistant-panel/` package |
 
 Plus `ui-motion-reference.html` / `-compat.html`, a zero-dependency motion
 pattern library (count-ups, gauges, staggered reveals, table row flash, etc).
+
+## Reusable code
+
+Unlike the numbered reference files, **`assistant-panel/`** is a real, drop-in
+package, not a copy-paste pattern: a backend-agnostic data schema
+(`schema.js`), a vanilla-JS renderer (`renderer.js` + `panel.css`), and a Vue
+wrapper (`vue/AssistantPanel.vue`) that mounts the exact same renderer, so
+there is one implementation of the interactions across both stacks. See
+`assistant-panel/README.md` and the live demo at
+`ui-ref-20-assistant-panel.html`. Point a coding agent at the folder and it
+only has to write the glue between your actual backend and the schema —
+see the prompt in that README.
 
 ## Conventions
 

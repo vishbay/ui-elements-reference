@@ -179,6 +179,23 @@ ground. If it needs a real photograph, apply the four-step recipe in section 05
 and put every piece of text on an opaque card.
 ```
 
+## 15. Build or wire the assistant tab
+
+```
+Read /Users/vishbay/Desktop/Ui-elements-reference/assistant-panel/README.md
+and schema.js. Copy the assistant-panel/ folder into this project unchanged
+(vanilla JS: use renderer.js directly; Vue: use vue/AssistantPanel.vue).
+Load tokens.css or map its variable names onto our existing theme.
+
+Our assistant backend is [describe it precisely: endpoint, streaming
+format, tool-calling shape, whatever it actually is]. Write ONLY the glue:
+a function that calls it and produces schema.js-shaped Turn/Block objects,
+calling startTurn/upsertBlock/finishTurn as data arrives. Do not modify
+renderer.js, panel.css, or AssistantPanel.vue. If our backend needs
+something no block type covers, tell me what's missing instead of
+inventing markup.
+```
+
 ---
 
 ## Habits that make these work
