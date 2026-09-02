@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 01 — Surfaces &amp; Materials</title>
+<style>
+/* ============================================================
+   THEME SCOPES — both themes coexist on one page.
+   Any element with [data-t="light"] or [data-t="dark"] becomes
+   a theming root. Nest freely.
+   ============================================================ */
+[data-t="dark"] {
+  --bg:            #0b1215;
+  --bg-2:          #111a1f;
+  --surface:       #172228;
+  --surface-2:     #1e2b32;
+  --surface-3:     #273640;
+  --border:        rgba(255,255,255,.09);
+  --border-strong: rgba(255,255,255,.16);
+  --hairline:      rgba(255,255,255,.06);
+  --text:          #edeef2;
+  --text-dim:      #9296a2;
+  --text-faint:    #626775;
+  --accent:        #3a9ad9;
+  --accent-2:      #8a9bb8;
+  --accent-3:      #2a7bb5;
+  --good:          #34d399;
+  --warn:          #fbbf24;
+  --danger:        #f4707f;
+
+  --glass-bg:      rgba(255,255,255,.06);
+  --glass-border:  rgba(255,255,255,.12);
+  --glass-hi:      rgba(255,255,255,.18);
+
+  --e1: 0 1px 2px rgba(0,0,0,.5);
+  --e2: 0 2px 4px rgba(0,0,0,.45), 0 4px 10px rgba(0,0,0,.35);
+  --e3: 0 4px 8px rgba(0,0,0,.45), 0 12px 28px rgba(0,0,0,.4);
+  --e4: 0 8px 16px rgba(0,0,0,.5), 0 24px 56px rgba(0,0,0,.45);
+  --scrim: rgba(0,0,0,.6);
+  --noise-op: .05;
+}
+[data-t="light"] {
+  --bg:            #f5f6f8;
+  --bg-2:          #ffffff;
+  --surface:       #ffffff;
+  --surface-2:     #f3f4f7;
+  --surface-3:     #e9ebf0;
+  --border:        rgba(16,18,26,.10);
+  --border-strong: rgba(16,18,26,.18);
+  --hairline:      rgba(16,18,26,.06);
+  --text:          #121c21;
+  --text-dim:      #5c6070;
+  --text-faint:    #9297a6;
+  --accent:        #1d6fae;
+  --accent-2:      #5b6f8f;
+  --accent-3:      #155a8f;
+  --good:          #12a56b;
+  --warn:          #b47509;
+  --danger:        #d64553;
+
+  --glass-bg:      rgba(255,255,255,.55);
+  --glass-border:  rgba(255,255,255,.75);
+  --glass-hi:      rgba(255,255,255,.9);
+
+  --e1: 0 1px 2px rgba(16,18,26,.06);
+  --e2: 0 2px 4px rgba(16,18,26,.05), 0 4px 10px rgba(16,18,26,.05);
+  --e3: 0 4px 8px rgba(16,18,26,.05), 0 12px 28px rgba(16,18,26,.07);
+  --e4: 0 8px 16px rgba(16,18,26,.07), 0 24px 56px rgba(16,18,26,.10);
+  --scrim: rgba(10,12,18,.42);
+  --noise-op: .035;
+}
+
+:root {
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-xl:26px; --r-pill:999px;
+  --ease: cubic-bezier(.22,1,.36,1);
+  --ease-spring: cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms; --base:400ms;
+}
+
+*{box-sizing:border-box}
+html{background:#0b1215}
+body{
+  margin:0; padding-bottom:90px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  background:#0b1215; color:#edeef2;
+}
+
+/* honor OS reduce-motion, but allow override for this reference */
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,
+  html:not([data-motion="force"]) *::before,
+  html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+}
+.motion-banner{
+  display:none; align-items:center; gap:12px;
+  background:rgba(251,191,36,.12); color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);
+  border-radius:12px; padding:12px 16px; font-size:13px; margin:0 0 26px;
+}
+.motion-banner.show{display:flex}
+.motion-banner button{
+  margin-left:auto; background:#fbbf24; color:#0b1215; border:none;
+  border-radius:8px; padding:7px 13px; font-size:12px; font-weight:700;
+  cursor:pointer; white-space:nowrap;
+}
+
+/* ---------- page chrome ---------- */
+.head{
+  padding:26px 24px 22px; border-bottom:1px solid rgba(255,255,255,.08);
+  background:#0e161a;
+}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0 6px;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:640px;line-height:1.6}
+
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+
+section{margin-bottom:52px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0 5px;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:680px;line-height:1.6}
+.sec-desc code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+  background:rgba(255,255,255,.07);padding:1px 5px;border-radius:4px;color:#c9cbd6;
+}
+
+/* ---------- the split light/dark tile ---------- */
+.tile{
+  display:grid; grid-template-columns:1fr 1fr; gap:0;
+  border:1px solid rgba(255,255,255,.09); border-radius:var(--r-lg);
+  overflow:hidden;
+}
+@media(max-width:760px){ .tile{grid-template-columns:1fr} }
+.pane{
+  background:var(--bg); color:var(--text);
+  padding:22px; min-height:150px; position:relative;
+}
+.pane + .pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:760px){ .pane + .pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)} }
+.pane-tag{
+  position:absolute; top:9px; right:11px; z-index:3;
+  font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-faint); font-weight:700; pointer-events:none;
+}
+
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.stack{display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin-bottom:8px}
+.cap{font-size:10.5px;color:var(--text-faint);margin-top:7px;text-align:center;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.h-t{font-size:14px;font-weight:650;margin:0 0 5px}
+
+/* ============================================================
+   01 ELEVATION
+   ============================================================ */
+.elev{
+  width:88px;height:76px;border-radius:var(--r-md);
+  background:var(--surface); border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--text-dim);
+}
+.e0{box-shadow:none}
+.e1{box-shadow:var(--e1)}
+.e2{box-shadow:var(--e2)}
+.e3{box-shadow:var(--e3)}
+.e4{box-shadow:var(--e4)}
+
+/* ============================================================
+   02 FROSTED GLASS
+   ============================================================ */
+.glass-stage{position:relative;height:210px;border-radius:var(--r-md);overflow:hidden;background:var(--bg-2);border:1px solid var(--border)}
+/* faux page content: what glass actually sits over in a product */
+.faux{position:absolute;inset:0;padding:12px;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:min-content;gap:8px}
+.faux .fc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px;min-height:56px}
+.faux .fc .l{height:6px;width:46%;border-radius:3px;background:var(--surface-3);margin-bottom:9px}
+.faux .fc .v{height:12px;width:58%;border-radius:3px;background:var(--text-faint);opacity:.55}
+.faux .fc .r2{display:flex;gap:5px;margin-top:8px}
+.faux .fc .r2 i{height:6px;border-radius:3px;background:var(--surface-3);flex:1}
+.faux .fc .r2 i.g{background:var(--good);opacity:.55;flex:0 0 20px}
+.faux .fc .r2 i.w{background:var(--warn);opacity:.55;flex:0 0 20px}
+.faux .fc.wide{grid-column:span 3;display:flex;gap:5px;align-items:flex-end;height:66px}
+.faux .fc.wide i{flex:1;background:var(--accent);opacity:.45;border-radius:2px 2px 0 0}
+.glass{
+  position:absolute; border-radius:14px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:var(--e3), inset 0 1px 0 var(--glass-hi);
+  padding:13px 15px;
+}
+.glass .t{font-size:12.5px;font-weight:700;color:var(--text)}
+.glass .s{font-size:11px;color:var(--text-dim);margin-top:2px}
+.g-a{top:22px;left:20px;width:172px}
+.g-b{bottom:22px;right:20px;width:150px}
+.g-blur-lo{-webkit-backdrop-filter:blur(4px) saturate(120%);backdrop-filter:blur(4px) saturate(120%)}
+.g-blur-hi{-webkit-backdrop-filter:blur(26px) saturate(200%);backdrop-filter:blur(26px) saturate(200%)}
+
+/* glass navbar */
+.glass-nav{
+  position:absolute; top:0; left:0; right:0; height:44px; z-index:2;
+  display:flex; align-items:center; gap:14px; padding:0 15px;
+  background:var(--glass-bg);
+  border-bottom:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(16px) saturate(170%);
+  backdrop-filter:blur(16px) saturate(170%);
+  font-size:11.5px; font-weight:650; color:var(--text);
+}
+.glass-nav .dotmark{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.scroll-stage{
+  position:relative;height:190px;overflow-y:auto;border-radius:var(--r-md);
+  background:var(--surface-2);
+}
+.scroll-inner{padding:56px 15px 15px}
+.scroll-inner p{font-size:12px;color:var(--text-dim);line-height:1.65;margin:0 0 11px}
+.chipline{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.chipline span{
+  font-size:10.5px;font-weight:650;padding:4px 9px;border-radius:var(--r-pill);
+  background:var(--surface-3);color:var(--text-dim);
+}
+
+/* ============================================================
+   03 NOISE / GRAIN
+   ============================================================ */
+.band{position:relative;height:118px;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border);
+  background:linear-gradient(160deg,var(--surface-3),var(--bg) 88%)}
+.band .half{position:absolute;top:0;bottom:0;width:50%}
+.band .half.r{right:0;border-left:1px dashed var(--border-strong)}
+.band .half.r::after{content:"";position:absolute;inset:0;opacity:.2;mix-blend-mode:normal;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n2)'/%3E%3C/svg%3E")}
+[data-t="light"] .band .half.r::after{opacity:.5;mix-blend-mode:multiply}
+.band .cap2{position:absolute;bottom:8px;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:var(--text-dim)}
+.band .cap2.l{left:12px}.band .cap2.r{right:12px}
+.band .hero{position:absolute;top:14px;left:14px;font-size:15px;font-weight:650;color:var(--text)}
+.grain-ctl{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--text-dim);margin-top:8px}
+.grain-ctl input{flex:1;accent-color:var(--accent)}
+.grain-ctl b{font-family:ui-monospace,Menlo,monospace;color:var(--text);min-width:30px;text-align:right}
+.grain-surface{
+  position:relative;overflow:hidden;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--border);
+  padding:18px;min-height:120px;box-shadow:var(--e2);
+}
+.grain-surface::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  opacity:var(--g,var(--noise-op));
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n2)'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   04 GRADIENT MESH / AURORA
+   ============================================================ */
+.ambient{position:relative;height:210px;border-radius:var(--r-md);overflow:hidden;background:var(--bg);border:1px solid var(--border)}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.2}
+.b1{width:260px;height:260px;background:var(--accent);top:-130px;left:-70px;animation:drift1 18s ease-in-out infinite}
+.b2{width:220px;height:220px;background:var(--accent-2);bottom:-130px;right:-50px;animation:drift2 22s ease-in-out infinite}
+@keyframes drift1{50%{transform:translate(40px,30px) scale(1.12)}}
+@keyframes drift2{50%{transform:translate(-36px,-24px) scale(1.08)}}
+.amb-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:224px;background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--e3)}
+.amb-card .t{font-size:13px;font-weight:650;margin-bottom:3px}
+.amb-card .s{font-size:11px;color:var(--text-dim);margin-bottom:11px}
+.amb-card .in{height:28px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface-2);margin-bottom:7px}
+.amb-card .bt{height:28px;border-radius:7px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:650;display:flex;align-items:center;justify-content:center;margin-top:9px}
+
+/* ============================================================
+   05 GLOW / AMBIENT
+   ============================================================ */
+.glow-card{position:relative;border-radius:var(--r-md);padding:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--e2)}
+.glow-card::before{content:"";position:absolute;left:12%;right:12%;bottom:-12px;height:24px;border-radius:50%;
+  background:#000;filter:blur(18px);opacity:.45;z-index:-1}
+[data-t="light"] .glow-card::before{opacity:.14}
+.glow-wrapper{position:relative;z-index:1}
+.ring-glow{border-radius:var(--r-md);padding:18px;background:var(--surface);border:1px solid var(--accent);box-shadow:0 0 0 3px rgba(58,154,217,.16)}
+[data-t="light"] .shine::after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent)}
+[data-t="light"] .ring-glow{box-shadow:0 0 0 3px rgba(29,111,174,.12)}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:640;color:var(--good);white-space:nowrap}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--good);animation:glowPulse 2.2s ease-out infinite}
+@keyframes glowPulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.45)}70%,100%{box-shadow:0 0 0 8px rgba(52,211,153,0)}}
+/* lit edge: accent fades into the hairline across a 1.5px padding wrapper — static */
+.grad-border{position:relative;border-radius:var(--r-md);padding:1.5px;background:linear-gradient(135deg,var(--accent),var(--border-strong) 70%)}
+.grad-border > div{background:var(--surface);border-radius:calc(var(--r-md) - 1px);padding:17px}
+
+/* sweep / shine */
+.shine{position:relative;overflow:hidden}
+.shine::after{
+  content:"";position:absolute;top:0;bottom:0;width:52%;
+  left:-60%; pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.14),transparent);
+  animation:sweep 3.4s var(--ease) infinite;
+}
+@keyframes sweep{ 0%{left:-60%} 55%,100%{left:130%} }
+
+/* ============================================================
+   06 SPOTLIGHT (cursor-follow)
+   ============================================================ */
+.spot{
+  position:relative;overflow:hidden;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--border);
+  padding:20px;min-height:118px;
+  transition:border-color var(--fast);
+}
+.spot::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  opacity:0;transition:opacity var(--base) var(--ease);
+  background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%),
+             rgba(58,154,217,.22), transparent 62%);
+}
+.spot:hover::before{opacity:1}
+.spot:hover{border-color:var(--border-strong)}
+
+.tilt{
+  border-radius:var(--r-md);background:var(--surface);
+  border:1px solid var(--border);padding:20px;min-height:118px;
+  box-shadow:var(--e2);
+  transition:transform var(--base) var(--ease), box-shadow var(--base) var(--ease);
+  transform-style:preserve-3d;
+}
+.tilt:hover{box-shadow:var(--e4)}
+
+/* ============================================================
+   07 TEXTURES
+   ============================================================ */
+.tex{height:92px;border-radius:var(--r-md);border:1px solid var(--border);background-color:var(--surface)}
+.dot-grid{
+  background-image:radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size:15px 15px;
+}
+.line-grid{
+  background-image:
+    linear-gradient(var(--hairline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+.diag{
+  background-image:repeating-linear-gradient(45deg,
+    var(--hairline) 0 1px, transparent 1px 9px);
+}
+.fade-grid{
+  background-image:radial-gradient(var(--border-strong) 1px, transparent 1px);
+  background-size:15px 15px;
+  -webkit-mask-image:radial-gradient(ellipse at center, #000 25%, transparent 72%);
+  mask-image:radial-gradient(ellipse at center, #000 25%, transparent 72%);
+}
+
+/* ============================================================
+   08 BORDERS / HAIRLINES / INSETS
+   ============================================================ */
+.b-demo{border-radius:var(--r-md);padding:15px;background:var(--surface);font-size:12px;color:var(--text-dim)}
+.b-plain{border:1px solid var(--border)}
+.b-strong{border:1px solid var(--border-strong)}
+.b-inset{border:1px solid var(--border);box-shadow:inset 0 1px 0 var(--glass-hi)}
+.b-inner{box-shadow:inset 0 0 0 1px var(--border), var(--e1)}
+.b-top-accent{border:1px solid var(--border);border-top:2px solid var(--accent)}
+.b-tint-accent{border:1px solid var(--border);background:var(--warn-soft)}
+.divider{height:1px;background:var(--hairline);margin:13px 0}
+.divider-fade{
+  height:1px;margin:13px 0;
+  background:linear-gradient(90deg,transparent,var(--border-strong),transparent);
+}
+
+/* ============================================================
+   09 SCRIM / VIGNETTE / MASK
+   ============================================================ */
+.scrim-stage{
+  position:relative;height:130px;border-radius:var(--r-md);overflow:hidden;
+  background:radial-gradient(circle at 70% 20%, rgba(255,255,255,.10) 0, transparent 45%),linear-gradient(160deg,#3a4a5c,#1d2731 60%,#2b3d3a);
+}
+.scrim-over{
+  position:absolute;inset:0;background:var(--scrim);
+  display:flex;align-items:flex-end;padding:14px;
+}
+.scrim-stage,.scrim-stage *{color:#fff}
+.scrim-over .t{font-size:13px;font-weight:700}
+.grad-scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.82) 0%, transparent 62%);
+  display:flex;align-items:flex-end;padding:14px;
+}
+.vignette{position:absolute;inset:0;box-shadow:inset 0 0 58px rgba(0,0,0,.62)}
+.fade-mask{
+  height:96px;border-radius:var(--r-md);
+  background:repeating-linear-gradient(0deg,var(--surface-3) 0 12px,var(--surface) 12px 24px);
+  -webkit-mask-image:linear-gradient(to bottom,#000 40%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 40%,transparent 100%);
+  border:1px solid var(--border);
+}
+
+/* ============================================================
+   10 BENTO
+   ============================================================ */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:62px;gap:9px}
+.bento > div{
+  border-radius:var(--r-md);border:1px solid var(--border);
+  background:var(--surface);padding:11px;
+  font-size:11px;color:var(--text-dim);font-weight:600;
+  display:flex;align-items:flex-end;
+  transition:transform var(--fast) var(--ease),border-color var(--fast);
+}
+.bento > div:hover{transform:translateY(-2px);border-color:var(--accent)}
+.bento > .bn-a{grid-column:span 2;grid-row:span 2;background:var(--accent-3);color:#fff;border-color:transparent}
+.bn-b{grid-column:span 2}
+.bn-c{grid-column:span 1}
+.bn-d{grid-column:span 1}
+.bn-e{grid-column:span 4;background:var(--surface-2)}
+
+/* ============================================================
+   11 GLASS MODAL + LAYERED DEPTH
+   ============================================================ */
+.modal-stage{position:relative;height:200px;border-radius:var(--r-md);overflow:hidden;background:var(--bg-2)}
+.modal-scrim2{
+  position:absolute;inset:0;background:var(--scrim);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+}
+.modal-glass{
+  width:78%;border-radius:var(--r-lg);padding:17px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);
+  box-shadow:var(--e4), inset 0 1px 0 var(--glass-hi);
+}
+.modal-glass .t{font-size:13.5px;font-weight:700;color:var(--text)}
+.modal-glass .s{font-size:11.5px;color:var(--text-dim);margin-top:5px;line-height:1.55}
+.mg-btns{display:flex;gap:7px;justify-content:flex-end;margin-top:14px}
+.mg-btns button{
+  border:none;border-radius:7px;padding:6px 13px;font-size:11.5px;font-weight:650;cursor:pointer;
+}
+.mg-ghost{background:transparent;border:1px solid var(--border-strong) !important;color:var(--text)}
+.mg-solid{background:var(--accent);color:#fff}
+
+.stack-depth{position:relative;height:120px}
+.stack-depth > div{
+  position:absolute;left:50%;border-radius:var(--r-md);
+  background:var(--surface);border:1px solid var(--border);
+  width:170px;height:64px;
+}
+.sd-3{transform:translateX(-50%) translateY(0) scale(.88);opacity:.5;top:8px;box-shadow:var(--e1)}
+.sd-2{transform:translateX(-50%) translateY(11px) scale(.94);opacity:.78;top:8px;box-shadow:var(--e2)}
+.sd-1{transform:translateX(-50%) translateY(23px);top:8px;box-shadow:var(--e3);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:650;color:var(--text-dim)}
+
+/* footer */
+.foot{
+  max-width:1180px;margin:0 auto;padding:0 24px;
+  font-size:12px;color:#626775;line-height:1.75;
+}
+.foot b{color:#9296a2}
+.replay{
+  position:fixed;bottom:18px;left:18px;z-index:60;
+  background:#172228;border:1px solid rgba(255,255,255,.16);color:#edeef2;
+  border-radius:var(--r-pill);padding:10px 17px;font-size:12.5px;font-weight:650;
+  cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5);
+}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="kicker">UI Reference · File 01</div>
+  <h1>Surfaces &amp; Materials</h1>
+  <p>Elevation, frosted glass, grain, ambient light, focus and lit edges, spotlights, textures, borders and scrims — every pattern rendered in light and dark simultaneously so the treatments can be compared directly. Zero dependencies. No <code>color-mix()</code>; vendor-prefixed for older Chrome.</p>
+</div>
+
+<div class="wrap">
+
+<div class="motion-banner" id="motionBanner">
+  <span>⚠</span>
+  <span><b>Reduce Motion is on in your OS.</b> CSS animations are suppressed — drifting blobs, sweeps and pulses will look static.</span>
+  <button onclick="forceMotion()">Enable anyway</button>
+</div>
+
+<!-- 01 ELEVATION -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Elevation</div>
+    <h2 class="sec-title">A shadow scale, not one shadow</h2>
+    <p class="sec-desc">Dark themes need larger, softer, more opaque shadows than light ones — a shadow tuned for white backgrounds vanishes on near-black. Define <code>--e1</code>…<code>--e4</code> per theme and never write a raw <code>box-shadow</code> in a component.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="row">
+        <div><div class="elev e0">0</div><div class="cap">flat</div></div>
+        <div><div class="elev e1">1</div><div class="cap">--e1</div></div>
+        <div><div class="elev e2">2</div><div class="cap">--e2</div></div>
+        <div><div class="elev e3">3</div><div class="cap">--e3</div></div>
+        <div><div class="elev e4">4</div><div class="cap">--e4</div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="row">
+        <div><div class="elev e0">0</div><div class="cap">flat</div></div>
+        <div><div class="elev e1">1</div><div class="cap">--e1</div></div>
+        <div><div class="elev e2">2</div><div class="cap">--e2</div></div>
+        <div><div class="elev e3">3</div><div class="cap">--e3</div></div>
+        <div><div class="elev e4">4</div><div class="cap">--e4</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 FROSTED GLASS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Frosted glass</div>
+    <h2 class="sec-title">Backdrop blur, saturation &amp; the inset highlight</h2>
+    <p class="sec-desc">Glass needs three things together: <code>backdrop-filter: blur() saturate()</code>, a translucent background, and an <code>inset 0 1px 0</code> top highlight that fakes a lit edge. Drop the highlight and it reads as a blurry rectangle. Light glass uses white at ~55%; dark glass uses white at ~6%. The backdrop here is page content, because that is what glass sits over in a product &mdash; not a colour mesh.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light" style="padding:0">
+      <span class="pane-tag">Light</span>
+      <div class="glass-stage"><div class="faux"></div>
+        <div class="glass g-a"><div class="t">Cycle health</div><div class="s">blur(14px) saturate(160%)</div></div>
+        <div class="glass g-b g-blur-hi"><div class="t">Heavy blur</div><div class="s">blur(26px)</div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark" style="padding:0">
+      <span class="pane-tag">Dark</span>
+      <div class="glass-stage"><div class="faux"></div>
+        <div class="glass g-a"><div class="t">Cycle health</div><div class="s">blur(14px) saturate(160%)</div></div>
+        <div class="glass g-b g-blur-hi"><div class="t">Heavy blur</div><div class="s">blur(26px)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:12px"></div>
+
+  <div class="tile">
+    <div class="pane" data-t="light" style="padding:0">
+      <span class="pane-tag">Light</span>
+      <div class="scroll-stage">
+        <div class="glass-nav"><span class="dotmark"></span>Sticky glass header</div>
+        <div class="scroll-inner">
+          <div class="chipline"><span>Airflow</span><span>BigQuery</span><span>Jira</span></div>
+          <p>Scroll this pane &mdash; content passes under the header and blurs. This is the single highest-impact place to use glass: a sticky bar that stays legible over arbitrary content.</p>
+          <p>Without <code>saturate()</code>, blurred colours go grey and muddy. Saturation of 160&ndash;180% restores the vividness the blur removes.</p>
+          <p>Keep the blur radius above 12px. Below that it reads as a rendering artifact rather than an intentional material.</p>
+        </div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark" style="padding:0">
+      <span class="pane-tag">Dark</span>
+      <div class="scroll-stage">
+        <div class="glass-nav"><span class="dotmark"></span>Sticky glass header</div>
+        <div class="scroll-inner">
+          <div class="chipline"><span>Airflow</span><span>BigQuery</span><span>Jira</span></div>
+          <p>Scroll this pane &mdash; content passes under the header and blurs. This is the single highest-impact place to use glass: a sticky bar that stays legible over arbitrary content.</p>
+          <p>Without <code>saturate()</code>, blurred colours go grey and muddy. Saturation of 160&ndash;180% restores the vividness the blur removes.</p>
+          <p>Keep the blur radius above 12px. Below that it reads as a rendering artifact rather than an intentional material.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 NOISE -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Noise &amp; grain</div>
+    <h2 class="sec-title">Where grain is visible, and where it is pointless</h2>
+    <p class="sec-desc">An SVG <code>feTurbulence</code> overlay shipped as a data URI. Grain earns its place on tonal dark gradients &mdash; empty states, hero backgrounds, login screens &mdash; where 8-bit banding shows on any large display. Over a saturated colour it disappears; over a flat surface it is a texture choice, not a fix. Left half of the band is the plain gradient, right half has grain at 20% normal blend on dark and 50% <code>multiply</code> on light; production values sit lower, the demo is turned up so you can see it.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div class="band"><div class="hero">Empty state background</div><div class="half l"></div><div class="half r"></div><span class="cap2 l">plain gradient</span><span class="cap2 r">+ grain</span></div>
+        <div class="grain-wrap"><div class="grain-surface" style="--g:0.04"><div class="h-t">Grain over surface</div><div class="body-txt">Drag the slider. Around 4% it is felt rather than seen; above 10% it is a texture and you should stop.</div></div>
+          <div class="grain-ctl"><span>opacity</span><input type="range" min="0" max="16" value="4" oninput="grain(this)"><b>4%</b></div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div class="band"><div class="hero">Empty state background</div><div class="half l"></div><div class="half r"></div><span class="cap2 l">plain gradient</span><span class="cap2 r">+ grain</span></div>
+        <div class="grain-wrap"><div class="grain-surface" style="--g:0.05"><div class="h-t">Grain over surface</div><div class="body-txt">Drag the slider. Around 5% it is felt rather than seen; above 10% it is a texture and you should stop.</div></div>
+          <div class="grain-ctl"><span>opacity</span><input type="range" min="0" max="16" value="5" oninput="grain(this)"><b>5%</b></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 AMBIENT -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Ambient light</div>
+    <h2 class="sec-title">Two blobs, one hue, behind a card</h2>
+    <p class="sec-desc">The realistic descendant of the gradient mesh: two blurred circles at 20% opacity, accent and slate, drifting over 18&ndash;22 seconds behind a login or empty-state card. The card is opaque; nothing is read over the light. This is as far as a modern product goes &mdash; never behind data, never more than two hues, never above 25%.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="ambient"><div class="blob b1"></div><div class="blob b2"></div>
+        <div class="amb-card"><div class="t">Sign in to Orbit</div><div class="s">Use your organisation account</div><div class="in"></div><div class="in"></div><div class="bt">Continue</div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="ambient"><div class="blob b1"></div><div class="blob b2"></div>
+        <div class="amb-card"><div class="t">Sign in to Orbit</div><div class="s">Use your organisation account</div><div class="in"></div><div class="in"></div><div class="bt">Continue</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 LIGHT & EDGES -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Light &amp; edges</div>
+    <h2 class="sec-title">Shadow, focus, pulse, lit edge, shimmer</h2>
+    <p class="sec-desc">The five ways a surface signals state without a coloured glow. Depth is a dark blurred shadow; focus is a ring, not a halo; live is a pulsing dot; a lit edge is the accent fading into the hairline; shimmer belongs to skeletons. None of these are animated at rest except the two that mean something is happening.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div class="glow-card"><div class="glow-wrapper"><div class="h-t">Ambient shadow</div><div class="body-txt">A blurred dark ellipse beneath the card lifts it without adding colour.</div></div></div>
+        <div class="ring-glow"><div class="h-t">Focus ring</div><div class="body-txt">1px accent border plus a 3px soft ring. No outer glow.</div></div>
+        <div class="glow-card"><div class="glow-wrapper" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="h-t">Live status</div><div class="body-txt">The pulse lives on the dot, never on the card.</div></div><span class="live"><i></i>Streaming</span></div></div>
+        <div class="grad-border"><div><div class="h-t">Lit edge</div><div class="body-txt">Accent fades into the hairline across the border. Static; one per screen.</div></div></div>
+        <div class="glow-card shine"><div class="glow-wrapper"><div class="h-t">Shimmer</div><div class="body-txt">Reserved for loading skeletons. Never on a resting card.</div></div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div class="glow-card"><div class="glow-wrapper"><div class="h-t">Ambient shadow</div><div class="body-txt">A blurred dark ellipse beneath the card lifts it without adding colour.</div></div></div>
+        <div class="ring-glow"><div class="h-t">Focus ring</div><div class="body-txt">1px accent border plus a 3px soft ring. No outer glow.</div></div>
+        <div class="glow-card"><div class="glow-wrapper" style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div><div class="h-t">Live status</div><div class="body-txt">The pulse lives on the dot, never on the card.</div></div><span class="live"><i></i>Streaming</span></div></div>
+        <div class="grad-border"><div><div class="h-t">Lit edge</div><div class="body-txt">Accent fades into the hairline across the border. Static; one per screen.</div></div></div>
+        <div class="glow-card shine"><div class="glow-wrapper"><div class="h-t">Shimmer</div><div class="body-txt">Reserved for loading skeletons. Never on a resting card.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 SPOTLIGHT -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Spotlight &amp; tilt</div>
+    <h2 class="sec-title">Cursor-reactive surfaces</h2>
+    <p class="sec-desc">Hover the cards. JS writes <code>--mx</code>/<code>--my</code> custom properties; CSS does the rest with a radial gradient. Tilt reads the pointer offset and applies a small 3D rotation — keep it under 8° or it becomes a toy.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div class="spot js-spot"><div class="h-t">Spotlight follow</div><div class="body-txt">Radial gradient tracks the cursor position.</div></div>
+        <div class="tilt js-tilt"><div class="h-t">3D tilt</div><div class="body-txt">perspective + rotateX/rotateY on hover.</div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div class="spot js-spot"><div class="h-t">Spotlight follow</div><div class="body-txt">Reads much stronger against dark.</div></div>
+        <div class="tilt js-tilt"><div class="h-t">3D tilt</div><div class="body-txt">perspective + rotateX/rotateY on hover.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 TEXTURES -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">07 — Background textures</div>
+    <h2 class="sec-title">Dot grids, rules, hatching &amp; masked fades</h2>
+    <p class="sec-desc">Pure <code>background-image</code> — no deliveries. The masked variant fades the grid toward the edges with <code>mask-image</code>, which stops a full-bleed grid from fighting your content.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div><div class="lbl">Dot grid</div><div class="tex dot-grid"></div></div>
+        <div><div class="lbl">Line grid</div><div class="tex line-grid"></div></div>
+        <div><div class="lbl">Diagonal hatch</div><div class="tex diag"></div></div>
+        <div><div class="lbl">Masked fade grid</div><div class="tex fade-grid"></div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div><div class="lbl">Dot grid</div><div class="tex dot-grid"></div></div>
+        <div><div class="lbl">Line grid</div><div class="tex line-grid"></div></div>
+        <div><div class="lbl">Diagonal hatch</div><div class="tex diag"></div></div>
+        <div><div class="lbl">Masked fade grid</div><div class="tex fade-grid"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 BORDERS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">08 — Borders &amp; hairlines</div>
+    <h2 class="sec-title">Alpha borders, not solid colours</h2>
+    <p class="sec-desc">Define borders as <code>rgba</code> over the surface rather than a fixed grey. They then work at any elevation and in both themes without a second token. Accent-edge cards are the cheapest way to encode severity in a list.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div class="b-demo b-plain">--border · default hairline</div>
+        <div class="b-demo b-strong">--border-strong · emphasis</div>
+        <div class="b-demo b-inset">inset top highlight · raised feel</div>
+        <div class="b-demo b-inner">inset ring · crisper at any radius</div>
+        <div class="b-demo b-top-accent">top accent · active tab / selected</div>
+        <div class="b-demo b-tint-accent">tinted fill · severity in a list, no edge bar</div>
+        <div class="divider"></div>
+        <div class="divider-fade"></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div class="b-demo b-plain">--border · default hairline</div>
+        <div class="b-demo b-strong">--border-strong · emphasis</div>
+        <div class="b-demo b-inset">inset top highlight · raised feel</div>
+        <div class="b-demo b-inner">inset ring · crisper at any radius</div>
+        <div class="b-demo b-top-accent">top accent · active tab / selected</div>
+        <div class="b-demo b-tint-accent">tinted fill · severity in a list, no edge bar</div>
+        <div class="divider"></div>
+        <div class="divider-fade"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 SCRIM -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">09 — Scrims, vignettes &amp; masks</div>
+    <h2 class="sec-title">Making text survive an unpredictable background</h2>
+    <p class="sec-desc">A flat scrim dims everything equally; a gradient scrim keeps the top of the image visible while guaranteeing contrast where the text sits. The masked fade is how you signal "list continues" without a hard cut.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="stack">
+        <div class="scrim-stage"><div class="scrim-over"><div class="t">Flat scrim</div></div></div>
+        <div class="scrim-stage"><div class="grad-scrim"><div class="t">Gradient scrim</div></div></div>
+        <div class="scrim-stage"><div class="vignette"></div></div>
+        <div><div class="lbl">Masked fade-out</div><div class="fade-mask"></div></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="stack">
+        <div class="scrim-stage"><div class="scrim-over"><div class="t">Flat scrim</div></div></div>
+        <div class="scrim-stage"><div class="grad-scrim"><div class="t">Gradient scrim</div></div></div>
+        <div class="scrim-stage"><div class="vignette"></div></div>
+        <div><div class="lbl">Masked fade-out</div><div class="fade-mask"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 BENTO + DEPTH -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">10 — Composition</div>
+    <h2 class="sec-title">Bento grids &amp; layered stacks</h2>
+    <p class="sec-desc">Mixed-span grid cells with one solid accent "hero" tile — the standard modern dashboard layout. The stack pattern (scaled, faded, offset copies) communicates "more behind this" for grouped notifications or queued items.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light">
+      <span class="pane-tag">Light</span>
+      <div class="bento">
+        <div class="bn-a">Primary metric</div>
+        <div class="bn-b">Trend</div>
+        <div class="bn-c">SLA</div>
+        <div class="bn-d">Alerts</div>
+        <div class="bn-e">Activity timeline</div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="lbl">Layered stack</div>
+      <div class="stack-depth"><div class="sd-3"></div><div class="sd-2"></div><div class="sd-1">3 grouped items</div></div>
+    </div>
+    <div class="pane" data-t="dark">
+      <span class="pane-tag">Dark</span>
+      <div class="bento">
+        <div class="bn-a">Primary metric</div>
+        <div class="bn-b">Trend</div>
+        <div class="bn-c">SLA</div>
+        <div class="bn-d">Alerts</div>
+        <div class="bn-e">Activity timeline</div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="lbl">Layered stack</div>
+      <div class="stack-depth"><div class="sd-3"></div><div class="sd-2"></div><div class="sd-1">3 grouped items</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 GLASS MODAL -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">11 — Glass overlay</div>
+    <h2 class="sec-title">Blurred scrim + glass dialog</h2>
+    <p class="sec-desc">Two blur layers: a light blur on the scrim to push the page back, and a heavier one on the dialog itself. Blurring the scrim alone is what separates a considered overlay from a div with opacity.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light" style="padding:0">
+      <span class="pane-tag">Light</span>
+      <div class="modal-stage"><div class="faux"></div>
+        <div class="modal-scrim2">
+          <div class="modal-glass">
+            <div class="t">Resubmit this run?</div>
+            <div class="s">Already resubmitted 3 times. A fourth attempt uses the same configuration.</div>
+            <div class="mg-btns"><button class="mg-ghost">Cancel</button><button class="mg-solid">Resubmit</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark" style="padding:0">
+      <span class="pane-tag">Dark</span>
+      <div class="modal-stage"><div class="faux"></div>
+        <div class="modal-scrim2">
+          <div class="modal-glass">
+            <div class="t">Resubmit this run?</div>
+            <div class="s">Already resubmitted 3 times. A fourth attempt uses the same configuration.</div>
+            <div class="mg-btns"><button class="mg-ghost">Cancel</button><button class="mg-solid">Resubmit</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="foot">
+  <b>Porting notes.</b> Copy the two theme blocks at the top of the stylesheet first — every pattern below reads from those tokens only.
+  Swap <code>[data-t="dark"]</code> for whatever theme root you use.
+  Glass requires a non-flat backdrop to be visible at all; over a solid colour it looks like nothing happened.
+  <code>backdrop-filter</code> is expensive — a handful of glass surfaces is fine, forty is not.
+  Always ship the <code>-webkit-</code> prefix alongside it.
+</div>
+
+<button class="replay" onclick="location.reload()">↻ Replay animations</button>
+
+<script>
+/* faux page content behind glass and dialogs */
+const FAUX=('<div class="fc"><div class="l"></div><div class="v"></div><div class="r2"><i class="g"></i><i></i></div></div>'
+ +'<div class="fc"><div class="l"></div><div class="v"></div><div class="r2"><i class="w"></i><i></i></div></div>'
+ +'<div class="fc"><div class="l"></div><div class="v"></div><div class="r2"><i></i><i></i></div></div>'
+ +'<div class="fc wide">'+[30,45,38,60,52,70,64,58,80,72,66,90].map(h=>'<i style="height:'+h+'%"></i>').join('')+'</div>');
+document.querySelectorAll('.faux').forEach(f=>f.innerHTML=FAUX);
+/* grain slider */
+function grain(i){const w=i.closest('.grain-wrap');w.querySelector('.grain-surface').style.setProperty('--g',i.value/100);w.querySelector('b').textContent=i.value+'%';}
+
+/* spotlight cards */
+document.querySelectorAll('.js-spot').forEach(el=>{
+  el.addEventListener('mousemove', e=>{
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
+});
+
+/* tilt cards */
+document.querySelectorAll('.js-tilt').forEach(el=>{
+  el.addEventListener('mousemove', e=>{
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width  - .5;
+    const py = (e.clientY - r.top ) / r.height - .5;
+    el.style.transform =
+      `perspective(680px) rotateY(${px*7}deg) rotateX(${-py*7}deg) translateY(-2px)`;
+  });
+  el.addEventListener('mouseleave', ()=>{ el.style.transform = ''; });
+});
+
+/* reduced-motion detection + override */
+function forceMotion(){
+  document.documentElement.dataset.motion = 'force';
+  document.getElementById('motionBanner').classList.remove('show');
+}
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');
+}
+</script>
+</body>
+</html>

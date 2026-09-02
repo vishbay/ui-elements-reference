@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 05 — Overlays &amp; Navigation</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.pop-wrap{position:relative;display:inline-block}
+.menu{position:absolute;z-index:40;min-width:186px;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;box-shadow:var(--e3);padding:5px;
+  opacity:0;transform:translateY(-7px) scale(.97);pointer-events:none;
+  transition:all 220ms var(--ease-spring)}
+.menu.open{opacity:1;transform:none;pointer-events:auto}
+.menu-item{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;
+  color:var(--text);font-size:12.5px;padding:8px 10px;border-radius:7px;cursor:pointer;
+  font-family:inherit;text-align:left}
+.menu-item:hover{background:var(--surface-2)}
+.menu-item.dang{color:var(--danger)}
+.menu-item .k{margin-left:auto;font-size:10px;color:var(--text-faint);font-family:var(--mono)}
+.menu-sep{height:1px;background:var(--hairline);margin:4px 2px}
+.menu-lbl{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;padding:6px 10px 3px}
+
+.pop{position:absolute;z-index:40;width:220px;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;box-shadow:var(--e3);padding:13px;font-size:12px;color:var(--text-dim);
+  line-height:1.55;opacity:0;transform:translateY(-6px);pointer-events:none;
+  transition:all 220ms var(--ease-spring)}
+.pop.open{opacity:1;transform:none;pointer-events:auto}
+.pop::before{content:"";position:absolute;width:10px;height:10px;background:var(--surface);
+  border-left:1px solid var(--border);border-top:1px solid var(--border);
+  transform:rotate(45deg);top:-6px;left:22px}
+.pop b{color:var(--text);display:block;margin-bottom:4px;font-size:12.5px}
+
+.tipw{position:relative;display:inline-block}
+.tipb{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(5px) scale(.94);
+  background:var(--text);color:var(--bg);font-size:11.5px;font-weight:620;padding:6px 10px;
+  border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;
+  transition:all var(--fast) var(--ease-spring);z-index:30}
+.tipw:hover .tipb{opacity:1;transform:translateX(-50%) scale(1)}
+.tipb::after{content:"";position:absolute;top:100%;left:50%;margin-left:-4px;
+  border:4px solid transparent;border-top-color:var(--text)}
+
+.cmdk-scrim{position:absolute;inset:0;background:var(--scrim);-webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;
+  padding-top:26px;z-index:50;border-radius:var(--r-md)}
+.cmdk-scrim.on{display:flex;animation:fade .22s var(--ease)}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.cmdk{width:88%;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;
+  box-shadow:var(--e4);overflow:hidden;animation:cmdIn .32s var(--ease-spring)}
+@keyframes cmdIn{from{opacity:0;transform:scale(.94) translateY(-10px)}to{opacity:1;transform:none}}
+.cmdk input{width:100%;background:none;border:none;border-bottom:1px solid var(--border);
+  padding:13px 15px;font-size:14px;color:var(--text);outline:none;font-family:inherit}
+.cmdk-list{max-height:158px;overflow-y:auto;padding:6px}
+.cmdk-list .menu-lbl{padding-top:8px}
+.cmdk-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;
+  font-size:12.5px;cursor:pointer}
+.cmdk-item.hi{background:var(--accent-soft);color:var(--accent)}
+.cmdk-item .ic{width:17px;text-align:center;opacity:.75}
+.cmdk-item .k{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+
+.sb-demo{display:flex;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;
+  height:196px;background:var(--surface)}
+.sb{width:158px;flex-shrink:0;background:var(--surface-2);border-right:1px solid var(--border);
+  padding:11px 8px;transition:width 340ms var(--ease-spring);overflow:hidden}
+.sb.mini{width:48px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 9px;border-radius:7px;
+  font-size:12.5px;color:var(--text-dim);cursor:pointer;white-space:nowrap;margin-bottom:2px}
+.sb-item:hover{background:var(--surface-3);color:var(--text)}
+.sb-item.on{background:var(--accent-soft);color:var(--accent);font-weight:640}
+.sb-item .ic{width:16px;flex-shrink:0;text-align:center}
+.sb-item .tx{transition:opacity 200ms var(--ease)}
+.sb.mini .tx{opacity:0}
+.sb-grp{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;padding:9px 9px 5px;white-space:nowrap}
+.sb.mini .sb-grp{opacity:0}
+.sb-body{flex:1;padding:14px;font-size:12px;color:var(--text-dim)}
+
+.crumbs{display:flex;align-items:center;gap:5px;font-size:12px;flex-wrap:wrap}
+.crumbs a{color:var(--text-dim);text-decoration:none;padding:3px 6px;border-radius:5px;cursor:pointer}
+.crumbs a:hover{background:var(--surface-2);color:var(--text)}
+.crumbs .sepc{color:var(--text-faint);opacity:.6}
+.crumbs .cur{color:var(--text);font-weight:640;padding:3px 6px}
+
+.steps{display:flex;align-items:center}
+.step{display:flex;align-items:center;gap:8px;flex:1}
+.step:last-child{flex:0}
+.step-dot{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;font-size:11.5px;font-weight:700;border:1.5px solid var(--border-strong);
+  color:var(--text-faint);background:var(--surface);transition:all var(--base) var(--ease-spring)}
+.step.done .step-dot{background:var(--good);border-color:var(--good);color:#fff}
+.step.cur .step-dot{border-color:var(--accent);color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft)}
+.step-line{flex:1;height:2px;background:var(--border);position:relative;overflow:hidden}
+.step-line::after{content:"";position:absolute;inset:0;background:var(--good);
+  transform:scaleX(0);transform-origin:left;transition:transform .6s var(--ease)}
+.step.done .step-line::after{transform:scaleX(1)}
+.step-lbls{display:flex;margin-top:8px;font-size:10.5px;color:var(--text-faint)}
+.step-lbls span{flex:1}
+.step-lbls span.on{color:var(--text);font-weight:640}
+
+.sheet-demo{position:relative;height:190px;border:1px solid var(--border);border-radius:var(--r-md);
+  overflow:hidden;background:var(--surface-2)}
+.sheet-scrim{position:absolute;inset:0;background:var(--scrim);opacity:0;pointer-events:none;
+  transition:opacity var(--base)}
+.sheet-scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+  border-top:1px solid var(--border-strong);border-radius:16px 16px 0 0;padding:14px;
+  transform:translateY(100%);transition:transform 480ms var(--ease-spring);box-shadow:var(--e4);z-index:5}
+.sheet.on{transform:none}
+.sheet-grab{width:34px;height:4px;border-radius:2px;background:var(--border-strong);
+  margin:0 auto 11px}
+.sheet .t{font-size:13px;font-weight:700;margin-bottom:5px}
+.sheet .s{font-size:11.5px;color:var(--text-dim);line-height:1.55}
+
+.toasts{position:absolute;bottom:11px;right:11px;display:flex;flex-direction:column;gap:7px;
+  align-items:flex-end;z-index:20}
+.toast{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);
+  border-radius:9px;padding:9px 13px;font-size:12px;
+  box-shadow:var(--e3);animation:tin .42s var(--ease-spring)}
+.toast>span:first-child{color:var(--good);font-weight:700}
+.toast.err>span:first-child{color:var(--danger)}
+.toast.warn>span:first-child{color:var(--warn)}
+.toast.out{animation:tout .28s var(--ease) forwards}
+@keyframes tin{from{opacity:0;transform:translateX(36px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateX(36px) scale(.94)}}
+.toast-stage{position:relative;height:150px;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--surface-2);padding:13px}
+
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:var(--r-sm);
+  padding:7px 13px;font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit;
+  transition:transform var(--fast),filter var(--fast),border-color var(--fast)}
+.btn:active{transform:scale(.96)}
+.btn-p{background:var(--accent);color:#fff}
+.btn-g{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.btn-g:hover{border-color:var(--accent);color:var(--accent)}
+
+
+/* ---- 04 tabs ---- */
+.tbs{display:flex;position:relative;border-bottom:1px solid var(--border);margin-bottom:14px}
+.tbs-i{font-size:12.5px;font-weight:600;color:var(--text-dim);padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--fast)}
+.tbs-i:hover{color:var(--text)}
+.tbs-i.on{color:var(--text)}
+.tbs-i .n{font-family:var(--mono);font-size:10px;color:var(--text-faint);background:var(--surface-2);padding:0 5px;border-radius:999px}
+.tbs-i.on .n{background:var(--accent-soft);color:var(--accent)}
+.tbs-i .ic{opacity:.8}
+.tbs-i .dot{width:6px;height:6px;border-radius:50%;background:var(--danger)}
+.tbs-ind{position:absolute;bottom:-1px;height:2px;background:var(--accent);left:0;width:0;transition:left 260ms var(--ease-spring),width 260ms var(--ease-spring)}
+.tbs.pill{border-bottom:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;gap:2px;display:inline-flex}
+.tbs.pill .tbs-i{padding:5px 11px;border-radius:6px;margin:0;font-size:12px;position:relative;z-index:1;border:none}
+.tbs.pill .tbs-ind{top:3px;bottom:3px;height:auto;border-radius:6px;background:var(--surface);box-shadow:var(--e1)}
+.tbs.boxed{border-bottom:1px solid var(--border);gap:3px;align-items:flex-end}
+.tbs.boxed .tbs-i{border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;background:transparent;margin-bottom:-1px}
+.tbs.boxed .tbs-i.on{background:var(--surface);border-color:var(--border);color:var(--text);box-shadow:0 1px 0 var(--surface)}
+.tbs.boxed .tbs-ind{display:none}
+.tbs.closable .tbs-i{padding-right:6px}
+.tbs.closable .x{width:16px;height:16px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-faint);margin-left:2px}
+.tbs.closable .x:hover{background:var(--surface-3);color:var(--text)}
+.tbs.closable .add{padding:6px 9px;color:var(--text-faint);font-weight:500}
+.tbs.vert{flex-direction:column;border-bottom:none;border-right:1px solid var(--border);width:150px;margin:0}
+.tbs.vert .tbs-i{border:none;margin:0;padding:7px 12px;border-radius:6px 0 0 6px}
+.tbs.vert .tbs-i.on{background:var(--accent-soft);color:var(--accent)}
+.tbs.vert .tbs-ind{display:none}
+.tile>.pane{min-width:0}
+.tbs-scroll{position:relative;overflow:hidden;min-width:0}
+.tbs-scroll .tbs{overflow-x:auto;scrollbar-width:none;margin-bottom:0;flex-wrap:nowrap}
+.tbs-scroll .tbs::-webkit-scrollbar{display:none}
+.tbs-scroll::before,.tbs-scroll::after{content:"";position:absolute;top:0;bottom:1px;width:32px;pointer-events:none;z-index:2}
+.tbs-scroll::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.tbs-scroll::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.tbs-panel{font-size:12px;color:var(--text-dim);padding:10px 2px;line-height:1.55;min-height:36px}
+.tbs-panel b{color:var(--text)}
+.tbs-vwrap{display:flex;gap:14px}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 05</div>
+  <h1>Overlays &amp; Navigation</h1>
+  <p>Dropdown menus, popovers with arrows, tooltips, a &#8984;K command palette, collapsible sidebar, breadcrumbs, steppers, bottom sheets and a self-reflowing toast stack.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Menus &amp; popovers</div>
+    <h2 class="sec-title">Dropdowns, popovers, tooltips, command palette</h2>
+    <p class="sec-desc">All three overlays share one spring transition and close on outside click. The command palette is the highest-leverage addition to any dense internal tool &mdash; it removes the need to design navigation for every action.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Dropdown &amp; context menu</div>
+<div class="row" style="margin-bottom:74px">
+  <div class="pop-wrap">
+    <button class="btn btn-g" onclick="tog(this,'.menu')">Actions &#9662;</button>
+    <div class="menu">
+      <div class="menu-lbl">Run</div>
+      <button class="menu-item">&#8635; Resubmit <span class="k">&#8984;R</span></button>
+      <button class="menu-item">&#9998; Edit config</button>
+      <button class="menu-item">&#8663; Open in Jira</button>
+      <div class="menu-sep"></div>
+      <button class="menu-item dang">&#9003; Cancel run</button>
+    </div>
+  </div>
+  <div class="pop-wrap">
+    <button class="btn btn-g" onclick="tog(this,'.pop')">Popover &#9662;</button>
+    <div class="pop" style="top:calc(100% + 9px);left:0">
+      <b>SLO vs SLA</b>
+      SLO is the internal earlier target that leaves recovery room. SLA is the committed external deadline.
+    </div>
+  </div>
+  <div class="tipw"><button class="btn btn-g">Tooltip</button>
+    <span class="tipb">Springs into place</span></div>
+</div>
+
+<div class="lbl">Command palette</div>
+<button class="btn btn-p" onclick="openCmd(this)">Open &#8984;K</button>
+<div class="cmdk-scrim" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="cmdk">
+    <input placeholder="Type a command or search..." oninput="cmdFilter(this)">
+    <div class="cmdk-list">
+      <div class="menu-lbl">Navigate</div>
+      <div class="cmdk-item hi"><span class="ic">&#9635;</span>Operations Overview<span class="k">G O</span></div>
+      <div class="cmdk-item"><span class="ic">&#9888;</span>Incident Tracker<span class="k">G I</span></div>
+      <div class="cmdk-item"><span class="ic">&#10022;</span>Service Map<span class="k">G A</span></div>
+      <div class="menu-lbl">Actions</div>
+      <div class="cmdk-item"><span class="ic">&#8635;</span>Refresh all data<span class="k">&#8984;&#8679;R</span></div>
+      <div class="cmdk-item"><span class="ic">&#9788;</span>Toggle theme<span class="k">&#8984;J</span></div>
+    </div>
+  </div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Dropdown &amp; context menu</div>
+<div class="row" style="margin-bottom:74px">
+  <div class="pop-wrap">
+    <button class="btn btn-g" onclick="tog(this,'.menu')">Actions &#9662;</button>
+    <div class="menu">
+      <div class="menu-lbl">Run</div>
+      <button class="menu-item">&#8635; Resubmit <span class="k">&#8984;R</span></button>
+      <button class="menu-item">&#9998; Edit config</button>
+      <button class="menu-item">&#8663; Open in Jira</button>
+      <div class="menu-sep"></div>
+      <button class="menu-item dang">&#9003; Cancel run</button>
+    </div>
+  </div>
+  <div class="pop-wrap">
+    <button class="btn btn-g" onclick="tog(this,'.pop')">Popover &#9662;</button>
+    <div class="pop" style="top:calc(100% + 9px);left:0">
+      <b>SLO vs SLA</b>
+      SLO is the internal earlier target that leaves recovery room. SLA is the committed external deadline.
+    </div>
+  </div>
+  <div class="tipw"><button class="btn btn-g">Tooltip</button>
+    <span class="tipb">Springs into place</span></div>
+</div>
+
+<div class="lbl">Command palette</div>
+<button class="btn btn-p" onclick="openCmd(this)">Open &#8984;K</button>
+<div class="cmdk-scrim" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="cmdk">
+    <input placeholder="Type a command or search..." oninput="cmdFilter(this)">
+    <div class="cmdk-list">
+      <div class="menu-lbl">Navigate</div>
+      <div class="cmdk-item hi"><span class="ic">&#9635;</span>Operations Overview<span class="k">G O</span></div>
+      <div class="cmdk-item"><span class="ic">&#9888;</span>Incident Tracker<span class="k">G I</span></div>
+      <div class="cmdk-item"><span class="ic">&#10022;</span>Service Map<span class="k">G A</span></div>
+      <div class="menu-lbl">Actions</div>
+      <div class="cmdk-item"><span class="ic">&#8635;</span>Refresh all data<span class="k">&#8984;&#8679;R</span></div>
+      <div class="cmdk-item"><span class="ic">&#9788;</span>Toggle theme<span class="k">&#8984;J</span></div>
+    </div>
+  </div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Navigation</div>
+    <h2 class="sec-title">Sidebar, breadcrumbs, stepper</h2>
+    <p class="sec-desc">The sidebar fades labels out <em>before</em> collapsing the width, which avoids text squashing mid-animation. The stepper animates its connector line with <code>scaleX</code> from the left rather than growing a width, so it stays smooth at any size.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Collapsible sidebar</div>
+<div class="sb-demo" style="margin-bottom:16px">
+  <div class="sb">
+    <div class="sb-grp">Operations</div>
+    <div class="sb-item on"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+    <div class="sb-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span></div>
+    <div class="sb-item"><span class="ic">&#10022;</span><span class="tx">Service map</span></div>
+    <div class="sb-grp">Analysis</div>
+    <div class="sb-item"><span class="ic">&#9906;</span><span class="tx">Failure clusters</span></div>
+    <div class="sb-item"><span class="ic">&#9200;</span><span class="tx">Run history</span></div>
+  </div>
+  <div class="sb-body">
+    <button class="btn btn-g" onclick="this.closest('.sb-demo').querySelector('.sb').classList.toggle('mini')">
+      &#8801; Toggle</button>
+    <div style="margin-top:11px;line-height:1.6">Labels fade before the width collapses, so text never
+    squashes mid-transition.</div>
+  </div>
+</div>
+
+<div class="lbl">Breadcrumbs</div>
+<div class="crumbs" style="margin-bottom:18px">
+  <a>Console</a><span class="sepc">/</span><a>Incidents</a><span class="sepc">/</span>
+  <a>Northwind Retail</a><span class="sepc">/</span><span class="cur">INC000012345678</span>
+</div>
+
+<div class="lbl">Stepper</div>
+<div class="steps">
+  <div class="step done"><div class="step-dot">&#10003;</div><div class="step-line"></div></div>
+  <div class="step done"><div class="step-dot">&#10003;</div><div class="step-line"></div></div>
+  <div class="step cur"><div class="step-dot">3</div><div class="step-line"></div></div>
+  <div class="step"><div class="step-dot">4</div></div>
+</div>
+<div class="step-lbls"><span>Detect</span><span>Triage</span><span class="on">Resubmit</span><span>Verify</span></div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Collapsible sidebar</div>
+<div class="sb-demo" style="margin-bottom:16px">
+  <div class="sb">
+    <div class="sb-grp">Operations</div>
+    <div class="sb-item on"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+    <div class="sb-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span></div>
+    <div class="sb-item"><span class="ic">&#10022;</span><span class="tx">Service map</span></div>
+    <div class="sb-grp">Analysis</div>
+    <div class="sb-item"><span class="ic">&#9906;</span><span class="tx">Failure clusters</span></div>
+    <div class="sb-item"><span class="ic">&#9200;</span><span class="tx">Run history</span></div>
+  </div>
+  <div class="sb-body">
+    <button class="btn btn-g" onclick="this.closest('.sb-demo').querySelector('.sb').classList.toggle('mini')">
+      &#8801; Toggle</button>
+    <div style="margin-top:11px;line-height:1.6">Labels fade before the width collapses, so text never
+    squashes mid-transition.</div>
+  </div>
+</div>
+
+<div class="lbl">Breadcrumbs</div>
+<div class="crumbs" style="margin-bottom:18px">
+  <a>Console</a><span class="sepc">/</span><a>Incidents</a><span class="sepc">/</span>
+  <a>Northwind Retail</a><span class="sepc">/</span><span class="cur">INC000012345678</span>
+</div>
+
+<div class="lbl">Stepper</div>
+<div class="steps">
+  <div class="step done"><div class="step-dot">&#10003;</div><div class="step-line"></div></div>
+  <div class="step done"><div class="step-dot">&#10003;</div><div class="step-line"></div></div>
+  <div class="step cur"><div class="step-dot">3</div><div class="step-line"></div></div>
+  <div class="step"><div class="step-dot">4</div></div>
+</div>
+<div class="step-lbls"><span>Detect</span><span>Triage</span><span class="on">Resubmit</span><span>Verify</span></div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Transient surfaces</div>
+    <h2 class="sec-title">Bottom sheets and toasts</h2>
+    <p class="sec-desc">Toasts enter from the edge they will exit toward and stack upward with automatic reflow. Sheets use a heavier spring than drawers because they travel further &mdash; matching easing across different distances makes the shorter one feel sluggish.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Bottom sheet</div>
+<div class="sheet-demo" style="margin-bottom:16px">
+  <div style="padding:13px;font-size:12px;color:var(--text-dim)">
+    <button class="btn btn-p" onclick="openSheet(this)">Open sheet</button>
+    <div style="margin-top:10px;line-height:1.6">Spring easing with a grab handle. On touch this is the
+    mobile equivalent of a side drawer.</div>
+  </div>
+  <div class="sheet-scrim" onclick="closeSheet(this)"></div>
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <div class="t">Resubmit options</div>
+    <div class="s">Choose whether to reuse the existing configuration or apply the updated timeout
+    before the run is queued again.</div>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeSheet(this)">Cancel</button>
+      <button class="btn btn-p" onclick="closeSheet(this)">Resubmit</button>
+    </div>
+  </div>
+</div>
+
+<div class="lbl">Toast stack</div>
+<div class="toast-stage">
+  <div class="row">
+    <button class="btn btn-g" onclick="toast(this,'Run resubmitted','')">Success</button>
+    <button class="btn btn-g" onclick="toast(this,'Resubmit failed','err')">Error</button>
+    <button class="btn btn-g" onclick="toast(this,'SLO at risk','warn')">Warning</button>
+  </div>
+  <div class="toasts"></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Bottom sheet</div>
+<div class="sheet-demo" style="margin-bottom:16px">
+  <div style="padding:13px;font-size:12px;color:var(--text-dim)">
+    <button class="btn btn-p" onclick="openSheet(this)">Open sheet</button>
+    <div style="margin-top:10px;line-height:1.6">Spring easing with a grab handle. On touch this is the
+    mobile equivalent of a side drawer.</div>
+  </div>
+  <div class="sheet-scrim" onclick="closeSheet(this)"></div>
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <div class="t">Resubmit options</div>
+    <div class="s">Choose whether to reuse the existing configuration or apply the updated timeout
+    before the run is queued again.</div>
+    <div class="row" style="margin-top:12px;justify-content:flex-end">
+      <button class="btn btn-g" onclick="closeSheet(this)">Cancel</button>
+      <button class="btn btn-p" onclick="closeSheet(this)">Resubmit</button>
+    </div>
+  </div>
+</div>
+
+<div class="lbl">Toast stack</div>
+<div class="toast-stage">
+  <div class="row">
+    <button class="btn btn-g" onclick="toast(this,'Run resubmitted','')">Success</button>
+    <button class="btn btn-g" onclick="toast(this,'Resubmit failed','err')">Error</button>
+    <button class="btn btn-g" onclick="toast(this,'SLO at risk','warn')">Warning</button>
+  </div>
+  <div class="toasts"></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Tabs</div>
+    <h2 class="sec-title">Underline, pill, boxed, closable, overflow and vertical</h2>
+    <p class="sec-desc">Six tab treatments from one markup shape. The indicator is a single absolutely-positioned element moved with a spring, which is what makes tabs feel native. Closable tabs promote a neighbour when the active one is removed; the overflow variant scrolls with fade masks and no scrollbar; vertical tabs are the settings-page form.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Underline with sliding indicator</div>
+<div class="tbs" data-tabs>
+  <span class="tbs-i on">Overview</span><span class="tbs-i">Timeline <span class="n">12</span></span><span class="tbs-i">Runbook</span><span class="tbs-i"><span class="dot"></span>Alerts</span>
+  <span class="tbs-ind"></span>
+</div>
+<div class="tbs-panel"><b>Overview.</b> Click a tab; the indicator slides rather than jumping, and the count pill picks up the accent when active.</div>
+
+<div class="lbl" style="margin-top:12px">Pill / segmented</div>
+<div class="tbs pill" data-tabs><span class="tbs-i on">Table</span><span class="tbs-i">Board</span><span class="tbs-i">Timeline</span><span class="tbs-ind"></span></div>
+
+<div class="lbl" style="margin-top:14px">Boxed (card top)</div>
+<div class="tbs boxed" data-tabs><span class="tbs-i on">&#9635; Config</span><span class="tbs-i">&#9998; Variables</span><span class="tbs-i">&#8635; History <span class="n">4</span></span><span class="tbs-ind"></span></div>
+
+<div class="lbl" style="margin-top:14px">Closable (project tabs)</div>
+<div class="tbs closable" data-tabs>
+  <span class="tbs-i on">INC-4821 <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i">checkout-api <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i">run #4,118 <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i add" onclick="tbsAdd(event,this)">+</span>
+  <span class="tbs-ind"></span>
+</div>
+
+<div class="lbl" style="margin-top:14px">Overflow with fade masks</div>
+<div class="tbs-scroll"><div class="tbs" data-tabs>
+  <span class="tbs-i on">eu-west-1</span><span class="tbs-i">eu-west-2</span><span class="tbs-i">eu-central-1</span><span class="tbs-i">us-east-1</span><span class="tbs-i">us-east-2</span><span class="tbs-i">us-west-2</span><span class="tbs-i">ap-southeast-1</span><span class="tbs-i">ap-northeast-1</span>
+  <span class="tbs-ind"></span></div></div>
+
+<div class="lbl" style="margin-top:14px">Vertical</div>
+<div class="tbs-vwrap">
+  <div class="tbs vert" data-tabs><span class="tbs-i on">General</span><span class="tbs-i">Members</span><span class="tbs-i">Notifications</span><span class="tbs-i">API keys</span><span class="tbs-ind"></span></div>
+  <div class="tbs-panel">Vertical tabs are the settings-page pattern: the active row takes a soft accent fill and there is no edge bar.</div>
+</div>
+</div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Underline with sliding indicator</div>
+<div class="tbs" data-tabs>
+  <span class="tbs-i on">Overview</span><span class="tbs-i">Timeline <span class="n">12</span></span><span class="tbs-i">Runbook</span><span class="tbs-i"><span class="dot"></span>Alerts</span>
+  <span class="tbs-ind"></span>
+</div>
+<div class="tbs-panel"><b>Overview.</b> Click a tab; the indicator slides rather than jumping, and the count pill picks up the accent when active.</div>
+
+<div class="lbl" style="margin-top:12px">Pill / segmented</div>
+<div class="tbs pill" data-tabs><span class="tbs-i on">Table</span><span class="tbs-i">Board</span><span class="tbs-i">Timeline</span><span class="tbs-ind"></span></div>
+
+<div class="lbl" style="margin-top:14px">Boxed (card top)</div>
+<div class="tbs boxed" data-tabs><span class="tbs-i on">&#9635; Config</span><span class="tbs-i">&#9998; Variables</span><span class="tbs-i">&#8635; History <span class="n">4</span></span><span class="tbs-ind"></span></div>
+
+<div class="lbl" style="margin-top:14px">Closable (project tabs)</div>
+<div class="tbs closable" data-tabs>
+  <span class="tbs-i on">INC-4821 <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i">checkout-api <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i">run #4,118 <span class="x" onclick="tbsClose(event,this)">&times;</span></span>
+  <span class="tbs-i add" onclick="tbsAdd(event,this)">+</span>
+  <span class="tbs-ind"></span>
+</div>
+
+<div class="lbl" style="margin-top:14px">Overflow with fade masks</div>
+<div class="tbs-scroll"><div class="tbs" data-tabs>
+  <span class="tbs-i on">eu-west-1</span><span class="tbs-i">eu-west-2</span><span class="tbs-i">eu-central-1</span><span class="tbs-i">us-east-1</span><span class="tbs-i">us-east-2</span><span class="tbs-i">us-west-2</span><span class="tbs-i">ap-southeast-1</span><span class="tbs-i">ap-northeast-1</span>
+  <span class="tbs-ind"></span></div></div>
+
+<div class="lbl" style="margin-top:14px">Vertical</div>
+<div class="tbs-vwrap">
+  <div class="tbs vert" data-tabs><span class="tbs-i on">General</span><span class="tbs-i">Members</span><span class="tbs-i">Notifications</span><span class="tbs-i">API keys</span><span class="tbs-ind"></span></div>
+  <div class="tbs-panel">Vertical tabs are the settings-page pattern: the active row takes a soft accent fill and there is no edge bar.</div>
+</div>
+</div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Every overlay here needs three behaviours to feel finished:
+close on outside click, close on <code>Escape</code>, and return focus to the trigger on close.
+The first two are wired above; the third matters for keyboard users and is a one-liner
+&mdash; store the trigger element on open and call <code>.focus()</code> on close.
+Command palettes should search actions and destinations together, not in separate modes.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+function tog(btn,sel){const el=btn.parentNode.querySelector(sel);
+  const wasOpen=el.classList.contains('open');closeAll();
+  if(!wasOpen)el.classList.add('open');}
+function closeAll(){document.querySelectorAll('.menu.open,.pop.open').forEach(m=>m.classList.remove('open'));}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))closeAll();});
+function openCmd(b){b.closest('.pane').querySelector('.cmdk-scrim').classList.add('on');
+  setTimeout(()=>b.closest('.pane').querySelector('.cmdk input').focus(),60);}
+function cmdFilter(inp){const q=inp.value.toLowerCase();
+  inp.closest('.cmdk').querySelectorAll('.cmdk-item').forEach(it=>{
+    it.style.display=it.textContent.toLowerCase().includes(q)?'flex':'none';});}
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();
+    document.querySelectorAll('.cmdk-scrim').forEach(s=>s.classList.add('on'));}
+  if(e.key==='Escape'){document.querySelectorAll('.cmdk-scrim.on').forEach(s=>s.classList.remove('on'));
+    closeAll();}});
+function openSheet(b){const d=b.closest('.sheet-demo');
+  d.querySelector('.sheet').classList.add('on');d.querySelector('.sheet-scrim').classList.add('on');}
+function closeSheet(b){const d=b.closest('.sheet-demo');
+  d.querySelector('.sheet').classList.remove('on');d.querySelector('.sheet-scrim').classList.remove('on');}
+function toast(b,msg,kind){const st=b.closest('.toast-stage').querySelector('.toasts');
+  const t=document.createElement('div');t.className='toast '+kind;
+  t.innerHTML='<span>'+(kind==='err'?'&#10007;':kind==='warn'?'&#9888;':'&#10003;')+'</span><span>'+msg+'</span>';
+  st.appendChild(t);setTimeout(()=>{t.classList.add('out');setTimeout(()=>t.remove(),300);},3000);}
+
+
+/* ---- 04 tabs: one indicator function handles horizontal, pill and vertical ---- */
+function tbsInd(t){const on=t.querySelector('.tbs-i.on'),ind=t.querySelector('.tbs-ind');if(!on||!ind)return;
+  if(t.classList.contains('vert')){ind.style.top=on.offsetTop+'px';ind.style.height=on.offsetHeight+'px';}
+  else{ind.style.left=on.offsetLeft+'px';ind.style.width=on.offsetWidth+'px';}}
+document.querySelectorAll('[data-tabs]').forEach(t=>{t.addEventListener('click',e=>{const it=e.target.closest('.tbs-i');
+  if(!it||it.classList.contains('add')||e.target.classList.contains('x'))return;
+  t.querySelectorAll('.tbs-i').forEach(x=>x.classList.remove('on'));it.classList.add('on');tbsInd(t);
+  it.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});});});
+function tbsClose(e,x){e.stopPropagation();const t=x.closest('.tbs'),it=x.closest('.tbs-i');const wasOn=it.classList.contains('on');
+  const next=it.nextElementSibling&&it.nextElementSibling.classList.contains('tbs-i')&&!it.nextElementSibling.classList.contains('add')?it.nextElementSibling:it.previousElementSibling;
+  it.remove();if(wasOn&&next&&next.classList.contains('tbs-i'))next.classList.add('on');tbsInd(t);}
+let tbsN=0;
+function tbsAdd(e,a){e.stopPropagation();const t=a.closest('.tbs');const it=document.createElement('span');it.className='tbs-i';
+  it.innerHTML='untitled-'+(++tbsN)+' <span class="x" onclick="tbsClose(event,this)">&times;</span>';t.insertBefore(it,a);
+  t.querySelectorAll('.tbs-i').forEach(x=>x.classList.remove('on'));it.classList.add('on');tbsInd(t);}
+window.addEventListener('load',()=>document.querySelectorAll('[data-tabs]').forEach(tbsInd));
+window.addEventListener('resize',()=>document.querySelectorAll('[data-tabs]').forEach(tbsInd));
+
+</script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 16 — Motion Choreography</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.stage{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);
+  padding:15px;position:relative;overflow:hidden}
+.gobtn{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:7px 14px;
+  font-size:12px;font-weight:640;cursor:pointer;font-family:inherit;margin-bottom:12px}
+.gobtn.g{background:transparent;color:var(--text);border:1px solid var(--border-strong)}
+
+/* easing comparison */
+.ez-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:11px}
+.ez-name{width:104px;flex-shrink:0;font-family:var(--mono);color:var(--text-dim);font-size:10.5px}
+.ez-track{flex:1;height:22px;background:var(--surface-2);border-radius:var(--r-pill);position:relative}
+.ez-ball{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;
+  background:var(--accent);transition-property:transform;transition-duration:900ms}
+.ez-linear .ez-ball{transition-timing-function:linear}
+.ez-out .ez-ball{transition-timing-function:cubic-bezier(.22,1,.36,1)}
+.ez-inout .ez-ball{transition-timing-function:cubic-bezier(.65,0,.35,1)}
+.ez-spring .ez-ball{transition-timing-function:cubic-bezier(.22,1.4,.36,1)}
+.ez-back .ez-ball{transition-timing-function:cubic-bezier(.68,-.5,.27,1.5)}
+.go .ez-ball{transform:translateX(calc(100% + 100px))}
+
+/* stagger curves */
+.stg{display:flex;gap:5px;align-items:flex-end;height:76px}
+.stg span{flex:1;background:var(--accent);border-radius:3px 3px 0 0;height:8%;
+  transition:height .5s cubic-bezier(.22,1,.36,1)}
+.stg.go span{height:100%}
+
+/* orchestrated reveal */
+.orch{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.orch > div{border:1px solid var(--border);border-radius:9px;padding:11px;background:var(--surface-2);
+  opacity:0;transform:translateY(14px) scale(.97)}
+.orch.go > div{animation:orchIn .5s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes orchIn{to{opacity:1;transform:none}}
+.orch .n{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.orch .l{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);
+  font-weight:700;margin-top:2px}
+.orch-hd{opacity:0;transform:translateY(-8px)}
+.orch-wrap.go .orch-hd{animation:hdIn .45s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes hdIn{to{opacity:1;transform:none}}
+.orch-ft{opacity:0}
+.orch-wrap.go .orch-ft{animation:ftIn .45s ease forwards;animation-delay:.55s}
+@keyframes ftIn{to{opacity:1}}
+
+/* shared element */
+.se-stage{position:relative;height:210px}
+.se-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.se-card{border:1px solid var(--border);border-radius:10px;padding:11px;background:var(--surface-2);
+  cursor:pointer;transition:opacity .3s var(--ease)}
+.se-card .t{font-size:12px;font-weight:640}
+.se-card .s{font-size:10.5px;color:var(--text-faint);margin-top:2px}
+.se-detail{position:absolute;border:1px solid var(--border-strong);border-radius:10px;
+  background:var(--surface);padding:13px;box-shadow:var(--e3);z-index:20;overflow:hidden;
+  transition:all 480ms cubic-bezier(.22,1,.36,1);opacity:0;pointer-events:none}
+.se-detail.on{opacity:1;pointer-events:auto}
+.se-detail .t{font-size:13px;font-weight:660;margin-bottom:5px}
+.se-detail .b{font-size:11.5px;color:var(--text-dim);line-height:1.55;opacity:0;
+  transition:opacity .3s ease .22s}
+.se-detail.on .b{opacity:1}
+.se-close{position:absolute;top:9px;right:11px;background:none;border:none;color:var(--text-faint);
+  cursor:pointer;font-size:14px;font-family:inherit}
+
+/* page transition */
+.pt-stage{position:relative;height:180px;overflow:hidden;border-radius:9px;background:var(--surface-2)}
+.pt-page{position:absolute;inset:0;padding:14px;background:var(--surface);
+  transition:transform 420ms cubic-bezier(.22,1,.36,1),opacity 420ms ease}
+.pt-page h4{margin:0 0 6px;font-size:13px}
+.pt-page p{margin:0;font-size:11.5px;color:var(--text-dim);line-height:1.55}
+.pt-page.out-l{transform:translateX(-24%);opacity:0}
+.pt-page.in-r{transform:translateX(100%);opacity:0}
+.pt-page.here{transform:none;opacity:1}
+
+/* enter-exit pairing */
+.ee{display:flex;gap:9px;flex-wrap:wrap}
+.ee-item{border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:12px;
+  background:var(--surface-2)}
+.ee-item.entering{animation:eeIn .38s cubic-bezier(.22,1.4,.36,1)}
+.ee-item.leaving{animation:eeOut .26s cubic-bezier(.4,0,1,1) forwards}
+@keyframes eeIn{from{opacity:0;transform:scale(.82) translateY(9px)}to{opacity:1;transform:none}}
+@keyframes eeOut{to{opacity:0;transform:scale(.9);margin-right:-9px;padding-left:0;padding-right:0;width:0}}
+
+/* timing table */
+.tt{width:100%;border-collapse:collapse;font-size:11.5px}
+.tt th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-faint);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--border)}
+.tt td{padding:8px;border-bottom:1px solid var(--hairline)}
+.tt td:first-child{font-weight:620}
+.tt code{font-size:10.5px}
+.tt .ms{font-family:var(--mono);color:var(--accent);font-weight:700}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 16</div>
+  <h1>Motion Choreography</h1>
+  <p>Not individual animations but their relationships: easing character, stagger intervals, orchestrated reveals, shared-element and directional page transitions, enter/exit asymmetry, and a duration reference table.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Easing</div>
+    <h2 class="sec-title">What each curve communicates</h2>
+    <p class="sec-desc">Run them together and watch the difference in character, not speed &mdash; identical distance, identical duration. Choosing an easing curve is choosing what the movement means.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Easing comparison &mdash; same distance, same duration</div>
+<button class="gobtn" onclick="runEz(this)">Run all</button>
+<div class="ez-set">
+  <div class="ez-row ez-linear"><span class="ez-name">linear</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-out"><span class="ez-name">ease-out</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-inout"><span class="ez-name">ease-in-out</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-spring"><span class="ez-name">spring</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-back"><span class="ez-name">anticipate</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+</div>
+<div class="body-txt" style="margin-top:10px">Linear reads mechanical &mdash; nothing in the physical
+world moves at constant velocity. Ease-out is the workhorse: fast start, gentle settle, which matches
+how a thing arriving should feel. Spring adds a slight overshoot; anticipate pulls back first and is
+almost always too much for interface work.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Easing comparison &mdash; same distance, same duration</div>
+<button class="gobtn" onclick="runEz(this)">Run all</button>
+<div class="ez-set">
+  <div class="ez-row ez-linear"><span class="ez-name">linear</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-out"><span class="ez-name">ease-out</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-inout"><span class="ez-name">ease-in-out</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-spring"><span class="ez-name">spring</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+  <div class="ez-row ez-back"><span class="ez-name">anticipate</span>
+    <span class="ez-track"><span class="ez-ball"></span></span></div>
+</div>
+<div class="body-txt" style="margin-top:10px">Linear reads mechanical &mdash; nothing in the physical
+world moves at constant velocity. Ease-out is the workhorse: fast start, gentle settle, which matches
+how a thing arriving should feel. Spring adds a slight overshoot; anticipate pulls back first and is
+almost always too much for interface work.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Stagger</div>
+    <h2 class="sec-title">Interval is a design decision</h2>
+    <p class="sec-desc">Three intervals on the same eight elements. 30&nbsp;ms reads as a single motion, 60&nbsp;ms as a deliberate sequence, 140&nbsp;ms as a page that is broken.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Stagger interval</div>
+<button class="gobtn" onclick="runStg(this)">Run</button>
+<div style="margin-bottom:9px"><div class="body-txt" style="margin-bottom:5px">30&nbsp;ms &mdash; reads as
+one motion</div><div class="stg" data-gap="30"><span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span></div></div>
+<div style="margin-bottom:9px"><div class="body-txt" style="margin-bottom:5px">60&nbsp;ms &mdash;
+deliberate, the usual answer</div><div class="stg" data-gap="60"><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span><span></span></div></div>
+<div><div class="body-txt" style="margin-bottom:5px">140&nbsp;ms &mdash; too slow, feels broken</div>
+<div class="stg" data-gap="140"><span></span><span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span></div></div>
+<div class="body-txt" style="margin-top:10px">Total sequence length matters more than the interval.
+Keep the whole reveal under about 600&nbsp;ms &mdash; past that, users start interacting mid-animation
+and the stagger becomes an obstacle rather than an introduction.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Stagger interval</div>
+<button class="gobtn" onclick="runStg(this)">Run</button>
+<div style="margin-bottom:9px"><div class="body-txt" style="margin-bottom:5px">30&nbsp;ms &mdash; reads as
+one motion</div><div class="stg" data-gap="30"><span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span></div></div>
+<div style="margin-bottom:9px"><div class="body-txt" style="margin-bottom:5px">60&nbsp;ms &mdash;
+deliberate, the usual answer</div><div class="stg" data-gap="60"><span></span><span></span><span></span>
+<span></span><span></span><span></span><span></span><span></span></div></div>
+<div><div class="body-txt" style="margin-bottom:5px">140&nbsp;ms &mdash; too slow, feels broken</div>
+<div class="stg" data-gap="140"><span></span><span></span><span></span><span></span><span></span>
+<span></span><span></span><span></span></div></div>
+<div class="body-txt" style="margin-top:10px">Total sequence length matters more than the interval.
+Keep the whole reveal under about 600&nbsp;ms &mdash; past that, users start interacting mid-animation
+and the stagger becomes an obstacle rather than an introduction.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Orchestration</div>
+    <h2 class="sec-title">Leading the eye through a screen</h2>
+    <p class="sec-desc">Header, then a staggered card grid, then the footnote. Sequencing carries meaning: what appears first is what you want read first. Simultaneous reveal throws that away.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Orchestrated page reveal</div>
+<button class="gobtn" onclick="runOrch(this)">Run sequence</button>
+<div class="orch-wrap">
+  <div class="orch-hd" style="font-size:13px;font-weight:660;margin-bottom:10px">
+    Cycle 09/01 &rarr; 09/02</div>
+  <div class="orch">
+    <div><div class="n">485</div><div class="l">Runs</div></div>
+    <div><div class="n">336</div><div class="l">Done</div></div>
+    <div><div class="n">135</div><div class="l">Failed</div></div>
+    <div><div class="n">14</div><div class="l">Active</div></div>
+    <div><div class="n">0</div><div class="l">Breach</div></div>
+    <div><div class="n">67%</div><div class="l">Retry ok</div></div>
+  </div>
+  <div class="orch-ft body-txt" style="margin-top:10px">Header first, cards staggered, footnote last
+  &mdash; the eye is led rather than flooded.</div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Orchestrated page reveal</div>
+<button class="gobtn" onclick="runOrch(this)">Run sequence</button>
+<div class="orch-wrap">
+  <div class="orch-hd" style="font-size:13px;font-weight:660;margin-bottom:10px">
+    Cycle 09/01 &rarr; 09/02</div>
+  <div class="orch">
+    <div><div class="n">485</div><div class="l">Runs</div></div>
+    <div><div class="n">336</div><div class="l">Done</div></div>
+    <div><div class="n">135</div><div class="l">Failed</div></div>
+    <div><div class="n">14</div><div class="l">Active</div></div>
+    <div><div class="n">0</div><div class="l">Breach</div></div>
+    <div><div class="n">67%</div><div class="l">Retry ok</div></div>
+  </div>
+  <div class="orch-ft body-txt" style="margin-top:10px">Header first, cards staggered, footnote last
+  &mdash; the eye is led rather than flooded.</div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Continuity</div>
+    <h2 class="sec-title">Shared elements and directional transitions</h2>
+    <p class="sec-desc">Both patterns exist to preserve a sense of place. The card grows into its detail rather than being replaced by it; pages move in a consistent direction that encodes depth.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Shared-element transition &mdash; click a card</div>
+<div class="se-stage" id="se-l">
+  <div class="se-grid">
+    <div class="se-card" onclick="seOpen(this,'l')">
+      <div class="t">Daily Sync</div><div class="s">7 of 7 complete</div></div>
+    <div class="se-card" onclick="seOpen(this,'l')">
+      <div class="t">Events</div><div class="s">109 of 109</div></div>
+    <div class="se-card" onclick="seOpen(this,'l')">
+      <div class="t">Logistics</div><div class="s">707 running</div></div>
+  </div>
+  <div class="se-detail">
+    <button class="se-close" onclick="seClose('l')">&times;</button>
+    <div class="t"></div>
+    <div class="b">The card grows from its original position into the detail panel rather than
+    appearing on top of it. Because the origin and destination are visually connected, no one loses
+    their place &mdash; which is the whole point of a shared-element transition.</div>
+  </div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Directional page transition</div>
+<div class="row" style="margin-bottom:11px">
+  <button class="gobtn g" style="margin:0" onclick="pt('d',-1)">&#8249; Back</button>
+  <button class="gobtn" style="margin:0" onclick="pt('d',1)">Forward &#8250;</button>
+</div>
+<div class="pt-stage" id="pt-d">
+  <div class="pt-page here"><h4>Incidents</h4><p>List view. Moving forward slides the next page in
+  from the right; moving back reverses it. Direction encodes hierarchy.</p></div>
+  <div class="pt-page in-r"><h4>INC&hellip;39631</h4><p>Detail view. The transition told you that you
+  went deeper, not sideways &mdash; so the back gesture is obvious.</p></div>
+  <div class="pt-page in-r"><h4>Run log</h4><p>Third level. Consistent direction across an app is the
+  cheapest way to build a mental model of its structure.</p></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Asymmetry</div>
+    <h2 class="sec-title">Enter and exit need different curves</h2>
+    <p class="sec-desc">The most common motion mistake is reusing one transition in both directions. Add and remove some filter chips to feel the difference.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Enter and exit are not mirror images</div>
+<div class="row" style="margin-bottom:11px">
+  <button class="gobtn" style="margin:0" onclick="eeAdd(this)">Add filter</button>
+  <button class="gobtn g" style="margin:0" onclick="eeRemove(this)">Remove last</button>
+</div>
+<div class="ee"><span class="ee-item">status:failed</span><span class="ee-item">project:Retail</span></div>
+<div class="body-txt" style="margin-top:11px">Entrances are slower with a spring &mdash; something
+arriving deserves attention. Exits are faster and linear &mdash; something leaving should get out of
+the way. Using the same curve both directions makes dismissal feel sluggish.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Enter and exit are not mirror images</div>
+<div class="row" style="margin-bottom:11px">
+  <button class="gobtn" style="margin:0" onclick="eeAdd(this)">Add filter</button>
+  <button class="gobtn g" style="margin:0" onclick="eeRemove(this)">Remove last</button>
+</div>
+<div class="ee"><span class="ee-item">status:failed</span><span class="ee-item">project:Retail</span></div>
+<div class="body-txt" style="margin-top:11px">Entrances are slower with a spring &mdash; something
+arriving deserves attention. Exits are faster and linear &mdash; something leaving should get out of
+the way. Using the same curve both directions makes dismissal feel sluggish.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Reference</div>
+    <h2 class="sec-title">Duration and easing by interaction</h2>
+    <p class="sec-desc">A starting table, not a law. The relationships matter more than the exact numbers &mdash; press faster than hover, close faster than open, distance scales duration.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<table class="tt">
+<thead><tr><th>Interaction</th><th>Duration</th><th>Easing</th></tr></thead>
+<tbody>
+<tr><td>Hover / focus</td><td class="ms">100&ndash;150ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Button press</td><td class="ms">80&ndash;120ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Tooltip appear</td><td class="ms">150&ndash;200ms</td><td><code>spring</code></td></tr>
+<tr><td>Dropdown open</td><td class="ms">200&ndash;250ms</td><td><code>spring</code></td></tr>
+<tr><td>Dropdown close</td><td class="ms">120&ndash;150ms</td><td><code>ease-in</code></td></tr>
+<tr><td>Modal open</td><td class="ms">300&ndash;400ms</td><td><code>spring</code></td></tr>
+<tr><td>Drawer / sheet</td><td class="ms">420&ndash;550ms</td><td><code>spring</code></td></tr>
+<tr><td>Page transition</td><td class="ms">350&ndash;450ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Chart draw-in</td><td class="ms">900&ndash;1400ms</td><td><code>ease-in-out</code></td></tr>
+<tr><td>Count-up</td><td class="ms">1000&ndash;1400ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Stagger interval</td><td class="ms">50&ndash;70ms</td><td>&mdash;</td></tr>
+<tr><td>Toast dismiss</td><td class="ms">250&ndash;300ms</td><td><code>ease-in</code></td></tr>
+</tbody></table>
+<div class="body-txt" style="margin-top:10px">Duration should scale with distance travelled. A 40&nbsp;px
+dropdown and a 400&nbsp;px drawer using the same 300&nbsp;ms will feel wrong in opposite directions
+&mdash; the small one sluggish, the large one abrupt.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<table class="tt">
+<thead><tr><th>Interaction</th><th>Duration</th><th>Easing</th></tr></thead>
+<tbody>
+<tr><td>Hover / focus</td><td class="ms">100&ndash;150ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Button press</td><td class="ms">80&ndash;120ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Tooltip appear</td><td class="ms">150&ndash;200ms</td><td><code>spring</code></td></tr>
+<tr><td>Dropdown open</td><td class="ms">200&ndash;250ms</td><td><code>spring</code></td></tr>
+<tr><td>Dropdown close</td><td class="ms">120&ndash;150ms</td><td><code>ease-in</code></td></tr>
+<tr><td>Modal open</td><td class="ms">300&ndash;400ms</td><td><code>spring</code></td></tr>
+<tr><td>Drawer / sheet</td><td class="ms">420&ndash;550ms</td><td><code>spring</code></td></tr>
+<tr><td>Page transition</td><td class="ms">350&ndash;450ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Chart draw-in</td><td class="ms">900&ndash;1400ms</td><td><code>ease-in-out</code></td></tr>
+<tr><td>Count-up</td><td class="ms">1000&ndash;1400ms</td><td><code>ease-out</code></td></tr>
+<tr><td>Stagger interval</td><td class="ms">50&ndash;70ms</td><td>&mdash;</td></tr>
+<tr><td>Toast dismiss</td><td class="ms">250&ndash;300ms</td><td><code>ease-in</code></td></tr>
+</tbody></table>
+<div class="body-txt" style="margin-top:10px">Duration should scale with distance travelled. A 40&nbsp;px
+dropdown and a 400&nbsp;px drawer using the same 300&nbsp;ms will feel wrong in opposite directions
+&mdash; the small one sluggish, the large one abrupt.</div></div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Three relationships carry most of the craft: exits are faster than
+entrances, duration scales with distance travelled, and stagger intervals sit between 50 and 70&nbsp;ms.
+Put every duration and curve in tokens so a single change adjusts the whole product's tempo.
+And measure the total length of any sequence &mdash; individually reasonable animations chained together
+routinely add up to a second and a half of waiting before a screen is usable.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+function runEz(b){
+  const set=b.parentNode.querySelector('.ez-set');
+  set.querySelectorAll('.ez-row').forEach(r=>r.classList.remove('go'));
+  void set.getBoundingClientRect();
+  requestAnimationFrame(()=>set.querySelectorAll('.ez-row').forEach(r=>r.classList.add('go')));}
+function runStg(b){
+  b.parentNode.querySelectorAll('.stg').forEach(g=>{
+    const gap=parseInt(g.dataset.gap);
+    g.querySelectorAll('span').forEach(s=>s.style.height='8%');
+    void g.getBoundingClientRect();
+    g.querySelectorAll('span').forEach((s,i)=>
+      setTimeout(()=>s.style.height=(35+Math.random()*65)+'%',i*gap));});}
+function runOrch(b){
+  const w=b.parentNode.querySelector('.orch-wrap');
+  w.classList.remove('go');
+  w.querySelectorAll('.orch > div').forEach(d=>d.style.animation='none');
+  void w.getBoundingClientRect();
+  w.classList.add('go');
+  w.querySelectorAll('.orch > div').forEach((d,i)=>{
+    d.style.animation='';d.style.animationDelay=(120+i*60)+'ms';});}
+function seOpen(card,p){
+  const stage=document.getElementById('se-'+p);
+  const det=stage.querySelector('.se-detail');
+  const r=card.getBoundingClientRect(),s=stage.getBoundingClientRect();
+  det.style.transition='none';
+  det.style.left=(r.left-s.left)+'px';det.style.top=(r.top-s.top)+'px';
+  det.style.width=r.width+'px';det.style.height=r.height+'px';
+  det.querySelector('.t').textContent=card.querySelector('.t').textContent;
+  void det.getBoundingClientRect();
+  det.style.transition='';det.classList.add('on');
+  requestAnimationFrame(()=>{
+    det.style.left='0px';det.style.top='0px';
+    det.style.width='100%';det.style.height='100%';});
+  stage.querySelectorAll('.se-card').forEach(c=>c.style.opacity=.25);}
+function seClose(p){
+  const stage=document.getElementById('se-'+p);
+  const det=stage.querySelector('.se-detail');
+  det.classList.remove('on');
+  stage.querySelectorAll('.se-card').forEach(c=>c.style.opacity=1);}
+const PT={};
+function pt(p,dir){
+  const stage=document.getElementById('pt-'+p);
+  const pages=[...stage.querySelectorAll('.pt-page')];
+  let i=PT[p]||0;
+  const n=Math.max(0,Math.min(pages.length-1,i+dir));
+  if(n===i)return;
+  if(dir>0){pages[i].className='pt-page out-l';pages[n].className='pt-page here';}
+  else{pages[i].className='pt-page in-r';pages[n].className='pt-page here';}
+  PT[p]=n;}
+function eeAdd(b){
+  const box=b.closest('.pane').querySelector('.ee');
+  const opts=['sla:breached','owner:pipeline','retry:>2','asset:critical','date:today'];
+  const s=document.createElement('span');
+  s.className='ee-item entering';
+  s.textContent=opts[Math.floor(Math.random()*opts.length)];
+  box.appendChild(s);}
+function eeRemove(b){
+  const box=b.closest('.pane').querySelector('.ee');
+  const last=box.lastElementChild;if(!last)return;
+  last.classList.add('leaving');
+  setTimeout(()=>last.remove(),270);}
+
+</script>
+</body>
+</html>

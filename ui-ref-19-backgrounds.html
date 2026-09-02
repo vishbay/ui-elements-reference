@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 19 — Backgrounds</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --glass-bg:rgba(255,255,255,.075);--glass-border:rgba(255,255,255,.14);--glass-hi:rgba(255,255,255,.16);
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --glass-bg:rgba(255,255,255,.74);--glass-border:rgba(255,255,255,.86);--glass-hi:rgba(255,255,255,.95);
+}
+:root{--r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;--ease:cubic-bezier(.22,1,.36,1);--fast:180ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:680px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+
+/* sticky control bar */
+.ctl{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 0;margin:-10px 0 20px;
+  background:linear-gradient(#0b1215 80%,transparent);font-size:12px;color:#9296a2}
+.ctl .sw{width:34px;height:19px;border-radius:999px;background:#273640;border:1px solid rgba(255,255,255,.16);position:relative;cursor:pointer}
+.ctl .sw::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#9296a2;transition:transform 200ms var(--ease)}
+.ctl .sw.on{background:#3a9ad9;border-color:#3a9ad9}.ctl .sw.on::after{transform:translateX(15px);background:#fff}
+.ctl label{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.ctl .sp{flex:1}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.bgc{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.bgp{position:relative;height:150px;overflow:hidden}
+.bgi{padding:11px 13px 6px}
+.bgi .n{font-size:13px;font-weight:650}
+.bgi .u{font-size:11.5px;color:#8b909d;line-height:1.5;margin-top:2px}
+.bgi .u b{color:#c9cbd6;font-weight:600}
+.bgcode{position:relative;margin:6px 0 0;background:#0d1519;border-top:1px solid rgba(255,255,255,.07);padding:9px 13px 10px;
+  font-family:var(--mono);font-size:10px;line-height:1.55;color:#8b909d;white-space:pre-wrap;word-break:break-all;max-height:88px;overflow:auto;padding-right:78px}
+.cp{position:absolute;top:6px;right:8px;background:#1e2b32;border:1px solid rgba(255,255,255,.14);color:#c9cbd6;border-radius:6px;
+  font-size:10px;padding:3px 8px;cursor:pointer;font-family:inherit}
+.cp:hover{border-color:#3a9ad9;color:#3a9ad9}
+/* sample overlay */
+.smp{position:absolute;inset:0;display:none;padding:14px;align-items:flex-end;gap:10px;pointer-events:none}
+body.samples .smp{display:flex}
+.smp .card{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;box-shadow:var(--e3);width:150px}
+.smp .card b{display:block;font-size:12px;font-weight:650}.smp .card span{font-size:10.5px;color:var(--text-dim)}
+.smp .glass{background:var(--glass-bg);color:var(--text);border:1px solid var(--glass-border);border-radius:10px;padding:10px 12px;
+  -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-shadow:var(--e2),inset 0 1px 0 var(--glass-hi);flex:1;min-width:0}
+.smp .glass b{display:block;font-size:12px;font-weight:650}.smp .glass span{font-size:10.5px;color:var(--text-dim)}
+.smp .tx{position:absolute;top:12px;left:14px;font-size:11px;color:var(--text);opacity:.9;font-weight:600}
+.smp .tx small{display:block;font-weight:400;color:var(--text-dim);font-size:10px}
+/* swatches */
+.sw-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:900px){.sw-row{grid-template-columns:repeat(3,1fr)}}
+.swc{border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;background:#141e23}
+.swc .s{height:74px;display:flex;align-items:flex-end;padding:8px 10px;font-family:var(--mono);font-size:10.5px}
+.swc .m{padding:8px 10px 9px;font-size:11.5px}
+.swc .m b{display:block;font-weight:650;color:#edeef2}
+.swc .m span{color:#8b909d;font-size:10.5px;line-height:1.45;display:block}
+.pair{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid rgba(255,255,255,.09);border-radius:12px;overflow:hidden}
+.pair th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7f8492;padding:10px 14px;background:#111a1f;border-bottom:1px solid rgba(255,255,255,.08)}
+.pair td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#c9cbd6;vertical-align:top;line-height:1.5}
+.pair tr:last-child td{border-bottom:none}.pair td:first-child{color:#edeef2;font-weight:640;white-space:nowrap}
+.pair .no{color:#f4707f}.pair .ok{color:#34d399}
+.recipe{background:#0d1519;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:#c9cbd6;white-space:pre;overflow:auto}
+.recipe .c{color:#5a5f6b}.recipe .k{color:#3a9ad9}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:14px}
+@media(max-width:820px){.notes{grid-template-columns:1fr}}
+.note{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px}
+.note h4{margin:0 0 4px;font-size:12.5px;color:#edeef2}.note p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.55}
+@keyframes drift{50%{transform:translate(30px,22px) scale(1.08)}}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 19</div>
+  <h1>Backgrounds</h1>
+  <p>Twenty-four backgrounds a modern product can actually ship: solid grounds, single-hue gradients, ambient light,
+  structure (grids, contours, rings) and photographic stand-ins, each with its CSS ready to copy. Nothing here uses more
+  than one hue. Turn on the sample overlay to see an opaque card, a glass chip and bare text on every one, which is the
+  only honest way to judge a background.</p>
+</div>
+<div class="wrap">
+<div class="ctl"><label><span class="sw" id="smpSw" onclick="togSamples()"></span>Overlay sample card, glass chip and text on every background</label><span class="sp"></span>
+  <span>Code under each preview is the preview's own inline style, so it cannot drift.</span></div>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Solid grounds</div>
+    <h2 class="sec-title">Six page colours, and what to put text on them</h2>
+    <p class="sec-desc">A page ground is a decision about temperature. Blue-black reads as operations, neutral graphite as developer
+    tooling, warm paper as writing. Pick one per product. The text colours listed are the pairs that pass contrast in the reference.</p>
+  </div>
+  <div class="sw-row">
+    <div class="swc"><div class="s" style="background:#0b1215;color:#9296a2">#0b1215</div><div class="m"><b>Obsidian</b><span>House dark. Text #edeef2 / #9296a2 / #626775.</span></div></div>
+    <div class="swc"><div class="s" style="background:#0e1117;color:#9aa3b5">#0e1117</div><div class="m"><b>Ink</b><span>Midnight theme. Text #e8ebf2 / #9aa3b5.</span></div></div>
+    <div class="swc"><div class="s" style="background:#131517;color:#8f9099">#131517</div><div class="m"><b>Graphite</b><span>Neutral, for Mono Utility. Text #ededef / #8f9099.</span></div></div>
+    <div class="swc"><div class="s" style="background:#f5f6f8;color:#5c6070">#f5f6f8</div><div class="m"><b>Cool paper</b><span>House light. Text #121c21 / #5c6070.</span></div></div>
+    <div class="swc"><div class="s" style="background:#f6f6f4;color:#66665f">#f6f6f4</div><div class="m"><b>Bone</b><span>Studio Light. Text #1b1b1a / #66665f.</span></div></div>
+    <div class="swc"><div class="s" style="background:#f4efe6;color:#6b6259">#f4efe6</div><div class="m"><b>Warm paper</b><span>Document tools. Text #2a2520 / #6b6259.</span></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Tonal gradients</div>
+    <h2 class="sec-title">One hue, two stops, for heroes and empty states</h2>
+    <p class="sec-desc">Every gradient here runs between two tones of the same hue or from a hue into the ground. That is the
+    entire difference between a product and a template. Add grain from file 01 section 03 if a large dark one bands.</p>
+  </div>
+  <div class="grid">
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:linear-gradient(160deg,#273640,#0b1215 85%)"></div><div class="bgi"><div class="n">Obsidian depth</div><div class="u"><b>Use for</b> empty states, login, the top of a long page.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(900px circle at 10% 0%,rgba(58,154,217,.22),transparent 55%),#0b1215"></div><div class="bgi"><div class="n">Azure corner</div><div class="u"><b>Use for</b> a hero where the accent should be felt, not seen.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:linear-gradient(180deg,#1c2431 0%,#0e1117 100%)"></div><div class="bgi"><div class="n">Slate dusk</div><div class="u"><b>Use for</b> Midnight theme pages; sits under lit-edge cards well.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(700px circle at 50% 120%,#1e2b32,#0b1215 60%)"></div><div class="bgi"><div class="n">Floor light</div><div class="u"><b>Use for</b> status walls and dashboards viewed from a distance.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:linear-gradient(160deg,#eef1f5,#dfe4ea)"></div><div class="bgi"><div class="n">Pewter</div><div class="u"><b>Use for</b> light heroes behind white cards; the cards separate cleanly.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:radial-gradient(800px circle at 0% 0%,rgba(29,111,174,.14),transparent 55%),#f5f6f8"></div><div class="bgi"><div class="n">Sky wash</div><div class="u"><b>Use for</b> light login and onboarding; accent at 14% is the ceiling.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:linear-gradient(170deg,#fbf8f2,#ede7dc)"></div><div class="bgi"><div class="n">Paper warm</div><div class="u"><b>Use for</b> Warm Paper theme, reports, document tools.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:linear-gradient(180deg,#ffffff,#f0f2f5)"></div><div class="bgi"><div class="n">White fade</div><div class="u"><b>Use for</b> settings and forms; almost invisible, stops a page feeling flat.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:linear-gradient(135deg,#0f1c26,#0b1215 50%,#101a1e)"></div><div class="bgi"><div class="n">Teal-black</div><div class="u"><b>Use for</b> NOC and HUD screens; cooler than obsidian without being blue.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Ambient light</div>
+    <h2 class="sec-title">Blurred light, two sources at most</h2>
+    <p class="sec-desc">The corrected form of the gradient mesh. Two large radial gradients at 14&ndash;22% opacity, one accent and one
+    neutral, placed off-canvas so only their edges show. Drifting is optional and slow. Never behind data.</p>
+  </div>
+  <div class="grid">
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(520px circle at 15% 10%,rgba(58,154,217,.22),transparent 60%),radial-gradient(520px circle at 90% 95%,rgba(138,155,184,.16),transparent 60%),#0b1215"></div><div class="bgi"><div class="n">Ambient azure</div><div class="u"><b>Use for</b> login, first-run, empty dashboard.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(600px circle at 80% 0%,rgba(255,255,255,.07),transparent 55%),radial-gradient(500px circle at 0% 100%,rgba(58,154,217,.14),transparent 60%),#0e1117"></div><div class="bgi"><div class="n">Window light</div><div class="u"><b>Use for</b> Midnight pages; the white source reads as daylight.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(420px circle at 50% -10%,rgba(58,154,217,.28),transparent 60%),#0b1215"></div><div class="bgi"><div class="n">Top glow</div><div class="u"><b>Use for</b> a single hero heading; the light sits behind the title only.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:radial-gradient(520px circle at 15% 10%,rgba(29,111,174,.16),transparent 60%),radial-gradient(520px circle at 90% 95%,rgba(91,111,143,.14),transparent 60%),#f5f6f8"></div><div class="bgi"><div class="n">Ambient azure, light</div><div class="u"><b>Use for</b> the same screens on light; cards stay pure white on top.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:radial-gradient(520px circle at 10% 0%,rgba(184,83,42,.12),transparent 60%),radial-gradient(520px circle at 95% 100%,rgba(168,114,26,.10),transparent 60%),#f4efe6"></div><div class="bgi"><div class="n">Paper warmth</div><div class="u"><b>Use for</b> Warm Paper theme; terracotta and ochre at 10&ndash;12%.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:radial-gradient(600px circle at 50% 110%,rgba(29,111,174,.12),transparent 60%),#ffffff"></div><div class="bgi"><div class="n">Floor light, light</div><div class="u"><b>Use for</b> pricing and marketing sections that end in a call to action.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Structure</div>
+    <h2 class="sec-title">Grids, contours and rings at hairline strength</h2>
+    <p class="sec-desc">Structure is what developer-facing products use instead of colour. The rule is opacity: lines at 5&ndash;8% on dark,
+    7&ndash;10% on light, always faded with a layer of the ground colour so they end before they meet content. All of these are pure CSS gradients and need no mask.</p>
+  </div>
+  <div class="grid">
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(ellipse at 50% 40%,transparent 30%,#0b1215 80%),radial-gradient(rgba(255,255,255,.09) 1px,transparent 1px) 0 0/18px 18px,#0b1215"></div><div class="bgi"><div class="n">Dot grid, faded</div><div class="u"><b>Use for</b> canvases, DAG views, hero sections of developer tools.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:linear-gradient(transparent 40%,#0b1215),linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px) 0 0/32px 32px,linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px) 0 0/32px 32px,#0b1215"></div><div class="bgi"><div class="n">Line grid, fading</div><div class="u"><b>Use for</b> the top of a landing or docs page; fades before the first card.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:repeating-radial-gradient(circle at 70% 30%,transparent 0 26px,rgba(255,255,255,.05) 26px 27px),repeating-radial-gradient(circle at 20% 90%,transparent 0 34px,rgba(255,255,255,.04) 34px 35px),#0b1215"></div><div class="bgi"><div class="n">Contours</div><div class="u"><b>Use for</b> infrastructure and mapping products; reads as a topographic plate.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(255,255,255,.035) 9px 10px),#0b1215"></div><div class="bgi"><div class="n">Hatch</div><div class="u"><b>Use for</b> disabled or placeholder regions, drop zones, "not yet configured".</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:radial-gradient(ellipse at 50% 40%,transparent 30%,#f5f6f8 80%),radial-gradient(rgba(16,18,26,.11) 1px,transparent 1px) 0 0/18px 18px,#f5f6f8"></div><div class="bgi"><div class="n">Dot grid, light</div><div class="u"><b>Use for</b> the same, on light. 11% is the ceiling before it competes with text.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="light" style="background:repeating-radial-gradient(circle at 70% 30%,transparent 0 26px,rgba(16,18,26,.06) 26px 27px),repeating-radial-gradient(circle at 20% 90%,transparent 0 34px,rgba(16,18,26,.05) 34px 35px),#f5f6f8"></div><div class="bgi"><div class="n">Contours, light</div><div class="u"><b>Use for</b> reports and print-adjacent screens; still reads on a projector.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Photographic stand-ins and real photos</div>
+    <h2 class="sec-title">Backdrops for scrims and glass, and how to treat a real image</h2>
+    <p class="sec-desc">When a screen needs an image behind glass or a scrim, these three CSS-only backdrops behave like a desaturated
+    photograph: a value range narrow enough that text on a card passes contrast anywhere. The recipe below applies the same
+    treatment to a real photo.</p>
+  </div>
+  <div class="grid">
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.10),transparent 45%),linear-gradient(160deg,#3a4a5c,#1d2731 60%,#2b3d3a)"></div><div class="bgi"><div class="n">Studio slate</div><div class="u"><b>Use for</b> the scrim and glass demos; a lit backdrop with no saturated area.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:linear-gradient(180deg,#1b2733 0%,#2c3a47 48%,#141c24 52%,#0f161c 100%)"></div><div class="bgi"><div class="n">Horizon</div><div class="u"><b>Use for</b> full-bleed heroes with a single centred card; the band gives depth.</div></div></div>
+    <div class="bgc"><div class="bgp" data-t="dark" style="background:radial-gradient(ellipse at 50% 50%,#26333c 0%,#0b1215 75%);box-shadow:inset 0 0 80px rgba(0,0,0,.6)"></div><div class="bgi"><div class="n">Vignette</div><div class="u"><b>Use for</b> modal backdrops and focus modes; pulls the eye to the centre.</div></div></div>
+  </div>
+  <div style="height:14px"></div>
+  <div class="recipe"><span class="c">/* Treating a real photograph so text and glass survive on it.
+   1. Search terms that return usable images: "abstract dark texture", "slate stone macro",
+      "fog mountains monochrome", "architecture concrete shadow", "brushed metal dark".
+   2. Then apply all four steps below. Skipping the scrim is the usual mistake. */</span>
+<span class="k">.photo-hero</span>{
+  background:
+    linear-gradient(rgba(11,18,21,.55), rgba(11,18,21,.85)),   <span class="c">/* 1. scrim, darker at the bottom where text sits */</span>
+    url("hero.jpg") center / cover no-repeat;
+  background-color:#0b1215;
+  background-blend-mode: luminosity;                           <span class="c">/* 2. desaturate: the photo takes the ground's hue */</span>
+}
+<span class="k">.photo-hero::after</span>{                                           <span class="c">/* 3. 4% grain so the scrim gradient does not band */</span>
+  content:""; position:absolute; inset:0; opacity:.04; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+<span class="c">/* 4. Text only on an opaque or 75%+ glass card on top. Never bare text on the photo. */</span></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Pairing rules</div>
+    <h2 class="sec-title">Which background goes under which screen</h2>
+    <p class="sec-desc">The background is decided by what sits on it, not the other way round.</p>
+  </div>
+  <table class="pair">
+    <thead><tr><th>Screen</th><th>Background</th><th>Allowed on top</th><th>Not allowed</th></tr></thead>
+    <tbody>
+      <tr><td>Data screens: tables, consoles, dashboards</td><td>Solid ground only (section 01)</td><td class="ok">Surfaces, hairlines, status colour</td><td class="no">Any gradient, any structure, any glass over data</td></tr>
+      <tr><td>Login, first-run, empty state</td><td>Tonal gradient or ambient (02, 03)</td><td class="ok">One opaque card, one heading</td><td class="no">More than two light sources, body text on the ground</td></tr>
+      <tr><td>Canvas: DAG, map, whiteboard</td><td>Dot grid or contours (04)</td><td class="ok">Nodes, edges, floating toolbars</td><td class="no">Structure stronger than 9% on dark</td></tr>
+      <tr><td>Marketing hero, pricing</td><td>Ambient, horizon, or treated photo (03, 05)</td><td class="ok">One effect, one glass surface at most</td><td class="no">Gradient text, glow, multi-hue anything</td></tr>
+      <tr><td>Dialog or focus mode backdrop</td><td>Vignette or blurred scrim over the page (05)</td><td class="ok">The dialog</td><td class="no">A second image behind the scrim</td></tr>
+      <tr><td>Settings, forms, docs</td><td>White fade or solid (02, 01)</td><td class="ok">Everything</td><td class="no">Anything that moves</td></tr>
+    </tbody>
+  </table>
+  <div class="notes">
+    <div class="note"><h4>Test with the overlay</h4><p>Turn on the sample overlay at the top. If the bare text in the corner is hard to read anywhere on a preview, that background cannot carry text and needs a card.</p></div>
+    <div class="note"><h4>Tint, then structure, never both</h4><p>Ambient light and a dot grid on the same screen is the point where restraint ends. Choose one.</p></div>
+    <div class="note"><h4>Opacity ceilings</h4><p>Accent tints 22% dark / 16% light. Structure 9% dark / 11% light. Grain 5%. Photo scrim never below 55%.</p></div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>How this fits the set.</b> File 01 shows the materials; this file is the palette of grounds they sit on.
+Every preview's code is its own inline <code>style</code>, copied verbatim by the button, so what you see is what you paste.
+Prompt 14 in PROMPTS.md asks a tool to pick from this file rather than invent a background.</div>
+<script>
+document.querySelectorAll('.bgp').forEach(p=>{
+  const css=p.getAttribute('style').replace(/;\s*/g,';\n').trim();
+  const pre=document.createElement('pre');pre.className='bgcode';pre.textContent=css;
+  const b=document.createElement('button');b.className='cp';b.textContent='Copy CSS';
+  b.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(css);b.textContent='Copied';setTimeout(()=>b.textContent='Copy CSS',1200);};
+  pre.appendChild(b);p.closest('.bgc').appendChild(pre);
+  p.insertAdjacentHTML('beforeend','<div class="smp"><span class="tx">Bare text<small>--text-dim caption</small></span><div class="card"><b>Opaque card</b><span>Always legible</span></div><div class="glass"><b>Glass 18px</b><span>Depends on this</span></div></div>');
+});
+function togSamples(){document.body.classList.toggle('samples');document.getElementById('smpSw').classList.toggle('on');}
+</script>
+</body>
+</html>

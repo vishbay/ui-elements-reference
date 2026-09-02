@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 09 — Theme Cookbook II</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+/* ---------- 1. MATERIAL (M3) ---------- */
+.th-material{
+  --bg:#f7f2fa; --surface:#fffbfe; --surface-2:#f3edf7; --surface-3:#e8def8;
+  --text:#1c1b1f; --text-dim:#49454f; --text-faint:#79747e;
+  --border:#cac4d0; --border-strong:#79747e;
+  --accent:#6750a4; --accent-fg:#fff; --accent-soft:#e8def8;
+  --good:#146c40; --good-soft:#c7f0d8; --warn:#8a5300; --warn-soft:#ffddb0;
+  --danger:#b3261e; --danger-soft:#f9dedc;
+  --font-ui:Roboto,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:16px; --r-sm:20px; --r-pill:999px;
+  --pad:16px; --gap:12px; --fs:13px; --fs-sm:11.5px; --fs-num:30px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1px 2px rgba(0,0,0,.14),0 2px 6px 2px rgba(0,0,0,.08);
+  --shadow-press:0 1px 2px rgba(0,0,0,.18);
+  --ease:cubic-bezier(.2,0,0,1); --dur:300ms;
+  --tracking:.006em; --weight-bold:600; --upper:none;
+}
+/* ---------- 2. FLUENT ---------- */
+.th-fluent{
+  --bg:#faf9f8; --surface:#fff; --surface-2:#f3f2f1; --surface-3:#edebe9;
+  --text:#201f1e; --text-dim:#484644; --text-faint:#797775;
+  --border:#e1dfdd; --border-strong:#8a8886;
+  --accent:#0f6cbd; --accent-fg:#fff; --accent-soft:#deecf9;
+  --good:#0e700e; --good-soft:#dff6dd; --warn:#8a6100; --warn-soft:#fff4ce;
+  --danger:#a4262c; --danger-soft:#fde7e9;
+  --font-ui:"Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:4px; --r-sm:4px; --r-pill:999px;
+  --pad:14px; --gap:10px; --fs:13px; --fs-sm:11.5px; --fs-num:28px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1.6px 3.6px rgba(0,0,0,.10),0 .3px .9px rgba(0,0,0,.08);
+  --shadow-press:0 .3px .9px rgba(0,0,0,.10);
+  --ease:cubic-bezier(.33,0,.67,1); --dur:200ms;
+  --tracking:0; --weight-bold:600; --upper:none;
+}
+/* ---------- 3. DOCUMENT (low chrome) ---------- */
+.th-doc{
+  --bg:#fff; --surface:#fff; --surface-2:#f7f6f3; --surface-3:#eeece7;
+  --text:#37352f; --text-dim:#6b6960; --text-faint:#9b9a93;
+  --border:rgba(55,53,47,.10); --border-strong:rgba(55,53,47,.22);
+  --accent:#2383e2; --accent-fg:#fff; --accent-soft:rgba(35,131,226,.10);
+  --good:#0f7b55; --good-soft:rgba(15,123,85,.10); --warn:#9a6700; --warn-soft:rgba(154,103,0,.10);
+  --danger:#c4453a; --danger-soft:rgba(196,69,58,.09);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-display:Lyon,Georgia,serif; --font-num:var(--font-ui);
+  --r:4px; --r-sm:4px; --r-pill:4px;
+  --pad:22px; --gap:16px; --fs:14px; --fs-sm:12px; --fs-num:32px;
+  --bw:1px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:cubic-bezier(.4,0,.2,1); --dur:160ms;
+  --tracking:0; --weight-bold:600; --upper:none;
+}
+/* ---------- 4. SOLARIZED (low fatigue) ---------- */
+.th-solar{
+  --bg:#002b36; --surface:#073642; --surface-2:#0a4351; --surface-3:#11505f;
+  --text:#eee8d5; --text-dim:#93a1a1; --text-faint:#7d9095;
+  --border:#11505f; --border-strong:#586e75;
+  --accent:#268bd2; --accent-fg:#002b36; --accent-soft:rgba(38,139,210,.20);
+  --good:#93a800; --good-soft:rgba(147,168,0,.20); --warn:#cb9a00; --warn-soft:rgba(203,154,0,.20);
+  --danger:#dc322f; --danger-soft:rgba(220,50,47,.22);
+  --font-ui:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:5px; --r-sm:4px; --r-pill:999px;
+  --pad:13px; --gap:10px; --fs:12px; --fs-sm:10.5px; --fs-num:26px;
+  --bw:1px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:cubic-bezier(.4,0,.2,1); --dur:180ms;
+  --tracking:.01em; --weight-bold:700; --upper:none;
+}
+/* ---------- 5. HIGH CONTRAST (WCAG AAA) ---------- */
+.th-hc{
+  --bg:#000; --surface:#000; --surface-2:#141414; --surface-3:#1f1f1f;
+  --text:#fff; --text-dim:#e0e0e0; --text-faint:#c4c4c4;
+  --border:#fff; --border-strong:#fff;
+  --accent:#5ec8ff; --accent-fg:#000; --accent-soft:#00263a;
+  --good:#5eff9f; --good-soft:#003318; --warn:#ffe14d; --warn-soft:#3a2f00;
+  --danger:#ff8a8a; --danger-soft:#3d0000;
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:4px; --r-sm:4px; --r-pill:999px;
+  --pad:16px; --gap:12px; --fs:14px; --fs-sm:12.5px; --fs-num:32px;
+  --bw:2px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:cubic-bezier(.4,0,.2,1); --dur:150ms;
+  --tracking:.01em; --weight-bold:700; --upper:none;
+}
+.th-hc .d-btn:focus-visible,.th-hc .d-in:focus{outline:3px solid #ffe14d;outline-offset:2px}
+.th-hc .d-badge{border-color:currentColor}
+/* ---------- 6. PRINT / REPORT ---------- */
+.th-print{
+  --bg:#fff; --surface:#fff; --surface-2:#fff; --surface-3:#f2f2f2;
+  --text:#000; --text-dim:#333; --text-faint:#666;
+  --border:#000; --border-strong:#000;
+  --accent:#000; --accent-fg:#fff; --accent-soft:#f2f2f2;
+  --good:#000; --good-soft:#fff; --warn:#000; --warn-soft:#fff;
+  --danger:#000; --danger-soft:#fff;
+  --font-ui:Georgia,"Times New Roman",serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:0px; --r-sm:0px; --r-pill:0px;
+  --pad:20px; --gap:15px; --fs:13px; --fs-sm:11px; --fs-num:34px;
+  --bw:1px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:linear; --dur:0ms;
+  --tracking:.02em; --weight-bold:700; --upper:uppercase;
+}
+.th-print .d-badge{border-color:#000;background:#fff !important;color:#000 !important}
+.th-print .d-badge i{background:#000}
+.th-print .bg-warn i{border-radius:0}
+.th-print .bg-dang i{background:#fff;box-shadow:inset 0 0 0 1.5px #000}
+
+/* ---------- 7. GLASS REFINED (dark) ---------- */
+.th-glassr{
+  --bg:#14161d; --surface:rgba(255,255,255,.075); --surface-2:rgba(255,255,255,.055);
+  --surface-3:rgba(255,255,255,.115);
+  --text:#f3f5fa; --text-dim:#b6bccb; --text-faint:#8b93a5;
+  --border:rgba(255,255,255,.13); --border-strong:rgba(255,255,255,.26);
+  --accent:#96a8ff; --accent-fg:#12141c; --accent-soft:rgba(150,168,255,.20);
+  --good:#7fe0b0; --good-soft:rgba(127,224,176,.18);
+  --warn:#f0cf85; --warn-soft:rgba(240,207,133,.18);
+  --danger:#f5a0a8; --danger-soft:rgba(245,160,168,.18);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:16px; --r-sm:11px; --r-pill:999px;
+  --pad:17px; --gap:12px; --fs:13px; --fs-sm:11.5px; --fs-num:31px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 4px 22px rgba(0,0,0,.30); --shadow-press:0 1px 6px rgba(0,0,0,.3);
+  --ease:cubic-bezier(.22,1,.36,1); --dur:340ms;
+  --tracking:0; --weight-bold:640; --upper:none;
+}
+.th-glassr .demo{background:
+  radial-gradient(680px circle at 12% 8%, rgba(96,116,180,.30) 0, transparent 62%),
+  radial-gradient(620px circle at 88% 88%, rgba(120,96,150,.24) 0, transparent 60%),
+  var(--bg)}
+.th-glassr .d-card{
+  -webkit-backdrop-filter:blur(26px) saturate(135%);
+  backdrop-filter:blur(26px) saturate(135%);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.16)}
+
+/* ---------- 8. FROST LIGHT ---------- */
+.th-frost{
+  --bg:#eaeef5; --surface:rgba(255,255,255,.74); --surface-2:rgba(255,255,255,.56);
+  --surface-3:rgba(255,255,255,.9);
+  --text:#171a21; --text-dim:#525a6b; --text-faint:#7c8496;
+  --border:rgba(255,255,255,.86); --border-strong:rgba(23,26,33,.16);
+  --accent:#4a63e7; --accent-fg:#fff; --accent-soft:rgba(74,99,231,.13);
+  --good:#0f7a55; --good-soft:rgba(15,122,85,.13);
+  --warn:#9a6a10; --warn-soft:rgba(154,106,16,.15);
+  --danger:#c33d4c; --danger-soft:rgba(195,61,76,.13);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:16px; --r-sm:11px; --r-pill:999px;
+  --pad:17px; --gap:12px; --fs:13px; --fs-sm:11.5px; --fs-num:31px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 2px 10px rgba(23,26,33,.06),0 10px 30px rgba(23,26,33,.07);
+  --shadow-press:0 1px 4px rgba(23,26,33,.08);
+  --ease:cubic-bezier(.22,1,.36,1); --dur:340ms;
+  --tracking:0; --weight-bold:640; --upper:none;
+}
+.th-frost .demo{background:
+  radial-gradient(660px circle at 10% 10%, rgba(126,152,220,.32) 0, transparent 60%),
+  radial-gradient(600px circle at 90% 85%, rgba(196,160,220,.26) 0, transparent 58%),
+  var(--bg)}
+.th-frost .d-card{
+  -webkit-backdrop-filter:blur(22px) saturate(150%);
+  backdrop-filter:blur(22px) saturate(150%);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.95)}
+
+/* ============================================================
+   COMPONENTS — identical markup across every theme
+   ============================================================ */
+.demo{background:var(--bg);color:var(--text);font-family:var(--font-ui);
+  padding:var(--pad);border-radius:var(--r);position:relative;overflow:hidden}
+.demo *{font-family:inherit}
+.d-card{background:var(--surface);border:var(--bw) var(--bstyle) var(--border);
+  border-radius:var(--r);padding:var(--pad);box-shadow:var(--shadow);margin-bottom:var(--gap)}
+.d-lbl{font-size:var(--fs-sm);color:var(--text-faint);text-transform:var(--upper);
+  letter-spacing:var(--tracking);font-weight:var(--weight-bold);margin-bottom:5px}
+.d-num{font-family:var(--font-num);font-size:var(--fs-num);font-weight:var(--weight-bold);
+  line-height:1.05;letter-spacing:var(--tracking)}
+.d-sub{font-size:var(--fs-sm);color:var(--text-dim);margin-top:3px}
+.d-h{font-family:var(--font-display);font-size:calc(var(--fs) + 2px);
+  font-weight:var(--weight-bold);letter-spacing:var(--tracking);margin:0 0 5px}
+.d-p{font-size:var(--fs);color:var(--text-dim);line-height:1.6;margin:0}
+.d-btn{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);
+  font-weight:var(--weight-bold);text-transform:var(--upper);letter-spacing:var(--tracking);
+  border:var(--bw) var(--bstyle) transparent;border-radius:var(--r-sm);
+  padding:calc(var(--pad)*.42) calc(var(--pad)*.8);cursor:pointer;font-family:inherit;
+  box-shadow:var(--shadow-press);
+  transition:transform var(--dur) var(--ease),filter var(--dur) var(--ease)}
+.d-btn:active{transform:scale(.96)}
+.d-btn-p{background:var(--accent);color:var(--accent-fg)}
+.d-btn-g{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.d-btn-d{background:var(--danger);color:#fff}
+.th-print .d-btn-p,.th-print .d-btn-d{background:#000;color:#fff}
+.d-badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-sm);
+  font-weight:var(--weight-bold);text-transform:var(--upper);letter-spacing:var(--tracking);
+  padding:3px 9px;border-radius:var(--r-pill);border:var(--bw) var(--bstyle) transparent}
+.bg-good{background:var(--good-soft);color:var(--good)}
+.bg-warn{background:var(--warn-soft);color:var(--warn)}
+.bg-dang{background:var(--danger-soft);color:var(--danger)}
+.d-badge i{width:5px;height:5px;border-radius:var(--r-pill);background:currentColor}
+.d-in{width:100%;background:var(--surface-2);color:var(--text);font-size:var(--fs);
+  border:var(--bw) var(--bstyle) var(--border);border-radius:var(--r-sm);
+  padding:calc(var(--pad)*.45) calc(var(--pad)*.55);outline:none;font-family:inherit;
+  transition:border-color var(--dur) var(--ease)}
+.d-in:focus{border-color:var(--accent)}
+.d-in::placeholder{color:var(--text-faint)}
+.d-tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.d-tbl th{text-align:left;color:var(--text-faint);text-transform:var(--upper);
+  letter-spacing:var(--tracking);font-weight:var(--weight-bold);
+  padding:calc(var(--pad)*.3) calc(var(--pad)*.35);
+  border-bottom:var(--bw) var(--bstyle) var(--border)}
+.d-tbl td{padding:calc(var(--pad)*.38) calc(var(--pad)*.35);
+  border-bottom:var(--bw) var(--bstyle) var(--border)}
+.d-tbl tr:last-child td{border-bottom:none}
+.d-track{height:6px;background:var(--surface-3);border-radius:var(--r-pill);overflow:hidden;
+  border:var(--bw) var(--bstyle) transparent}
+.th-print .d-track,.th-hc .d-track{border-color:var(--border)}
+.d-fill{height:100%;background:var(--accent);border-radius:var(--r-pill);width:0;
+  transition:width 1s var(--ease)}
+.d-row{display:flex;gap:var(--gap);flex-wrap:wrap;align-items:center}
+
+/* cookbook chrome */
+.theme-block{border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.tb-head{display:flex;align-items:baseline;gap:11px;padding:13px 16px;background:#111a1f;
+  border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
+.tb-name{font-size:14.5px;font-weight:680}
+.tb-dna{font-size:11px;color:#7f8492;font-family:ui-monospace,Menlo,monospace}
+.tb-copy{margin-left:auto;background:#1e2b32;border:1px solid rgba(255,255,255,.14);
+  color:#c9cbd6;border-radius:7px;font-size:11px;padding:5px 11px;cursor:pointer;font-family:inherit}
+.tb-copy:hover{border-color:#3a9ad9;color:#3a9ad9}
+.tb-body{display:grid;grid-template-columns:1fr 330px}
+@media(max-width:900px){.tb-body{grid-template-columns:1fr}}
+.tb-tokens{background:#0d1519;border-left:1px solid rgba(255,255,255,.08);padding:13px;
+  font-family:ui-monospace,Menlo,monospace;font-size:10.5px;line-height:1.65;color:#8b909d;
+  overflow:auto;max-height:440px;white-space:pre}
+@media(max-width:900px){.tb-tokens{border-left:none;border-top:1px solid rgba(255,255,255,.08)}}
+.tb-tokens .tk{color:#3a9ad9}
+.tb-tokens .tv{color:#c8cbd4}
+.tb-tokens .tc{color:#5a5f6b}
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:10px}
+@media(max-width:820px){.rules{grid-template-columns:1fr}}
+.rule{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px}
+.rule h4{margin:0 0 5px;font-size:12.5px;color:#edeef2}
+.rule p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.6}
+.rule.bad{border-color:rgba(244,112,127,.3)}
+.rule.bad h4{color:#f4707f}
+.rule.good{border-color:rgba(52,211,153,.3)}
+.rule.good h4{color:#34d399}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 09</div>
+  <h1>Theme Cookbook II &mdash; Enterprise &amp; Glass</h1>
+  <p>Eight further themes: a corrected pair of frosted-glass treatments, plus the systems most likely
+  to actually ship in a corporate environment &mdash; Material, Fluent, Document, Solarized,
+  High Contrast and Print. Identical markup throughout; only tokens change.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">00 — Why the first glass theme failed</div>
+    <h2 class="sec-title">Four rules for readable glass</h2>
+    <p class="sec-desc">Glassmorphism photographs well and reads badly. The failure is almost always the
+    same: a saturated backdrop showing through a surface that is too transparent, with text that was
+    picked for the mock rather than for contrast. Both glass themes below follow these rules.</p>
+  </div>
+  <div class="rules">
+    <div class="rule bad"><h4>&times; Saturated backdrop</h4>
+      <p>Vivid purple and pink at full strength behind a 6% white surface leaves text sitting on an
+      unpredictable, high-chroma field. Contrast varies across the same paragraph.</p></div>
+    <div class="rule good"><h4>&#10003; Desaturate and darken the backdrop</h4>
+      <p>Near-neutral slate with low-chroma tints at 24&ndash;30% opacity. The mesh still reads as
+      atmosphere, but the value range behind any given card is narrow.</p></div>
+    <div class="rule bad"><h4>&times; Too transparent</h4>
+      <p>Below roughly 6% white on dark, the surface stops occluding and the blur alone is carrying
+      contrast &mdash; which it cannot do.</p></div>
+    <div class="rule good"><h4>&#10003; Raise opacity, raise blur</h4>
+      <p>7.5% white with a 26px blur on dark; 74% white with 22px on light. Add an
+      <code>inset 0 1px 0</code> highlight so the top edge reads as lit glass rather than fog.</p></div>
+    <div class="rule bad"><h4>&times; Body text on the mesh</h4>
+      <p>Any text placed directly over the gradient will fail contrast somewhere, and you cannot test
+      every position.</p></div>
+    <div class="rule good"><h4>&#10003; Text only on cards</h4>
+      <p>The mesh is background; every piece of content sits on a glass surface. Then contrast is a
+      fixed, testable pair rather than a variable one.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Glass Refined &mdash; the corrected version</div>
+    <h2 class="sec-title">Glass Refined</h2>
+    <p class="sec-desc">The fix for the previous glass theme. Three changes: the backdrop is desaturated near-neutral slate instead of saturated purple and pink; surface opacity rises to 7.5% with a 26px blur so the panel actually occludes what is behind it; and body text sits at #b6bccb rather than a tinted mid-grey. Body copy never touches the mesh directly &mdash; it always sits on a card. That is the whole trick.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-glassr</span>
+      <span class="tb-dna">radius 16 &middot; blur 26 &middot; desaturated backdrop</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-glassr" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-glassr {</span>
+  <span class="tk">--bg</span>: <span class="tv">#14161d</span>;
+  <span class="tk">--surface</span>: <span class="tv">rgba(255,255,255,.075)</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">rgba(255,255,255,.055)</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">rgba(255,255,255,.115)</span>;
+  <span class="tk">--text</span>: <span class="tv">#f3f5fa</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#b6bccb</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#8b93a5</span>;
+  <span class="tk">--border</span>: <span class="tv">rgba(255,255,255,.13)</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">rgba(255,255,255,.26)</span>;
+  <span class="tk">--accent</span>: <span class="tv">#96a8ff</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#12141c</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">rgba(150,168,255,.20)</span>;
+  <span class="tk">--good</span>: <span class="tv">#7fe0b0</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">rgba(127,224,176,.18)</span>;
+  <span class="tk">--warn</span>: <span class="tv">#f0cf85</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">rgba(240,207,133,.18)</span>;
+  <span class="tk">--danger</span>: <span class="tv">#f5a0a8</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">rgba(245,160,168,.18)</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">16px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">11px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">17px</span>;
+  <span class="tk">--gap</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs</span>: <span class="tv">13px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">11.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">31px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">0 4px 22px rgba(0,0,0,.30)</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">0 1px 6px rgba(0,0,0,.3)</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.22,1,.36,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">340ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">0</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">640</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Frost Light &mdash; white frosted</div>
+    <h2 class="sec-title">Frost Light</h2>
+    <p class="sec-desc">The light counterpart. White at 74% opacity over a soft blue-lilac wash, with a near-white inset highlight along the top edge. Light glass is easier to keep readable than dark glass because the surface is close to opaque; the blur is doing texture work rather than contrast work.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-frost</span>
+      <span class="tb-dna">radius 16 &middot; blur 22 &middot; white 74%</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-frost" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-frost {</span>
+  <span class="tk">--bg</span>: <span class="tv">#eaeef5</span>;
+  <span class="tk">--surface</span>: <span class="tv">rgba(255,255,255,.74)</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">rgba(255,255,255,.56)</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">rgba(255,255,255,.9)</span>;
+  <span class="tk">--text</span>: <span class="tv">#171a21</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#525a6b</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#7c8496</span>;
+  <span class="tk">--border</span>: <span class="tv">rgba(255,255,255,.86)</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">rgba(23,26,33,.16)</span>;
+  <span class="tk">--accent</span>: <span class="tv">#4a63e7</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">rgba(74,99,231,.13)</span>;
+  <span class="tk">--good</span>: <span class="tv">#0f7a55</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">rgba(15,122,85,.13)</span>;
+  <span class="tk">--warn</span>: <span class="tv">#9a6a10</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">rgba(154,106,16,.15)</span>;
+  <span class="tk">--danger</span>: <span class="tv">#c33d4c</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">rgba(195,61,76,.13)</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">16px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">11px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">17px</span>;
+  <span class="tk">--gap</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs</span>: <span class="tv">13px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">11.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">31px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">0 2px 10px rgba(23,26,33,.06),0 10px 30px rgba(23,26,33,.07)</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">0 1px 4px rgba(23,26,33,.08)</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.22,1,.36,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">340ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">0</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">640</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Material 3 &mdash; tonal elevation</div>
+    <h2 class="sec-title">Material 3</h2>
+    <p class="sec-desc">Google's current system: tonal surfaces rather than pure white, generous radius, pill-shaped buttons, and elevation carried by soft ambient shadow. Uppercase labels were dropped in M3. Familiar to almost every user, which makes it a safe institutional default.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-material</span>
+      <span class="tb-dna">radius 16 &middot; 300ms &middot; tonal &middot; Roboto</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-material" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-material {</span>
+  <span class="tk">--bg</span>: <span class="tv">#f7f2fa</span>;
+  <span class="tk">--surface</span>: <span class="tv">#fffbfe</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#f3edf7</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#e8def8</span>;
+  <span class="tk">--text</span>: <span class="tv">#1c1b1f</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#49454f</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#79747e</span>;
+  <span class="tk">--border</span>: <span class="tv">#cac4d0</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">#79747e</span>;
+  <span class="tk">--accent</span>: <span class="tv">#6750a4</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">#e8def8</span>;
+  <span class="tk">--good</span>: <span class="tv">#146c40</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">#c7f0d8</span>;
+  <span class="tk">--warn</span>: <span class="tv">#8a5300</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">#ffddb0</span>;
+  <span class="tk">--danger</span>: <span class="tv">#b3261e</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">#f9dedc</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">Roboto,-apple-system,BlinkMacSystemFont,system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">16px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">20px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">16px</span>;
+  <span class="tk">--gap</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs</span>: <span class="tv">13px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">11.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">30px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">0 1px 2px rgba(0,0,0,.14),0 2px 6px 2px rgba(0,0,0,.08)</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">0 1px 2px rgba(0,0,0,.18)</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.2,0,0,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">300ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">.006em</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">600</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Fluent 2 &mdash; Microsoft desk</div>
+    <h2 class="sec-title">Fluent 2</h2>
+    <p class="sec-desc">Small radius, restrained shadow, warm neutral greys, single strong blue. Worth choosing when the tool lives beside Teams and Outlook all day &mdash; matching the surrounding environment reduces the sense that your tool is a foreign object.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-fluent</span>
+      <span class="tb-dna">radius 4 &middot; 200ms &middot; subtle &middot; Segoe UI</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-fluent" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-fluent {</span>
+  <span class="tk">--bg</span>: <span class="tv">#faf9f8</span>;
+  <span class="tk">--surface</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#f3f2f1</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#edebe9</span>;
+  <span class="tk">--text</span>: <span class="tv">#201f1e</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#484644</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#797775</span>;
+  <span class="tk">--border</span>: <span class="tv">#e1dfdd</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">#8a8886</span>;
+  <span class="tk">--accent</span>: <span class="tv">#0f6cbd</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">#deecf9</span>;
+  <span class="tk">--good</span>: <span class="tv">#0e700e</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">#dff6dd</span>;
+  <span class="tk">--warn</span>: <span class="tv">#8a6100</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">#fff4ce</span>;
+  <span class="tk">--danger</span>: <span class="tv">#a4262c</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">#fde7e9</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">"Segoe UI",-apple-system,BlinkMacSystemFont,system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">14px</span>;
+  <span class="tk">--gap</span>: <span class="tv">10px</span>;
+  <span class="tk">--fs</span>: <span class="tv">13px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">11.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">28px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">0 1.6px 3.6px rgba(0,0,0,.10),0 .3px .9px rgba(0,0,0,.08)</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">0 .3px .9px rgba(0,0,0,.10)</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.33,0,.67,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">200ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">0</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">600</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Document &mdash; low chrome</div>
+    <h2 class="sec-title">Document</h2>
+    <p class="sec-desc">Near-invisible borders, no shadows, large padding and line-height, serif display face. The content is the interface. Strong for executive summaries and written reports where reading is the primary action.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-doc</span>
+      <span class="tb-dna">radius 4 &middot; 160ms &middot; flat &middot; serif display</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-doc" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-doc {</span>
+  <span class="tk">--bg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#f7f6f3</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#eeece7</span>;
+  <span class="tk">--text</span>: <span class="tv">#37352f</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#6b6960</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#9b9a93</span>;
+  <span class="tk">--border</span>: <span class="tv">rgba(55,53,47,.10)</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">rgba(55,53,47,.22)</span>;
+  <span class="tk">--accent</span>: <span class="tv">#2383e2</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">rgba(35,131,226,.10)</span>;
+  <span class="tk">--good</span>: <span class="tv">#0f7b55</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">rgba(15,123,85,.10)</span>;
+  <span class="tk">--warn</span>: <span class="tv">#9a6700</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">rgba(154,103,0,.10)</span>;
+  <span class="tk">--danger</span>: <span class="tv">#c4453a</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">rgba(196,69,58,.09)</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">Lyon,Georgia,serif</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">4px</span>;
+  <span class="tk">--pad</span>: <span class="tv">22px</span>;
+  <span class="tk">--gap</span>: <span class="tv">16px</span>;
+  <span class="tk">--fs</span>: <span class="tv">14px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">32px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">none</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">none</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.4,0,.2,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">160ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">0</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">600</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Solarized Dark &mdash; low fatigue</div>
+    <h2 class="sec-title">Solarized Dark</h2>
+    <p class="sec-desc">Precision-designed for long sessions: every colour holds a fixed relationship to the background so contrast stays even, and no pairing is harsh. Deliberately muted &mdash; nothing shouts. The right pick when someone stares at a screen for a full shift.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-solar</span>
+      <span class="tb-dna">radius 5 &middot; 180ms &middot; flat &middot; mono</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-solar" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-solar {</span>
+  <span class="tk">--bg</span>: <span class="tv">#002b36</span>;
+  <span class="tk">--surface</span>: <span class="tv">#073642</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#0a4351</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#11505f</span>;
+  <span class="tk">--text</span>: <span class="tv">#eee8d5</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#93a1a1</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#7d9095</span>;
+  <span class="tk">--border</span>: <span class="tv">#11505f</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">#586e75</span>;
+  <span class="tk">--accent</span>: <span class="tv">#268bd2</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#002b36</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">rgba(38,139,210,.20)</span>;
+  <span class="tk">--good</span>: <span class="tv">#93a800</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">rgba(147,168,0,.20)</span>;
+  <span class="tk">--warn</span>: <span class="tv">#cb9a00</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">rgba(203,154,0,.20)</span>;
+  <span class="tk">--danger</span>: <span class="tv">#dc322f</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">rgba(220,50,47,.22)</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">ui-monospace,SFMono-Regular,Menlo,Consolas,monospace</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">5px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">13px</span>;
+  <span class="tk">--gap</span>: <span class="tv">10px</span>;
+  <span class="tk">--fs</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">10.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">26px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">none</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">none</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.4,0,.2,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">180ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">.01em</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">700</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">High Contrast &mdash; WCAG AAA</div>
+    <h2 class="sec-title">High Contrast</h2>
+    <p class="sec-desc">Pure black, pure white, 2px borders, 3px yellow focus rings, and no reliance on colour alone &mdash; every status badge carries a border as well as a fill. Usually a required accessibility mode for enterprise rollout rather than a default.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-hc</span>
+      <span class="tb-dna">radius 4 &middot; 150ms &middot; 2px borders &middot; AAA</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-hc" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-hc {</span>
+  <span class="tk">--bg</span>: <span class="tv">#000</span>;
+  <span class="tk">--surface</span>: <span class="tv">#000</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#141414</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#1f1f1f</span>;
+  <span class="tk">--text</span>: <span class="tv">#fff</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#e0e0e0</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#c4c4c4</span>;
+  <span class="tk">--border</span>: <span class="tv">#fff</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent</span>: <span class="tv">#5ec8ff</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#000</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">#00263a</span>;
+  <span class="tk">--good</span>: <span class="tv">#5eff9f</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">#003318</span>;
+  <span class="tk">--warn</span>: <span class="tv">#ffe14d</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">#3a2f00</span>;
+  <span class="tk">--danger</span>: <span class="tv">#ff8a8a</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">#3d0000</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">4px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">999px</span>;
+  <span class="tk">--pad</span>: <span class="tv">16px</span>;
+  <span class="tk">--gap</span>: <span class="tv">12px</span>;
+  <span class="tk">--fs</span>: <span class="tv">14px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">12.5px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">32px</span>;
+  <span class="tk">--bw</span>: <span class="tv">2px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">none</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">none</span>;
+  <span class="tk">--ease</span>: <span class="tv">cubic-bezier(.4,0,.2,1)</span>;
+  <span class="tk">--dur</span>: <span class="tv">150ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">.01em</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">700</span>;
+  <span class="tk">--upper</span>: <span class="tv">none</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Print / Report &mdash; black on white</div>
+    <h2 class="sec-title">Print / Report</h2>
+    <p class="sec-desc">Zero colour, zero shadow, zero motion. Badges become outlined rather than filled so they survive greyscale printing. Serif throughout. Use as an export stylesheet, not an interactive theme.</p>
+  </div>
+  <div class="theme-block">
+    <div class="tb-head"><span class="tb-name">.th-print</span>
+      <span class="tb-dna">radius 0 &middot; 0ms &middot; monochrome &middot; Georgia</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button></div>
+    <div class="tb-body">
+      <div class="th-print" style="padding:16px">
+<div class="demo">
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains before the committed deadline.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Events</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>1h 08m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div></div>
+      <div class="tb-tokens"><span class="tc">.th-print {</span>
+  <span class="tk">--bg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface-2</span>: <span class="tv">#fff</span>;
+  <span class="tk">--surface-3</span>: <span class="tv">#f2f2f2</span>;
+  <span class="tk">--text</span>: <span class="tv">#000</span>;
+  <span class="tk">--text-dim</span>: <span class="tv">#333</span>;
+  <span class="tk">--text-faint</span>: <span class="tv">#666</span>;
+  <span class="tk">--border</span>: <span class="tv">#000</span>;
+  <span class="tk">--border-strong</span>: <span class="tv">#000</span>;
+  <span class="tk">--accent</span>: <span class="tv">#000</span>;
+  <span class="tk">--accent-fg</span>: <span class="tv">#fff</span>;
+  <span class="tk">--accent-soft</span>: <span class="tv">#f2f2f2</span>;
+  <span class="tk">--good</span>: <span class="tv">#000</span>;
+  <span class="tk">--good-soft</span>: <span class="tv">#fff</span>;
+  <span class="tk">--warn</span>: <span class="tv">#000</span>;
+  <span class="tk">--warn-soft</span>: <span class="tv">#fff</span>;
+  <span class="tk">--danger</span>: <span class="tv">#000</span>;
+  <span class="tk">--danger-soft</span>: <span class="tv">#fff</span>;
+  <span class="tk">--font-ui</span>: <span class="tv">Georgia,"Times New Roman",serif</span>;
+  <span class="tk">--font-display</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--font-num</span>: <span class="tv">var(--font-ui)</span>;
+  <span class="tk">--r</span>: <span class="tv">0px</span>;
+  <span class="tk">--r-sm</span>: <span class="tv">0px</span>;
+  <span class="tk">--r-pill</span>: <span class="tv">0px</span>;
+  <span class="tk">--pad</span>: <span class="tv">20px</span>;
+  <span class="tk">--gap</span>: <span class="tv">15px</span>;
+  <span class="tk">--fs</span>: <span class="tv">13px</span>;
+  <span class="tk">--fs-sm</span>: <span class="tv">11px</span>;
+  <span class="tk">--fs-num</span>: <span class="tv">34px</span>;
+  <span class="tk">--bw</span>: <span class="tv">1px</span>;
+  <span class="tk">--bstyle</span>: <span class="tv">solid</span>;
+  <span class="tk">--shadow</span>: <span class="tv">none</span>;
+  <span class="tk">--shadow-press</span>: <span class="tv">none</span>;
+  <span class="tk">--ease</span>: <span class="tv">linear</span>;
+  <span class="tk">--dur</span>: <span class="tv">0ms</span>;
+  <span class="tk">--tracking</span>: <span class="tv">.02em</span>;
+  <span class="tk">--weight-bold</span>: <span class="tv">700</span>;
+  <span class="tk">--upper</span>: <span class="tv">uppercase</span>;
+<span class="tc">}</span></div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>How to use this.</b> Copy any token block over the <code>[data-t="dark"]</code> block
+in files 01&ndash;07 &mdash; components read only from tokens, so they re-skin without edits.
+Glass Refined is the only dark glass theme in the set; the earlier saturated version in file 08 was removed for readability.
+For an operations console, the practical shortlist is Fluent or Material for broad familiarity,
+Solarized for long-shift screens, Document for executive views, and High Contrast shipped alongside
+whichever you pick, since accessibility mode is usually a rollout requirement rather than an option.</div>
+<button class="replay" onclick="runFills()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+function runFills(){document.querySelectorAll('.d-fill').forEach((f,i)=>{
+  f.style.width='0';setTimeout(()=>f.style.width=f.dataset.w+'%',120+i*80);});}
+function cpTok(b){const pre=b.closest('.theme-block').querySelector('.tb-tokens');
+  navigator.clipboard&&navigator.clipboard.writeText(pre.innerText);
+  const o=b.innerHTML;b.innerHTML='&#10003; Copied';setTimeout(()=>b.innerHTML=o,1400);}
+window.addEventListener('load',runFills);
+</script>
+</body>
+</html>

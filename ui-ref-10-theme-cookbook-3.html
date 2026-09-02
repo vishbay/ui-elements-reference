@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 10 — Theme Cookbook III</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --scrim:rgba(0,0,0,.6);--code-bg:#121c21;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+/* ============================================================
+   STYLE DNA — same six axes as files 08 and 09.
+   Components read only from tokens, never hardcoded values.
+   ============================================================ */
+
+
+/* ---------- 0a. STUDIO LIGHT (the modern SaaS default, light) ---------- */
+.th-studio{
+  --bg:#f6f6f4; --surface:#ffffff; --surface-2:#f1f1ee; --surface-3:#e8e8e4;
+  --text:#1b1b1a; --text-dim:#66665f; --text-faint:#9a9a93;
+  --border:rgba(27,27,26,.08); --border-strong:rgba(27,27,26,.16);
+  --accent:#2b59c3; --accent-fg:#fff; --accent-soft:rgba(43,89,195,.10);
+  --good:#1a7f4b; --good-soft:rgba(26,127,75,.11);
+  --warn:#9a6700; --warn-soft:rgba(154,103,0,.12);
+  --danger:#c2323b; --danger-soft:rgba(194,50,59,.10);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:8px; --r-sm:6px; --r-pill:999px;
+  --pad:16px; --gap:12px; --fs:13px; --fs-sm:11.5px; --fs-num:28px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1px 2px rgba(27,27,26,.04),0 1px 3px rgba(27,27,26,.05);
+  --shadow-press:0 1px 1px rgba(27,27,26,.06);
+  --ease:cubic-bezier(.2,0,0,1); --dur:150ms;
+  --tracking:-.006em; --weight-bold:600; --upper:none;
+}
+.th-studio .d-num{font-variant-numeric:tabular-nums;letter-spacing:-.02em;font-weight:620}
+.th-studio .d-lbl{color:var(--text-dim);font-weight:500;letter-spacing:0}
+.th-studio .d-btn-p{background:var(--text);color:var(--bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 1px 2px rgba(27,27,26,.12)}
+.th-studio .d-btn-g{background:var(--surface);box-shadow:var(--shadow)}
+.th-studio .d-btn-g:hover{background:var(--surface-2)}
+.th-studio .d-in{background:var(--surface);box-shadow:inset 0 1px 2px rgba(27,27,26,.04)}
+.th-studio .d-in:focus{box-shadow:0 0 0 3px var(--accent-soft)}
+.th-studio .d-tab.on{border-bottom-color:var(--text)}
+.th-studio .d-seg span.on{box-shadow:0 1px 2px rgba(27,27,26,.10)}
+
+/* ---------- 0b. MIDNIGHT (the modern SaaS default, dark) ---------- */
+.th-midnight{
+  --bg:#0e1117; --surface:#151a22; --surface-2:#1b212c; --surface-3:#232b38;
+  --text:#e8ebf2; --text-dim:#9aa3b5; --text-faint:#5f6879;
+  --border:rgba(255,255,255,.08); --border-strong:rgba(255,255,255,.15);
+  --accent:#4f8cff; --accent-fg:#fff; --accent-soft:rgba(79,140,255,.16);
+  --good:#3ecf8e; --good-soft:rgba(62,207,142,.14);
+  --warn:#f5b642; --warn-soft:rgba(245,182,66,.14);
+  --danger:#f2646e; --danger-soft:rgba(242,100,110,.14);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:8px; --r-sm:6px; --r-pill:999px;
+  --pad:16px; --gap:12px; --fs:13px; --fs-sm:11.5px; --fs-num:28px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-press:none;
+  --ease:cubic-bezier(.2,0,0,1); --dur:160ms;
+  --tracking:-.006em; --weight-bold:600; --upper:none;
+}
+.th-midnight .d-card{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),var(--shadow)}   /* the lit top edge */
+.th-midnight .d-num{font-variant-numeric:tabular-nums;letter-spacing:-.02em;font-weight:620}
+.th-midnight .d-lbl{color:var(--text-dim);font-weight:500;letter-spacing:0}
+.th-midnight .d-btn-p{background:linear-gradient(180deg,#5d97ff,#4f8cff);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 1px 2px rgba(0,0,0,.4)}
+.th-midnight .d-btn-g{background:var(--surface-2);border-color:var(--border-strong)}
+.th-midnight .d-btn-g:hover{background:var(--surface-3)}
+.th-midnight .d-in{background:var(--bg);box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.th-midnight .d-in:focus{box-shadow:0 0 0 3px var(--accent-soft)}
+.th-midnight .d-seg span.on{box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 1px 2px rgba(0,0,0,.4)}
+
+/* ---------- 1. MONO UTILITY (Linear / Vercel / Raycast register) ---------- */
+.th-mono{
+  --bg:#0b0c0e; --surface:#121316; --surface-2:#18191d; --surface-3:#202126;
+  --text:#ededef; --text-dim:#8f9099; --text-faint:#5f6068;
+  --border:rgba(255,255,255,.07); --border-strong:rgba(255,255,255,.14);
+  --accent:#ededef; --accent-fg:#0b0c0e; --accent-soft:rgba(255,255,255,.08);
+  --good:#5bc98a; --good-soft:rgba(91,201,138,.12);
+  --warn:#d9a441; --warn-soft:rgba(217,164,65,.12);
+  --danger:#e0606a; --danger-soft:rgba(224,96,106,.12);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:6px; --r-sm:5px; --r-pill:999px;
+  --pad:14px; --gap:10px; --fs:13px; --fs-sm:11.5px; --fs-num:26px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1px 2px rgba(0,0,0,.3); --shadow-press:none;
+  --ease:cubic-bezier(.2,0,0,1); --dur:120ms;
+  --tracking:-.005em; --weight-bold:560; --upper:none;
+}
+.th-mono .d-num{font-variant-numeric:tabular-nums}
+.th-mono .d-btn-p{box-shadow:inset 0 -1px 0 rgba(0,0,0,.18)}
+.th-mono .d-btn-g:hover{background:var(--surface-2)}
+.th-mono .d-lbl{color:var(--text-dim);font-weight:500}
+.th-mono .d-in:focus{box-shadow:0 0 0 1px var(--border-strong)}
+
+/* ---------- 2. WARM PAPER (Notion / editorial-tool register) ---------- */
+.th-paper{
+  --bg:#f4efe6; --surface:#fdfbf6; --surface-2:#f1ebdf; --surface-3:#e7e0d1;
+  --text:#2a2520; --text-dim:#6b6259; --text-faint:#9b9184;
+  --border:rgba(42,37,32,.12); --border-strong:rgba(42,37,32,.22);
+  --accent:#b8532a; --accent-fg:#fff; --accent-soft:rgba(184,83,42,.10);
+  --good:#3d7a4f; --good-soft:rgba(61,122,79,.12);
+  --warn:#a8721a; --warn-soft:rgba(168,114,26,.12);
+  --danger:#b3403c; --danger-soft:rgba(179,64,60,.10);
+  --font-ui:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --font-num:var(--font-display);
+  --r:10px; --r-sm:7px; --r-pill:999px;
+  --pad:18px; --gap:13px; --fs:13.5px; --fs-sm:11.5px; --fs-num:34px;
+  --bw:1px; --bstyle:solid;
+  --shadow:0 1px 2px rgba(42,37,32,.06),0 6px 18px rgba(42,37,32,.06);
+  --shadow-press:0 1px 2px rgba(42,37,32,.08);
+  --ease:cubic-bezier(.22,1,.36,1); --dur:240ms;
+  --tracking:0; --weight-bold:600; --upper:none;
+}
+.th-paper .d-num{font-weight:500;letter-spacing:-.01em}
+.th-paper .d-h{font-weight:600;font-size:calc(var(--fs) + 4px)}
+.th-paper .d-lbl{letter-spacing:.04em;text-transform:uppercase;font-size:10.5px}
+.th-paper .d-tbl th{letter-spacing:.04em;text-transform:uppercase;font-size:10.5px}
+
+/* ---------- 3. CARBON INDUSTRIAL (IBM-style layered surfaces) ---------- */
+.th-carbon{
+  --bg:#161616; --surface:#262626; --surface-2:#393939; --surface-3:#525252;
+  --text:#f4f4f4; --text-dim:#c6c6c6; --text-faint:#8d8d8d;
+  --border:#393939; --border-strong:#6f6f6f;
+  --accent:#0f62fe; --accent-fg:#fff; --accent-soft:rgba(69,137,255,.18);
+  --good:#42be65; --good-soft:rgba(66,190,101,.14);
+  --warn:#f1c21b; --warn-soft:rgba(241,194,27,.14);
+  --danger:#fa4d56; --danger-soft:rgba(250,77,86,.14);
+  --font-ui:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --font-display:var(--font-ui); --font-num:var(--font-ui);
+  --r:0px; --r-sm:0px; --r-pill:999px;
+  --pad:16px; --gap:16px; --fs:14px; --fs-sm:12px; --fs-num:28px;
+  --bw:1px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:cubic-bezier(.2,0,.38,.9); --dur:110ms;
+  --tracking:.01em; --weight-bold:600; --upper:none;
+}
+.th-carbon .d-card{border-color:transparent}           /* depth by layer, not by line */
+.th-carbon .d-num{font-weight:300;letter-spacing:0}
+.th-carbon .d-btn{justify-content:space-between;min-width:132px;padding-right:calc(var(--pad)*2.6)}
+.th-carbon .d-btn-g{border-color:var(--accent);color:var(--accent)}
+.th-carbon .d-btn-g:hover{background:var(--accent-soft)}
+.th-carbon .d-btn:active{transform:none;filter:brightness(1.15)}
+.th-carbon .d-in{border:none;border-bottom:1px solid var(--border-strong);background:var(--surface-2)}
+.th-carbon .d-in:focus{outline:2px solid var(--accent);outline-offset:-2px;border-bottom-color:transparent}
+.th-carbon .d-badge{border:none;padding:4px 10px}
+.th-carbon .d-tbl th{background:var(--surface-2);color:var(--text);padding:calc(var(--pad)*.55) calc(var(--pad)*.5)}
+.th-carbon .d-tbl td{border-bottom-color:var(--bg)}
+.th-carbon .d-track{border-radius:0}.th-carbon .d-fill{border-radius:0}
+
+/* ---------- 4. MISSION-CONTROL HUD (restrained) ---------- */
+.th-hud{
+  --bg:#070b0f; --surface:#0c1218; --surface-2:#111a22; --surface-3:#16222c;
+  --text:#d5e3ec; --text-dim:#7f97a6; --text-faint:#4d6270;
+  --border:#1b2c38; --border-strong:#2c4657;
+  --accent:#3bd0ff; --accent-fg:#04111a; --accent-soft:rgba(59,208,255,.12);
+  --good:#41e0a3; --good-soft:rgba(65,224,163,.12);
+  --warn:#ffb454; --warn-soft:rgba(255,180,84,.12);
+  --danger:#ff5c6c; --danger-soft:rgba(255,92,108,.12);
+  --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --font-display:var(--font-ui);
+  --font-num:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:2px; --r-sm:2px; --r-pill:2px;
+  --pad:13px; --gap:10px; --fs:12.5px; --fs-sm:10.5px; --fs-num:28px;
+  --bw:1px; --bstyle:solid;
+  --shadow:none; --shadow-press:none;
+  --ease:cubic-bezier(.4,0,.2,1); --dur:200ms;
+  --tracking:.08em; --weight-bold:600; --upper:uppercase;
+}
+.th-hud .demo{background:
+  radial-gradient(rgba(59,208,255,.07) 1px,transparent 1px) 0 0/18px 18px,
+  var(--bg)}
+.th-hud .d-card{position:relative}
+.th-hud .d-card::before,.th-hud .d-card::after{content:"";position:absolute;width:8px;height:8px;
+  border-color:var(--accent);border-style:solid;pointer-events:none}
+.th-hud .d-card::before{top:-1px;left:-1px;border-width:1px 0 0 1px}
+.th-hud .d-card::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
+.th-hud .d-num{color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:0}
+.th-hud .d-h,.th-hud .d-p{text-transform:none;letter-spacing:0}
+.th-hud .d-badge i{border-radius:0;width:6px;height:6px}
+.th-hud .d-btn-g{border-color:var(--border-strong);color:var(--accent)}
+.th-hud .d-in{font-family:var(--font-num);letter-spacing:0}
+.th-hud .d-tbl td{font-family:var(--font-num);font-variant-numeric:tabular-nums}
+.th-hud .d-tbl td:first-child{font-family:var(--font-ui)}
+
+/* ============================================================
+   COMPONENTS — identical markup for every theme (cloned from
+   the <template> below). These read ONLY from the tokens above.
+   ============================================================ */
+.demo{background:var(--bg);color:var(--text);font-family:var(--font-ui);
+  padding:var(--pad);border-radius:var(--r);position:relative;overflow:hidden}
+.demo *{font-family:inherit}
+
+.d-card{background:var(--surface);border:var(--bw) var(--bstyle) var(--border);
+  border-radius:var(--r);padding:var(--pad);box-shadow:var(--shadow);margin-bottom:var(--gap)}
+.d-lbl{font-size:var(--fs-sm);color:var(--text-faint);text-transform:var(--upper);
+  letter-spacing:var(--tracking);font-weight:var(--weight-bold);margin-bottom:5px}
+.d-num{font-family:var(--font-num);font-size:var(--fs-num);font-weight:var(--weight-bold);
+  line-height:1.05;letter-spacing:var(--tracking)}
+.d-sub{font-size:var(--fs-sm);color:var(--text-dim);margin-top:3px}
+.d-h{font-family:var(--font-display);font-size:calc(var(--fs) + 2px);
+  font-weight:var(--weight-bold);letter-spacing:var(--tracking);margin:0 0 5px}
+.d-p{font-size:var(--fs);color:var(--text-dim);line-height:1.55;margin:0}
+
+.d-btn{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);
+  font-weight:var(--weight-bold);text-transform:var(--upper);letter-spacing:var(--tracking);
+  border:var(--bw) var(--bstyle) transparent;border-radius:var(--r-sm);
+  padding:calc(var(--pad)*.45) calc(var(--pad)*.85);cursor:pointer;font-family:inherit;
+  box-shadow:var(--shadow);transition:transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),filter var(--dur) var(--ease),background var(--dur) var(--ease)}
+.d-btn:active{box-shadow:var(--shadow-press);transform:scale(.97)}
+.d-btn-p{background:var(--accent);color:var(--accent-fg)}
+.d-btn-g{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.d-btn-d{background:var(--danger);color:#fff}
+
+.d-badge{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-sm);
+  font-weight:var(--weight-bold);text-transform:var(--upper);letter-spacing:var(--tracking);
+  padding:3px 9px;border-radius:var(--r-pill);border:var(--bw) var(--bstyle) transparent}
+.bg-good{background:var(--good-soft);color:var(--good)}
+.bg-warn{background:var(--warn-soft);color:var(--warn)}
+.bg-dang{background:var(--danger-soft);color:var(--danger)}
+.d-badge i{width:5px;height:5px;border-radius:var(--r-pill);background:currentColor}
+
+.d-in{width:100%;background:var(--surface-2);color:var(--text);font-size:var(--fs);
+  border:var(--bw) var(--bstyle) var(--border);border-radius:var(--r-sm);
+  padding:calc(var(--pad)*.5) calc(var(--pad)*.6);outline:none;font-family:inherit;
+  transition:border-color var(--dur) var(--ease)}
+.d-in:focus{border-color:var(--accent)}
+.d-in::placeholder{color:var(--text-faint)}
+
+.d-tbl{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.d-tbl th{text-align:left;color:var(--text-faint);text-transform:var(--upper);
+  letter-spacing:var(--tracking);font-weight:var(--weight-bold);
+  padding:calc(var(--pad)*.35) calc(var(--pad)*.4);
+  border-bottom:var(--bw) var(--bstyle) var(--border)}
+.d-tbl td{padding:calc(var(--pad)*.42) calc(var(--pad)*.4);
+  border-bottom:var(--bw) var(--bstyle) var(--border);opacity:.92}
+.d-tbl tr:last-child td{border-bottom:none}
+
+.d-track{height:6px;background:var(--surface-3);border-radius:var(--r-pill);overflow:hidden;
+  border:var(--bw) var(--bstyle) transparent}
+.d-fill{height:100%;background:var(--accent);border-radius:var(--r-pill);width:0;
+  transition:width 1s var(--ease)}
+.d-row{display:flex;gap:var(--gap);flex-wrap:wrap;align-items:center}
+
+/* toolbar strip — new in this file; covers tabs, segmented control, icon buttons and kbd hints */
+.d-bar{display:flex;align-items:center;gap:var(--gap);flex-wrap:wrap;margin-bottom:var(--gap)}
+.d-tabs{display:flex;gap:2px;border-bottom:var(--bw) var(--bstyle) var(--border)}
+.d-tab{font-size:var(--fs-sm);font-weight:var(--weight-bold);text-transform:var(--upper);
+  letter-spacing:var(--tracking);color:var(--text-dim);padding:calc(var(--pad)*.4) calc(var(--pad)*.6);
+  border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;
+  transition:color var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.d-tab:hover{color:var(--text)}
+.d-tab.on{color:var(--text);border-bottom-color:var(--accent)}
+.d-seg{display:inline-flex;background:var(--surface-2);border:var(--bw) var(--bstyle) var(--border);
+  border-radius:var(--r-sm);padding:2px;margin-left:auto}
+.d-seg span{font-size:var(--fs-sm);padding:3px 9px;border-radius:calc(var(--r-sm) - 2px);color:var(--text-dim);
+  cursor:pointer;letter-spacing:var(--tracking);text-transform:var(--upper);font-weight:var(--weight-bold)}
+.d-seg span.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.d-ico{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;
+  border:var(--bw) var(--bstyle) var(--border-strong);border-radius:var(--r-sm);color:var(--text-dim);
+  background:transparent;cursor:pointer;font-size:13px;font-family:inherit}
+.d-ico:hover{color:var(--text);border-color:var(--accent)}
+.d-kbd{font-family:var(--font-num);font-size:calc(var(--fs-sm) - 1px);color:var(--text-faint);
+  border:var(--bw) var(--bstyle) var(--border);border-bottom-width:2px;border-radius:var(--r-sm);
+  padding:1px 5px;letter-spacing:0;text-transform:none}
+
+/* page chrome for the cookbook itself */
+.theme-block{border:1px solid rgba(255,255,255,.09);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.tb-head{display:flex;align-items:baseline;gap:11px;padding:13px 16px;background:#111a1f;
+  border-bottom:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
+.tb-name{font-size:14.5px;font-weight:680}
+.tb-dna{font-size:11px;color:#7f8492;font-family:ui-monospace,Menlo,monospace}
+.tb-copy{margin-left:auto;background:#1e2b32;border:1px solid rgba(255,255,255,.14);
+  color:#c9cbd6;border-radius:7px;font-size:11px;padding:5px 11px;cursor:pointer;font-family:inherit}
+.tb-copy:hover{border-color:#3a9ad9;color:#3a9ad9}
+.tb-body{display:grid;grid-template-columns:1fr 320px}
+@media(max-width:900px){.tb-body{grid-template-columns:1fr}}
+.tb-demo{padding:16px}
+.tb-tokens{background:#0d1519;border-left:1px solid rgba(255,255,255,.08);padding:13px;
+  font-family:ui-monospace,Menlo,monospace;font-size:10.5px;line-height:1.65;
+  color:#8b909d;overflow:auto;max-height:520px;white-space:pre}
+@media(max-width:900px){.tb-tokens{border-left:none;border-top:1px solid rgba(255,255,255,.08)}}
+.tb-tokens .tk{color:#3a9ad9}.tb-tokens .tv{color:#c8cbd4}.tb-tokens .tc{color:#5a5f6b}
+
+.pick{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;overflow:hidden}
+.pick th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7f8492;
+  padding:10px 14px;background:#111a1f;border-bottom:1px solid rgba(255,255,255,.08)}
+.pick td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#c9cbd6;vertical-align:top;line-height:1.5}
+.pick tr:last-child td{border-bottom:none}
+.pick td:first-child{color:#edeef2;font-weight:640;white-space:nowrap}
+.pick .th{font-family:var(--mono);font-size:11px;color:#3a9ad9}
+.pick .f{color:#7f8492;font-size:11.5px}
+.notes{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-top:14px}
+@media(max-width:820px){.notes{grid-template-columns:1fr}}
+.note{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px}
+.note h4{margin:0 0 4px;font-size:12.5px;color:#edeef2}
+.note p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 10</div>
+  <h1>Theme Cookbook III &mdash; SaaS, Utility, Paper, Carbon, HUD</h1>
+  <p>Six themes chosen for what operations and SaaS teams actually ship. Studio Light and Midnight are the
+  two to start from for a modern SaaS product: warm neutrals, a lit top edge on dark cards, black or cobalt
+  primary, 8px radius, 150ms motion, nothing decorative. Then a monochrome utility register in the Linear /
+  Vercel vein, a warm paper look for document tools, an IBM-Carbon-style layered system, and a restrained
+  mission-control HUD. Same six axes as files 08 and 09; the demo also carries a toolbar strip.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">00 — Picking one</div>
+    <h2 class="sec-title">Nineteen themes, one decision</h2>
+    <p class="sec-desc">Across files 08, 09 and 10 there are now nineteen token sets. The choice is driven by
+    who is looking, for how long, and what the product needs to feel like. Match on register first; every
+    theme can be recoloured afterwards.</p>
+  </div>
+  <table class="pick">
+    <thead><tr><th>Product</th><th>Start from</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Modern SaaS product, light</td><td><span class="th">.th-studio</span></td>
+        <td>Warm off-white, black primary button, cobalt reserved for links, focus and the current item. Layered 1&ndash;3px shadows instead of borders doing all the work. This is the register of Linear, Attio and Stripe's dashboard.</td></tr>
+      <tr><td>Modern SaaS product, dark</td><td><span class="th">.th-midnight</span></td>
+        <td>Blue-black ground, a one-pixel lit edge on every card, gradient-lit primary. Reads as a product rather than a terminal, without any glow, mesh or glass.</td></tr>
+      <tr><td>Internal ops console, mixed audience</td><td><span class="th">.th-console</span> or <span class="th">.th-mono</span></td>
+        <td>Console is the safe default. Mono removes the coloured accent entirely, which is the fastest way out of the generic look <span class="f">(see file 18)</span>.</td></tr>
+      <tr><td>NOC / trading / 24-hour screens</td><td><span class="th">.th-dense</span>, <span class="th">.th-solar</span> or <span class="th">.th-hud</span></td>
+        <td>Low luminance, mono numerals, zero decoration. HUD adds a point of view; Dense adds density; Solarized adds fatigue resistance.</td></tr>
+      <tr><td>Enterprise deployment, IT-managed</td><td><span class="th">.th-carbon</span>, <span class="th">.th-fluent</span> or <span class="th">.th-material</span></td>
+        <td>Familiar to the audience, defensible in procurement, and each has an open component library you can fall back to.</td></tr>
+      <tr><td>Knowledge / document tool</td><td><span class="th">.th-paper</span> or <span class="th">.th-doc</span></td>
+        <td>Serif display and warm neutrals read as writing rather than monitoring. Chrome disappears behind content.</td></tr>
+      <tr><td>Marketing-facing SaaS app</td><td><span class="th">.th-glassr</span> or <span class="th">.th-frost</span></td>
+        <td>Only where the product is the pitch. Use the corrected glass rules in file 09 and keep effects to one per screen.</td></tr>
+      <tr><td>Exported reports, print, executive views</td><td><span class="th">.th-print</span> or <span class="th">.th-hc</span></td>
+        <td>Black on white with hard rules survives photocopies and projectors. Ship High Contrast alongside any other pick.</td></tr>
+    </tbody>
+  </table>
+  <div class="notes">
+    <div class="note"><h4>Accent is optional</h4><p>Mono Utility proves a theme can have no coloured accent at all.
+      Semantic colours (good, warn, danger) still exist; they just stop competing with a brand colour.</p></div>
+    <div class="note"><h4>Type does more than colour</h4><p>Paper swaps one axis, the display face, and reads as a
+      different product. Carbon swaps radius to 0 and depth to layers. Change one axis decisively before touching two.</p></div>
+  </div>
+</section>
+
+<template id="demoTpl">
+<div class="demo">
+  <div class="d-bar">
+    <div class="d-tabs"><span class="d-tab on">Overview</span><span class="d-tab">Timeline</span><span class="d-tab">Runbook</span></div>
+    <div class="d-seg"><span class="on">24h</span><span>7d</span><span>30d</span></div>
+    <button class="d-ico" title="Filter">&#9776;</button>
+    <button class="d-ico" title="Refresh">&#8635;</button>
+    <span class="d-kbd">&#8984;K</span>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl">Cycle completion</div>
+    <div class="d-num">86<span style="font-size:.5em">%</span></div>
+    <div class="d-sub">116 of 823 pipelines &middot; 707 running</div>
+    <div class="d-track" style="margin-top:10px"><div class="d-fill" data-w="86"></div></div>
+  </div>
+  <div class="d-card">
+    <h3 class="d-h">Order Fulfilment</h3>
+    <p class="d-p">Hundreds of deliveries still in progress. No SLA breach yet &mdash; roughly 90 minutes of margin remains.</p>
+    <div class="d-row" style="margin-top:11px">
+      <span class="d-badge bg-good"><i></i>On time</span>
+      <span class="d-badge bg-warn"><i></i>At risk</span>
+      <span class="d-badge bg-dang"><i></i>Breached</span>
+    </div>
+  </div>
+  <div class="d-card">
+    <div class="d-lbl" style="margin-bottom:8px">Actions</div>
+    <div class="d-row" style="margin-bottom:11px">
+      <button class="d-btn d-btn-p">Resubmit</button>
+      <button class="d-btn d-btn-g">Details</button>
+      <button class="d-btn d-btn-d">Cancel</button>
+    </div>
+    <input class="d-in" placeholder="Search incidents...">
+  </div>
+  <div class="d-card" style="margin-bottom:0">
+    <table class="d-tbl">
+      <thead><tr><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody>
+        <tr><td>Daily Sync</td><td><span class="d-badge bg-good"><i></i>Done</span></td><td>2h 41m</td></tr>
+        <tr><td>Reconciliation</td><td><span class="d-badge bg-dang"><i></i>Failed</span></td><td>0h 12m</td></tr>
+        <tr><td>Logistics</td><td><span class="d-badge bg-warn"><i></i>Running</span></td><td>3h 13m</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</template>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Studio Light &mdash; modern SaaS, light</div>
+    <h2 class="sec-title">Studio Light</h2>
+    <p class="sec-desc">The look most current SaaS products converge on when they are designed rather than generated: warm
+    off-white ground instead of pure white or grey, a black primary button with a one-pixel inner highlight, cobalt only for
+    links and focus, and depth from two stacked one-to-three-pixel shadows rather than from borders. Tabular numerals,
+    weight 600 instead of 700, letter-spacing slightly negative. Nothing here is an effect.</p>
+  </div>
+  <div class="theme-block" data-theme="th-studio">
+    <div class="tb-head">
+      <span class="tb-name">.th-studio</span>
+      <span class="tb-dna">radius 8 &middot; ease-out 150ms &middot; layered soft shadow &middot; black primary</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-studio tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Midnight &mdash; modern SaaS, dark</div>
+    <h2 class="sec-title">Midnight</h2>
+    <p class="sec-desc">The dark counterpart. Blue-black rather than neutral black so text has somewhere to sit, each card
+    carrying a one-pixel lit top edge (<code>inset 0 1px 0 rgba(255,255,255,.05)</code>) that reads as material instead of
+    as a flat rectangle, and a primary button lit from above with a subtle gradient. Inputs are darker than their card, which
+    is the opposite of the light theme and the detail most dark modes miss. No glow, no glass, no mesh.</p>
+  </div>
+  <div class="theme-block" data-theme="th-midnight">
+    <div class="tb-head">
+      <span class="tb-name">.th-midnight</span>
+      <span class="tb-dna">radius 8 &middot; ease-out 160ms &middot; lit top edge &middot; cobalt primary</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-midnight tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Mono Utility &mdash; no accent colour</div>
+    <h2 class="sec-title">Mono Utility</h2>
+    <p class="sec-desc">Greys only. The primary button is white on black, status colours are desaturated so they
+    read as information rather than decoration, and everything moves in 120ms with no spring. Weight 560 instead
+    of 700, letter-spacing slightly negative, nothing uppercase. This is the current default register for
+    developer-facing SaaS and it is the hardest to mistake for a template.</p>
+  </div>
+  <div class="theme-block" data-theme="th-mono">
+    <div class="tb-head">
+      <span class="tb-name">.th-mono</span>
+      <span class="tb-dna">radius 6 &middot; ease-out 120ms &middot; hairline depth &middot; white accent</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-mono tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Warm Paper &mdash; serif display</div>
+    <h2 class="sec-title">Warm Paper</h2>
+    <p class="sec-desc">Cream ground, a humanist sans for UI and an old-style serif for headings and numerals.
+    Terracotta accent, low-saturation semantic colours. Radius 10, soft double shadow. Reads as a writing or
+    knowledge tool rather than a monitoring one, which is exactly why it should not be used for an incident console.</p>
+  </div>
+  <div class="theme-block" data-theme="th-paper">
+    <div class="tb-head">
+      <span class="tb-name">.th-paper</span>
+      <span class="tb-dna">radius 10 &middot; ease 240ms &middot; soft shadow &middot; serif display</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-paper tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Carbon Industrial &mdash; depth by layer</div>
+    <h2 class="sec-title">Carbon Industrial</h2>
+    <p class="sec-desc">Modelled on IBM's Carbon: radius 0 everywhere except tags, no card borders (each layer is a
+    step lighter than the one below), inputs with a bottom rule only, buttons with the label left-aligned and room
+    reserved for an icon, 110ms productive motion. Cobalt is the single accent. Reads as serious infrastructure
+    tooling without any decoration at all.</p>
+  </div>
+  <div class="theme-block" data-theme="th-carbon">
+    <div class="tb-head">
+      <span class="tb-name">.th-carbon</span>
+      <span class="tb-dna">radius 0 &middot; productive 110ms &middot; layered depth &middot; Plex Sans</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-carbon tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">Mission-Control HUD &mdash; restraint version</div>
+    <h2 class="sec-title">Mission-Control HUD</h2>
+    <p class="sec-desc">The sci-fi console done with discipline: one cyan, one amber, a faint dot grid, corner ticks
+    on cards instead of glow, and mono numerals everywhere a number appears. Uppercase tracked labels set the
+    register; body copy stays sentence case. No scanlines, no animated borders, no bloom. If you add any of those,
+    you have left restraint and entered a game menu.</p>
+  </div>
+  <div class="theme-block" data-theme="th-hud">
+    <div class="tb-head">
+      <span class="tb-name">.th-hud</span>
+      <span class="tb-dna">radius 2 &middot; 200ms &middot; corner ticks &middot; mono numerals</span>
+      <button class="tb-copy" onclick="cpTok(this)">&#10697; Copy tokens</button>
+    </div>
+    <div class="tb-body">
+      <div class="th-hud tb-demo"></div>
+      <div class="tb-tokens"></div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>How to use this.</b> Copy any token block over the <code>[data-t="dark"]</code> block
+in files 01&ndash;07, exactly as with files 08 and 09. The toolbar strip (<code>.d-bar</code>, <code>.d-tabs</code>,
+<code>.d-seg</code>, <code>.d-ico</code>, <code>.d-kbd</code>) is new here and reads only from tokens, so it can be
+pasted into either earlier cookbook. Theme-specific overrides sit directly under each token block; they are the
+one or two rules that a token cannot express (Carbon's borderless layers, the HUD's corner ticks) and are
+deliberately kept to a handful. For full-page compositions in the house theme, see file 11.</div>
+<button class="replay" onclick="runFills()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+/* clone the one demo into every theme block, then render that theme's tokens from the stylesheet */
+function tokensFor(cls){
+  for(const ss of document.styleSheets){let rules;try{rules=ss.cssRules}catch(e){continue}
+    for(const r of rules){if(r.selectorText==='.'+cls){const s=r.style;let out='<span class="tc">.'+cls+' {</span>\n';
+      for(let i=0;i<s.length;i++){const p=s[i];if(!p.startsWith('--'))continue;
+        out+='  <span class="tk">'+p+'</span>: <span class="tv">'+s.getPropertyValue(p).trim().replace(/</g,'&lt;')+'</span>;\n';}
+      return out+'<span class="tc">}</span>';}}}
+  return '';}
+document.querySelectorAll('.theme-block').forEach(b=>{
+  b.querySelector('.tb-demo').appendChild(document.getElementById('demoTpl').content.cloneNode(true));
+  b.querySelector('.tb-tokens').innerHTML=tokensFor(b.dataset.theme);});
+document.querySelectorAll('.d-tabs').forEach(t=>t.addEventListener('click',e=>{const el=e.target.closest('.d-tab');
+  if(!el)return;t.querySelectorAll('.d-tab').forEach(x=>x.classList.remove('on'));el.classList.add('on');}));
+document.querySelectorAll('.d-seg').forEach(t=>t.addEventListener('click',e=>{const el=e.target.closest('span');
+  if(!el)return;t.querySelectorAll('span').forEach(x=>x.classList.remove('on'));el.classList.add('on');}));
+function runFills(){document.querySelectorAll('.d-fill').forEach((f,i)=>{
+  f.style.width='0';setTimeout(()=>f.style.width=f.dataset.w+'%',120+i*80);});}
+function cpTok(b){const pre=b.closest('.theme-block').querySelector('.tb-tokens');
+  navigator.clipboard&&navigator.clipboard.writeText(pre.innerText);
+  const o=b.innerHTML;b.innerHTML='&#10003; Copied';setTimeout(()=>b.innerHTML=o,1400);}
+window.addEventListener('load',runFills);
+</script>
+</body>
+</html>

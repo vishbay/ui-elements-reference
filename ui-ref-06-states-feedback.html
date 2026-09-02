@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 06 — States &amp; Feedback</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.state{text-align:center;padding:24px 14px;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--surface)}
+.state .ic{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:21px}
+.ic-neutral{background:var(--accent-soft);color:var(--accent);animation:floaty 3.4s ease-in-out infinite}
+.ic-warn{background:var(--warn-soft);color:var(--warn)}
+.ic-dang{background:var(--danger-soft);color:var(--danger)}
+.ic-good{background:var(--good-soft);color:var(--good)}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.state .t{font-size:13.5px;font-weight:660;margin-bottom:4px}
+.state .s{font-size:12px;color:var(--text-dim);line-height:1.55;max-width:280px;margin:0 auto 12px}
+.state .row{justify-content:center}
+
+.banner{display:flex;align-items:flex-start;gap:10px;border-radius:10px;padding:11px 13px;
+  font-size:12.5px;line-height:1.5;border:1px solid transparent}
+.bn-info{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
+.bn-warn{background:var(--warn-soft);color:var(--warn)}
+.bn-dang{background:var(--danger-soft);color:var(--danger)}
+.bn-good{background:var(--good-soft);color:var(--good)}
+.banner b{display:block;margin-bottom:2px}
+.banner .x{margin-left:auto;cursor:pointer;opacity:.6;font-weight:700}
+.banner .x:hover{opacity:1}
+.banner.offline{animation:slideDown .35s var(--ease-spring)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-9px)}to{opacity:1;transform:none}}
+
+.up-item{display:flex;align-items:center;gap:11px;padding:10px;border:1px solid var(--border);
+  border-radius:10px;background:var(--surface);margin-bottom:8px}
+.up-ic{width:32px;height:32px;border-radius:8px;background:var(--accent-soft);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.up-body{flex:1;min-width:0}
+.up-n{font-size:12.5px;font-weight:620;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.up-m{font-size:10.5px;color:var(--text-faint);margin-top:2px;font-variant-numeric:tabular-nums}
+.up-track{height:4px;background:var(--surface-3);border-radius:2px;margin-top:6px;overflow:hidden}
+.up-fill{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .3s linear}
+.up-fill.done{background:var(--good)}
+.up-x{background:none;border:none;color:var(--text-faint);cursor:pointer;font-size:15px;
+  font-family:inherit;padding:0 3px}
+.up-x:hover{color:var(--danger)}
+
+.skelp{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);padding:14px}
+.sk{background:linear-gradient(90deg,var(--skel-1) 25%,var(--skel-2) 50%,var(--skel-1) 75%);
+  background-size:200% 100%;animation:shim 1.5s infinite linear;border-radius:6px}
+@keyframes shim{to{background-position:-200% 0}}
+.sk-l{height:11px;margin-bottom:9px}
+.sk-c{width:36px;height:36px;border-radius:50%}
+
+.fresh{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);
+  border-radius:var(--r-pill);padding:5px 11px;font-size:11.5px;font-weight:640;
+  transition:all var(--base)}
+.fresh i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.fresh.f0{color:var(--good);border-color:var(--good-soft)}
+.fresh.f0 i{animation:lp 2s infinite}
+.fresh.f1{color:var(--text-dim)}
+.fresh.f2{color:var(--warn);border-color:var(--warn-soft);background:var(--warn-soft)}
+.fresh.f3{color:var(--danger);border-color:var(--danger-soft);background:var(--danger-soft)}
+@keyframes lp{0%{box-shadow:0 0 0 0 currentColor}70%{box-shadow:0 0 0 5px transparent}
+  100%{box-shadow:0 0 0 0 transparent}}
+
+.ntf{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);overflow:hidden}
+.ntf-head{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--border);
+  font-size:12.5px;font-weight:660}
+.ntf-badge{background:var(--danger);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;
+  border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.ntf-head button{margin-left:auto;background:none;border:none;color:var(--accent);font-size:11.5px;
+  font-weight:640;cursor:pointer;font-family:inherit}
+.ntf-item{display:flex;gap:10px;padding:11px 13px;border-bottom:1px solid var(--hairline);
+  transition:background var(--fast)}
+.ntf-item:hover{background:var(--surface-2)}
+.ntf-item.unread{background:var(--accent-soft)}
+.ntf-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.ntf-item:not(.unread) .ntf-dot{background:transparent}
+.ntf-t{font-size:12.5px;line-height:1.45}
+.ntf-s{font-size:10.5px;color:var(--text-faint);margin-top:3px}
+.ntf-grp{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;padding:8px 13px 4px;background:var(--surface-2)}
+
+.prog-ring{transform:rotate(-90deg)}
+.pr-fill{transition:stroke-dashoffset 1s var(--ease)}
+.retry{display:flex;align-items:center;gap:10px;border:1px solid var(--danger-soft);
+  background:var(--danger-soft);border-radius:10px;padding:11px 13px}
+.retry .t{font-size:12.5px;color:var(--danger);font-weight:620}
+.retry .s{font-size:11px;color:var(--text-dim);margin-top:2px}
+.retry button{margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:var(--r-sm);
+  padding:7px 13px;font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit;
+  transition:transform var(--fast),filter var(--fast),border-color var(--fast)}
+.btn:active{transform:scale(.96)}
+.btn-p{background:var(--accent);color:#fff}
+.btn-g{background:transparent;color:var(--text);border-color:var(--border-strong)}
+.btn-g:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:11.5px}
+
+
+/* ---- 05 notification center ---- */
+.nc-stage{position:relative;height:330px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface-2);padding:12px;overflow:hidden}
+.nc-bell{position:relative;width:32px;height:32px;border:1px solid var(--border-strong);border-radius:8px;background:var(--surface);color:var(--text-dim);
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px}
+.nc-bell:hover{color:var(--text)}
+.nc-bell .n{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;border-radius:999px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--surface-2);transition:transform 220ms var(--ease-spring)}
+.nc-bell .n.zero{transform:scale(0)}
+.nc{position:absolute;top:50px;right:12px;width:320px;max-height:262px;background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;
+  box-shadow:var(--e4);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:all 220ms var(--ease-spring);z-index:10}
+.nc.open{opacity:1;transform:none;pointer-events:auto}
+.nc-h{display:flex;align-items:center;gap:8px;padding:10px 12px 0;font-size:13px;font-weight:650}
+.nc-h .act{margin-left:auto;font-size:11px;font-weight:500;color:var(--accent);cursor:pointer}
+.nc-h .gear{color:var(--text-faint);cursor:pointer;font-size:13px}
+.nc-tabs{display:flex;gap:2px;padding:6px 12px 0;border-bottom:1px solid var(--border)}
+.nc-tab{font-size:11.5px;font-weight:600;color:var(--text-dim);padding:6px 8px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;display:flex;gap:5px;align-items:center}
+.nc-tab.on{color:var(--text);border-bottom-color:var(--accent)}
+.nc-tab .n{font-family:var(--mono);font-size:9.5px;color:var(--text-faint)}
+.nc-list{overflow:auto;flex:1}
+.nc-day{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:700;padding:8px 12px 3px}
+.nc-i{display:grid;grid-template-columns:8px 24px 1fr auto;gap:8px;padding:8px 12px;align-items:start;cursor:pointer;border-top:1px solid var(--hairline);transition:background var(--fast)}
+.nc-i:hover{background:var(--surface-2)}
+.nc-i .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:6px;transition:opacity var(--fast)}
+.nc-i.read .dot{opacity:0}
+.nc-i.read .m b{font-weight:500;color:var(--text-dim)}
+.nc-i .ic{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;background:#5d7ba8}
+.nc-i .ic.sys{background:var(--surface-3);color:var(--text-dim)}.nc-i .ic.bad{background:var(--danger-soft);color:var(--danger)}.nc-i .ic.warn{background:var(--warn-soft);color:var(--warn)}
+.nc-i .m{font-size:11.5px;line-height:1.45;color:var(--text-dim)}.nc-i .m b{color:var(--text);font-weight:620}
+.nc-i .m code{font-size:10.5px;padding:0 4px}
+.nc-i .acts{display:flex;gap:5px;margin-top:6px}
+.nc-i .acts button{font:inherit;font-size:10.5px;font-weight:600;height:22px;padding:0 8px;border-radius:5px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text);cursor:pointer}
+.nc-i .acts button.p{background:var(--accent);border-color:transparent;color:#fff}
+.nc-i .t{font-family:var(--mono);font-size:9.5px;color:var(--text-faint);white-space:nowrap;padding-top:2px}
+.nc-empty{text-align:center;padding:26px 12px;font-size:11.5px;color:var(--text-dim);display:none}
+.nc-empty b{display:block;color:var(--text);margin-bottom:2px}
+.nc-list.empty .nc-i,.nc-list.empty .nc-day{display:none}.nc-list.empty .nc-empty{display:block}
+.nc-f{border-top:1px solid var(--border);padding:7px 12px;font-size:11px;color:var(--accent);text-align:center;cursor:pointer}
+.nc-toast{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:11.5px;box-shadow:var(--e3);opacity:0;transform:translateY(12px);transition:all 320ms var(--ease-spring);max-width:280px}
+.nc-toast.show{opacity:1;transform:none}
+.nc-toast b{display:block;font-weight:640;color:var(--danger)}.nc-toast span{color:var(--text-dim);font-size:11px}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 06</div>
+  <h1>States &amp; Feedback</h1>
+  <p>Empty, no-result, permission and error states; the full banner severity range; upload progress with cancel, determinate rings, retries and skeletons; plus freshness decay, self-updating timestamps and a grouped notification centre.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Empty &amp; error states</div>
+    <h2 class="sec-title">The screens nobody designs until it is too late</h2>
+    <p class="sec-desc">Four distinct states that are usually collapsed into one generic message: nothing exists yet, nothing matches the filter, you lack permission, and something broke. Each needs a different action &mdash; clearing a filter is not the same as requesting access.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="stack">
+<div class="state"><div class="ic ic-neutral">&#9635;</div>
+  <div class="t">No incidents open</div>
+  <div class="s">Everything in this cycle completed without needing attention.</div></div>
+
+<div class="state"><div class="ic ic-neutral">&#9906;</div>
+  <div class="t">No results for &ldquo;northwind&rdquo;</div>
+  <div class="s">No incidents match this filter in the selected date range.</div>
+  <div class="row"><button class="btn btn-g btn-sm">Clear filters</button>
+  <button class="btn btn-g btn-sm">Widen to 30 days</button></div></div>
+
+<div class="state"><div class="ic ic-warn">&#128274;</div>
+  <div class="t">You do not have access</div>
+  <div class="s">This project is restricted to the Pipeline Team. Request access to view its runs.</div>
+  <div class="row"><button class="btn btn-p btn-sm">Request access</button></div></div>
+
+<div class="state"><div class="ic ic-dang">&#9888;</div>
+  <div class="t">Something went wrong</div>
+  <div class="s">The query failed after three attempts. This is usually transient.</div>
+  <div class="row"><button class="btn btn-p btn-sm">Try again</button>
+  <button class="btn btn-g btn-sm">Copy error ID</button></div></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="stack">
+<div class="state"><div class="ic ic-neutral">&#9635;</div>
+  <div class="t">No incidents open</div>
+  <div class="s">Everything in this cycle completed without needing attention.</div></div>
+
+<div class="state"><div class="ic ic-neutral">&#9906;</div>
+  <div class="t">No results for &ldquo;northwind&rdquo;</div>
+  <div class="s">No incidents match this filter in the selected date range.</div>
+  <div class="row"><button class="btn btn-g btn-sm">Clear filters</button>
+  <button class="btn btn-g btn-sm">Widen to 30 days</button></div></div>
+
+<div class="state"><div class="ic ic-warn">&#128274;</div>
+  <div class="t">You do not have access</div>
+  <div class="s">This project is restricted to the Pipeline Team. Request access to view its runs.</div>
+  <div class="row"><button class="btn btn-p btn-sm">Request access</button></div></div>
+
+<div class="state"><div class="ic ic-dang">&#9888;</div>
+  <div class="t">Something went wrong</div>
+  <div class="s">The query failed after three attempts. This is usually transient.</div>
+  <div class="row"><button class="btn btn-p btn-sm">Try again</button>
+  <button class="btn btn-g btn-sm">Copy error ID</button></div></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Banners</div>
+    <h2 class="sec-title">Inline status across the severity range</h2>
+    <p class="sec-desc">Banners sit in the layout rather than floating, so they are for conditions that persist. Anything transient belongs in a toast. The connection-lost banner slides in rather than appearing, which reads as an event rather than a page element.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="stack">
+<div class="banner bn-info"><span>&#9432;</span><div><b>Next cycle starts at 02:00 CT</b>
+  Data shown is from the 09/01 &rarr; 09/02 window.</div><span class="x" onclick="this.closest('.banner').remove()">&times;</span></div>
+<div class="banner bn-warn"><span>&#9888;</span><div><b>SLO at risk</b>
+  Two projects are tracking behind their internal target.</div></div>
+<div class="banner bn-dang offline"><span>&#9889;</span><div><b>Connection lost</b>
+  Showing cached data from 4 minutes ago. Reconnecting&hellip;</div></div>
+<div class="banner bn-good"><span>&#10003;</span><div><b>All critical deliveries arrived</b>
+  9 of 9 on time or early.</div></div>
+<div class="banner bn-warn"><span>&#9203;</span><div><b>Rate limited</b>
+  Too many refreshes. Automatic retry in <span class="cd">18</span>s.</div></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="stack">
+<div class="banner bn-info"><span>&#9432;</span><div><b>Next cycle starts at 02:00 CT</b>
+  Data shown is from the 09/01 &rarr; 09/02 window.</div><span class="x" onclick="this.closest('.banner').remove()">&times;</span></div>
+<div class="banner bn-warn"><span>&#9888;</span><div><b>SLO at risk</b>
+  Two projects are tracking behind their internal target.</div></div>
+<div class="banner bn-dang offline"><span>&#9889;</span><div><b>Connection lost</b>
+  Showing cached data from 4 minutes ago. Reconnecting&hellip;</div></div>
+<div class="banner bn-good"><span>&#10003;</span><div><b>All critical deliveries arrived</b>
+  9 of 9 on time or early.</div></div>
+<div class="banner bn-warn"><span>&#9203;</span><div><b>Rate limited</b>
+  Too many refreshes. Automatic retry in <span class="cd">18</span>s.</div></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Progress &amp; loading</div>
+    <h2 class="sec-title">Uploads, rings, retries, skeletons</h2>
+    <p class="sec-desc">Upload rows keep the cancel affordance visible throughout &mdash; progress without cancel is a hostage situation. Skeletons preserve the final layout so nothing jumps when data lands.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Upload with cancel</div>
+<div style="margin-bottom:16px">
+  <div class="up-item"><div class="up-ic">&#128196;</div>
+    <div class="up-body"><div class="up-n">deploy_config_2026_09.yaml</div>
+      <div class="up-m"><span class="pct">0</span>% &middot; 1.2 MB</div>
+      <div class="up-track"><div class="up-fill"></div></div></div>
+    <button class="up-x">&times;</button></div>
+  <div class="up-item"><div class="up-ic" style="background:var(--good-soft);color:var(--good)">&#10003;</div>
+    <div class="up-body"><div class="up-n">service_map.json</div>
+      <div class="up-m">Complete &middot; 340 KB</div>
+      <div class="up-track"><div class="up-fill done" style="width:100%"></div></div></div></div>
+</div>
+
+<div class="lbl">Determinate ring</div>
+<div class="row" style="margin-bottom:16px;gap:16px">
+  <svg width="52" height="52" viewBox="0 0 40 40" class="prog-ring">
+    <circle cx="20" cy="20" r="16" fill="none" stroke="var(--surface-3)" stroke-width="4"/>
+    <circle class="pr-fill" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4"
+      stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" data-pct="72"/>
+  </svg>
+  <div><div style="font-size:19px;font-weight:700">72%</div>
+  <div style="font-size:11px;color:var(--text-faint)">Cycle complete</div></div>
+</div>
+
+<div class="lbl">Retry state</div>
+<div class="retry" style="margin-bottom:16px"><div>
+  <div class="t">Failed to load run history</div>
+  <div class="s">Attempt 3 of 3 &middot; BigQuery timeout</div></div>
+  <button class="btn btn-g btn-sm">Retry</button></div>
+
+<div class="lbl">Skeleton page</div>
+<div class="skelp">
+  <div style="display:flex;gap:11px;align-items:center;margin-bottom:13px">
+    <div class="sk sk-c"></div>
+    <div style="flex:1"><div class="sk sk-l" style="width:52%"></div>
+    <div class="sk sk-l" style="width:32%;margin:0"></div></div></div>
+  <div class="sk sk-l"></div><div class="sk sk-l" style="width:88%"></div>
+  <div class="sk sk-l" style="width:64%;margin:0"></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Upload with cancel</div>
+<div style="margin-bottom:16px">
+  <div class="up-item"><div class="up-ic">&#128196;</div>
+    <div class="up-body"><div class="up-n">deploy_config_2026_09.yaml</div>
+      <div class="up-m"><span class="pct">0</span>% &middot; 1.2 MB</div>
+      <div class="up-track"><div class="up-fill"></div></div></div>
+    <button class="up-x">&times;</button></div>
+  <div class="up-item"><div class="up-ic" style="background:var(--good-soft);color:var(--good)">&#10003;</div>
+    <div class="up-body"><div class="up-n">service_map.json</div>
+      <div class="up-m">Complete &middot; 340 KB</div>
+      <div class="up-track"><div class="up-fill done" style="width:100%"></div></div></div></div>
+</div>
+
+<div class="lbl">Determinate ring</div>
+<div class="row" style="margin-bottom:16px;gap:16px">
+  <svg width="52" height="52" viewBox="0 0 40 40" class="prog-ring">
+    <circle cx="20" cy="20" r="16" fill="none" stroke="var(--surface-3)" stroke-width="4"/>
+    <circle class="pr-fill" cx="20" cy="20" r="16" fill="none" stroke="var(--accent)" stroke-width="4"
+      stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" data-pct="72"/>
+  </svg>
+  <div><div style="font-size:19px;font-weight:700">72%</div>
+  <div style="font-size:11px;color:var(--text-faint)">Cycle complete</div></div>
+</div>
+
+<div class="lbl">Retry state</div>
+<div class="retry" style="margin-bottom:16px"><div>
+  <div class="t">Failed to load run history</div>
+  <div class="s">Attempt 3 of 3 &middot; BigQuery timeout</div></div>
+  <button class="btn btn-g btn-sm">Retry</button></div>
+
+<div class="lbl">Skeleton page</div>
+<div class="skelp">
+  <div style="display:flex;gap:11px;align-items:center;margin-bottom:13px">
+    <div class="sk sk-c"></div>
+    <div style="flex:1"><div class="sk sk-l" style="width:52%"></div>
+    <div class="sk sk-l" style="width:32%;margin:0"></div></div></div>
+  <div class="sk sk-l"></div><div class="sk sk-l" style="width:88%"></div>
+  <div class="sk sk-l" style="width:64%;margin:0"></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Freshness &amp; notifications</div>
+    <h2 class="sec-title">Data age and grouped alerts</h2>
+    <p class="sec-desc">Freshness decay is the pattern most auto-refreshing dashboards miss: the indicator must visibly degrade, or a stale screen looks identical to a live one. Relative timestamps update themselves on an interval instead of waiting for a re-render.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Freshness decay</div>
+<div class="row" style="gap:9px;margin-bottom:8px">
+  <span class="fresh f0"><i></i>Live &middot; 12s ago</span>
+  <span class="fresh f1"><i></i>2m ago</span>
+  <span class="fresh f2"><i></i>Stale &middot; 11m ago</span>
+  <span class="fresh f3"><i></i>Disconnected &middot; 48m</span>
+</div>
+<div class="body-txt" style="margin-bottom:16px">The indicator degrades as data ages, so nobody reads a
+stale dashboard as current.</div>
+
+<div class="lbl">Self-updating relative time</div>
+<div class="row" style="margin-bottom:16px">
+  <span class="fresh f1"><i></i>Refreshed <span class="ago" data-t="0">just now</span></span>
+</div>
+
+<div class="lbl">Notification centre</div>
+<div class="ntf">
+  <div class="ntf-head">Notifications <span class="ntf-badge">3</span>
+    <button onclick="markAll(this)">Mark all read</button></div>
+  <div class="ntf-grp">Today</div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">Reports event pre-process failed</div>
+    <div class="ntf-s">14 minutes ago &middot; Retail</div></div></div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">SLA breach on Daily Sync</div>
+    <div class="ntf-s">1 hour ago &middot; Billing</div></div></div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">3 runs self-recovered after retry</div>
+    <div class="ntf-s">2 hours ago</div></div></div>
+  <div class="ntf-grp">Yesterday</div>
+  <div class="ntf-item"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">All critical deliveries arrived on time</div>
+    <div class="ntf-s">Yesterday 23:58</div></div></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Freshness decay</div>
+<div class="row" style="gap:9px;margin-bottom:8px">
+  <span class="fresh f0"><i></i>Live &middot; 12s ago</span>
+  <span class="fresh f1"><i></i>2m ago</span>
+  <span class="fresh f2"><i></i>Stale &middot; 11m ago</span>
+  <span class="fresh f3"><i></i>Disconnected &middot; 48m</span>
+</div>
+<div class="body-txt" style="margin-bottom:16px">The indicator degrades as data ages, so nobody reads a
+stale dashboard as current.</div>
+
+<div class="lbl">Self-updating relative time</div>
+<div class="row" style="margin-bottom:16px">
+  <span class="fresh f1"><i></i>Refreshed <span class="ago" data-t="0">just now</span></span>
+</div>
+
+<div class="lbl">Notification centre</div>
+<div class="ntf">
+  <div class="ntf-head">Notifications <span class="ntf-badge">3</span>
+    <button onclick="markAll(this)">Mark all read</button></div>
+  <div class="ntf-grp">Today</div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">Reports event pre-process failed</div>
+    <div class="ntf-s">14 minutes ago &middot; Retail</div></div></div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">SLA breach on Daily Sync</div>
+    <div class="ntf-s">1 hour ago &middot; Billing</div></div></div>
+  <div class="ntf-item unread"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">3 runs self-recovered after retry</div>
+    <div class="ntf-s">2 hours ago</div></div></div>
+  <div class="ntf-grp">Yesterday</div>
+  <div class="ntf-item"><span class="ntf-dot"></span><div>
+    <div class="ntf-t">All critical deliveries arrived on time</div>
+    <div class="ntf-s">Yesterday 23:58</div></div></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Notification center</div>
+    <h2 class="sec-title">Bell with count, panel with tabs and day groups, inline actions, empty state</h2>
+    <p class="sec-desc">The in-app inbox. The bell count animates to zero rather than disappearing; the panel groups by day, leads each item with who or what, and puts the one action that matters inline. A simulated new alert shows the pair that should always move together: a toast for now, an inbox entry for later.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Bell, panel, tabs, grouped items, inline actions, empty state</div>
+<div class="nc-stage">
+  <div class="row"><span class="nc-bell" onclick="ncTog(this)">&#9993;<span class="n">3</span></span>
+    <button class="btn btn-g btn-sm" onclick="ncPush(this)">Simulate a new alert</button>
+    <span class="body-txt" style="font-size:11.5px">Click an item to mark it read. Mark all to see the empty state.</span></div>
+  <div class="nc open">
+    <div class="nc-h">Notifications<span class="act" onclick="ncAll(this)">Mark all read</span><span class="gear">&#9881;</span></div>
+    <div class="nc-tabs"><span class="nc-tab on" onclick="ncTab(this,'')">All</span><span class="nc-tab" onclick="ncTab(this,'unread')">Unread <span class="n nc-un">3</span></span><span class="nc-tab" onclick="ncTab(this,'mention')">Mentions</span></div>
+    <div class="nc-list">
+      <div class="nc-day">Today</div>
+      <div class="nc-i" data-kind="mention" onclick="ncRead(this)"><span class="dot"></span><span class="ic">AK</span>
+        <div class="m"><b>Ana K.</b> mentioned you on <code>INC-4821</code>: "can you confirm the rollback landed?"<div class="acts"><button class="p">Reply</button><button>View</button></div></div><span class="t">2m</span></div>
+      <div class="nc-i" data-kind="alert" onclick="ncRead(this)"><span class="dot"></span><span class="ic bad">!</span>
+        <div class="m"><b>Sev1 declared</b> on checkout-api: p99 latency above 2.4s. You are on the rota.<div class="acts"><button class="p">Acknowledge</button><button>Open</button></div></div><span class="t">41m</span></div>
+      <div class="nc-i" data-kind="alert" onclick="ncRead(this)"><span class="dot"></span><span class="ic warn">&#9888;</span>
+        <div class="m"><b>Cert expiring</b> api.acme.io in 6 days. Auto-renew is off.</div><span class="t">5h</span></div>
+      <div class="nc-day">Yesterday</div>
+      <div class="nc-i read" data-kind="sys" onclick="ncRead(this)"><span class="dot"></span><span class="ic sys">&#8635;</span>
+        <div class="m"><b>Nightly reconciliation</b> completed with 217 duplicates removed.</div><span class="t">1d</span></div>
+      <div class="nc-i read" data-kind="mention" onclick="ncRead(this)"><span class="dot"></span><span class="ic" style="background:#8b6b9e">MR</span>
+        <div class="m"><b>Marco R.</b> assigned you <code>INC-4808</code>.</div><span class="t">1d</span></div>
+      <div class="nc-empty"><b>You're all caught up</b>Nothing unread. New alerts will appear here and in the bell.</div>
+    </div>
+    <div class="nc-f">View all notifications</div>
+  </div>
+  <div class="nc-toast"><div><b>Sev2 declared</b><span>order-stream: consumer lag above 5 min</span></div></div>
+</div>
+</div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Bell, panel, tabs, grouped items, inline actions, empty state</div>
+<div class="nc-stage">
+  <div class="row"><span class="nc-bell" onclick="ncTog(this)">&#9993;<span class="n">3</span></span>
+    <button class="btn btn-g btn-sm" onclick="ncPush(this)">Simulate a new alert</button>
+    <span class="body-txt" style="font-size:11.5px">Click an item to mark it read. Mark all to see the empty state.</span></div>
+  <div class="nc open">
+    <div class="nc-h">Notifications<span class="act" onclick="ncAll(this)">Mark all read</span><span class="gear">&#9881;</span></div>
+    <div class="nc-tabs"><span class="nc-tab on" onclick="ncTab(this,'')">All</span><span class="nc-tab" onclick="ncTab(this,'unread')">Unread <span class="n nc-un">3</span></span><span class="nc-tab" onclick="ncTab(this,'mention')">Mentions</span></div>
+    <div class="nc-list">
+      <div class="nc-day">Today</div>
+      <div class="nc-i" data-kind="mention" onclick="ncRead(this)"><span class="dot"></span><span class="ic">AK</span>
+        <div class="m"><b>Ana K.</b> mentioned you on <code>INC-4821</code>: "can you confirm the rollback landed?"<div class="acts"><button class="p">Reply</button><button>View</button></div></div><span class="t">2m</span></div>
+      <div class="nc-i" data-kind="alert" onclick="ncRead(this)"><span class="dot"></span><span class="ic bad">!</span>
+        <div class="m"><b>Sev1 declared</b> on checkout-api: p99 latency above 2.4s. You are on the rota.<div class="acts"><button class="p">Acknowledge</button><button>Open</button></div></div><span class="t">41m</span></div>
+      <div class="nc-i" data-kind="alert" onclick="ncRead(this)"><span class="dot"></span><span class="ic warn">&#9888;</span>
+        <div class="m"><b>Cert expiring</b> api.acme.io in 6 days. Auto-renew is off.</div><span class="t">5h</span></div>
+      <div class="nc-day">Yesterday</div>
+      <div class="nc-i read" data-kind="sys" onclick="ncRead(this)"><span class="dot"></span><span class="ic sys">&#8635;</span>
+        <div class="m"><b>Nightly reconciliation</b> completed with 217 duplicates removed.</div><span class="t">1d</span></div>
+      <div class="nc-i read" data-kind="mention" onclick="ncRead(this)"><span class="dot"></span><span class="ic" style="background:#8b6b9e">MR</span>
+        <div class="m"><b>Marco R.</b> assigned you <code>INC-4808</code>.</div><span class="t">1d</span></div>
+      <div class="nc-empty"><b>You're all caught up</b>Nothing unread. New alerts will appear here and in the bell.</div>
+    </div>
+    <div class="nc-f">View all notifications</div>
+  </div>
+  <div class="nc-toast"><div><b>Sev2 declared</b><span>order-stream: consumer lag above 5 min</span></div></div>
+</div>
+</div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Give every empty state a distinct action &mdash; a shared
+&ldquo;nothing here&rdquo; screen teaches users nothing about what to do next.
+Freshness decay needs a real timestamp comparison, not a counter that resets on re-render,
+otherwise a stalled poller will keep reporting &ldquo;just now&rdquo; forever.
+Relative-time intervals should be cleared on unmount or they leak in a single-page app.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+/* upload progress sim */
+function runUploads(){document.querySelectorAll('.up-fill:not(.done)').forEach(f=>{
+  let v=0;const pct=f.closest('.up-body').querySelector('.pct');
+  const t=setInterval(()=>{v=Math.min(100,v+Math.random()*9);
+    f.style.width=v+'%';if(pct)pct.textContent=Math.round(v);
+    if(v>=100){clearInterval(t);f.classList.add('done');
+      if(pct)pct.parentNode.textContent='Complete \u00b7 1.2 MB';}},260);});}
+/* progress ring */
+function runRings(){document.querySelectorAll('.pr-fill').forEach(c=>{
+  c.style.strokeDashoffset=100;void c.getBoundingClientRect();
+  requestAnimationFrame(()=>c.style.strokeDashoffset=100-parseFloat(c.dataset.pct));});}
+/* rate-limit countdown */
+function runCountdown(){document.querySelectorAll('.cd').forEach(el=>{
+  let n=parseInt(el.textContent);
+  setInterval(()=>{n=n>0?n-1:18;el.textContent=n;},1000);});}
+/* self-updating relative time */
+function runAgo(){document.querySelectorAll('.ago').forEach(el=>{
+  let s=0;setInterval(()=>{s++;
+    el.textContent=s<60?(s<5?'just now':s+'s ago'):Math.floor(s/60)+'m ago';},1000);});}
+function markAll(b){b.closest('.ntf').querySelectorAll('.unread').forEach(i=>i.classList.remove('unread'));
+  const bd=b.closest('.ntf-head').querySelector('.ntf-badge');if(bd)bd.remove();}
+window.addEventListener('load',()=>{runUploads();runRings();runCountdown();runAgo();});
+
+
+/* ---- 05 notification center ---- */
+function ncTog(b){const st=b.closest('.nc-stage');st.querySelector('.nc').classList.toggle('open');}
+function ncCount(st){const n=st.querySelectorAll('.nc-i:not(.read)').length;const b=st.querySelector('.nc-bell .n');b.textContent=n;b.classList.toggle('zero',n===0);
+  st.querySelector('.nc-un').textContent=n;const list=st.querySelector('.nc-list');const tab=st.querySelector('.nc-tab.on');
+  list.classList.toggle('empty',n===0&&(tab.textContent.trim().startsWith('Unread')||tab.textContent.trim()==='All'));}
+function ncRead(i){i.classList.add('read');ncCount(i.closest('.nc-stage'));}
+function ncAll(a){const st=a.closest('.nc-stage');st.querySelectorAll('.nc-i').forEach(i=>i.classList.add('read'));ncCount(st);}
+function ncTab(t,k){const st=t.closest('.nc-stage');st.querySelectorAll('.nc-tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  st.querySelectorAll('.nc-i').forEach(i=>{const show=!k||(k==='unread'?!i.classList.contains('read'):i.dataset.kind===k);i.style.display=show?'grid':'none';});
+  const anyVisible=[...st.querySelectorAll('.nc-i')].some(i=>i.style.display!=='none');st.querySelector('.nc-list').classList.toggle('empty',!anyVisible);}
+function ncPush(b){const st=b.closest('.nc-stage');const list=st.querySelector('.nc-list');const day=list.querySelector('.nc-day');
+  const i=document.createElement('div');i.className='nc-i';i.dataset.kind='alert';i.setAttribute('onclick','ncRead(this)');
+  i.innerHTML='<span class="dot"></span><span class="ic bad">!</span><div class="m"><b>Sev2 declared</b> on order-stream: consumer lag above 5 min.<div class="acts"><button class="p">Acknowledge</button><button>Open</button></div></div><span class="t">now</span>';
+  day.insertAdjacentElement('afterend',i);list.classList.remove('empty');ncCount(st);
+  const t=st.querySelector('.nc-toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+</script>
+</body>
+</html>

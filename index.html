@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference — Index</title>
+<style>
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;color:#edeef2;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;padding-bottom:60px}
+.head{padding:30px 24px 24px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:24px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:680px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 24px}
+.tools{display:flex;gap:10px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.search{flex:1;min-width:220px;height:36px;background:#172228;border:1px solid rgba(255,255,255,.12);border-radius:9px;color:#edeef2;padding:0 12px;font:inherit;font-size:13px;outline:none}
+.search:focus{border-color:#3a9ad9;box-shadow:0 0 0 3px rgba(58,154,217,.18)}
+.search::placeholder{color:#626775}
+.hint{font-size:11.5px;color:#626775}
+.hint kbd{font-family:ui-monospace,Menlo,monospace;font-size:10px;border:1px solid rgba(255,255,255,.14);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:#9296a2}
+.grp{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700;margin:26px 0 10px}
+.grp:first-of-type{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{display:block;background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 15px 13px;text-decoration:none;color:inherit;
+  transition:border-color 160ms,transform 160ms;position:relative}
+.card:hover{border-color:rgba(58,154,217,.6);transform:translateY(-1px)}
+.card.hide{display:none}
+.card .num{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#626775;display:flex;justify-content:space-between}
+.card .num .new{color:#34d399;font-weight:700;letter-spacing:.06em;font-size:9.5px}
+.card h3{margin:5px 0 4px;font-size:14px;font-weight:650;letter-spacing:-.005em}
+.card p{margin:0 0 9px;font-size:12px;color:#9296a2;line-height:1.5}
+.card .secs{display:flex;flex-wrap:wrap;gap:4px}
+.card .secs span{font-size:10px;color:#8b909d;background:rgba(255,255,255,.05);padding:1px 6px;border-radius:4px}
+.foot{max-width:1180px;margin:30px auto 0;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; Index</div>
+  <h1>UI Elements Reference</h1>
+  <p>Nineteen zero-dependency HTML files plus a motion library. Each file is self-contained: open it, switch light and dark,
+  copy what you need. Built for operations consoles and modern SaaS products that should not look generated.
+  Start with file 18 if you are deciding a look, file 11 if you are building a screen, files 08&ndash;10 if you are picking a theme.</p>
+</div>
+<div class="wrap">
+  <div class="tools"><input class="search" id="q" placeholder="Filter files and sections, e.g. table, glass, date range, kanban" autofocus>
+    <span class="hint">Press <kbd>/</kbd> to focus &middot; <kbd>Esc</kbd> to clear</span></div>
+
+  <div class="grp">Start here</div>
+  <div class="grid">
+    <a class="card" href="PROMPTS.md"><div class="num">prompts <span class="new">new</span></div><h3>Prompt Library</h3><p>Fifteen copy-paste prompts for Claude Code and similar tools: install the system, pick a theme, build a screen or component, de-generic a design, run the checks.</p><div class="secs"><span>kickoff</span><span>theme</span><span>screen</span><span>component</span><span>review</span><span>port</span></div></a>
+    <a class="card" href="DESIGN-BRIEF.md"><div class="num">brief <span class="new">new</span></div><h3>Design Brief</h3><p>Drop-in section for a project's CLAUDE.md: the ten non-negotiables and a map of which file holds which pattern.</p><div class="secs"><span>rules</span><span>file map</span><span>acceptance</span></div></a>
+    <a class="card" href="tokens.css"><div class="num">tokens.css <span class="new">new</span></div><h3>House Tokens</h3><p>The dark and light token blocks as a standalone stylesheet, generated from the compositions file. Copy into any project unchanged.</p><div class="secs"><span>dark</span><span>light</span><span>radius</span><span>easing</span></div></a>
+  </div>
+
+  <div class="grp">Foundations &amp; components</div>
+  <div class="grid">
+    <a class="card" href="ui-ref-01-surfaces.html"><div class="num">01</div><h3>Surfaces &amp; Materials</h3><p>Elevation scale, glass over real content, visible grain, ambient light, focus and lit edges, textures, scrims, bento composition.</p><div class="secs"><span>elevation</span><span>frosted glass</span><span>grain</span><span>ambient</span><span>focus</span><span>tilt</span><span>textures</span><span>hairlines</span><span>scrims</span><span>bento</span></div></a>
+    <a class="card" href="ui-ref-02-buttons-controls.html"><div class="num">02 <span class="new">+ filter bar</span></div><h3>Buttons &amp; Controls</h3><p>Button variants, async and armed states, split buttons, inputs, switches, sliders, tags, dropzone, saved views, filter chips, date-range picker.</p><div class="secs"><span>buttons</span><span>text inputs</span><span>controls</span><span>advanced inputs</span><span>filter bar</span><span>date range</span></div></a>
+    <a class="card" href="ui-ref-03-data-display.html"><div class="num">03 <span class="new">+ people &amp; audit</span></div><h3>Data Display</h3><p>Tables, log viewer, JSON and diff, micro-charts, timeline, avatars and presence, permission matrix, audit log, uptime bars.</p><div class="secs"><span>tables</span><span>log viewer</span><span>json diff</span><span>micro-charts</span><span>timeline</span><span>avatars</span><span>permissions</span><span>audit</span><span>uptime</span></div></a>
+    <a class="card" href="ui-ref-04-charts.html"><div class="num">04</div><h3>Charts &amp; Visualisation</h3><p>Streaming time series, calendar heatmap, schedule, flow and reconciliation, comparison.</p><div class="secs"><span>time series</span><span>heatmap</span><span>gantt</span><span>sankey</span><span>comparison</span></div></a>
+    <a class="card" href="ui-ref-05-overlays-nav.html"><div class="num">05 <span class="new">+ tabs</span></div><h3>Overlays &amp; Navigation</h3><p>Menus, popovers, tooltips, command palette, sidebar, breadcrumbs, stepper, sheets, toasts, six tab treatments.</p><div class="secs"><span>menus</span><span>command palette</span><span>sidebar</span><span>breadcrumbs</span><span>stepper</span><span>toasts</span><span>tabs</span></div></a>
+    <a class="card" href="ui-ref-06-states-feedback.html"><div class="num">06 <span class="new">+ notifications</span></div><h3>States &amp; Feedback</h3><p>Empty and error states, banners, progress, skeletons, freshness, grouped alerts, notification center.</p><div class="secs"><span>empty states</span><span>banners</span><span>progress</span><span>skeletons</span><span>freshness</span><span>notification center</span></div></a>
+    <a class="card" href="ui-ref-07-ai-interface.html"><div class="num">07</div><h3>AI Interface Patterns</h3><p>Thinking, tool calls, citations, streaming, copyable code, persona, context budget, composer.</p><div class="secs"><span>conversation</span><span>streaming</span><span>tool calls</span><span>composer</span></div></a>
+  </div>
+
+  <div class="grp">Themes</div>
+  <div class="grid">
+    <a class="card" href="ui-ref-08-theme-cookbook.html"><div class="num">08</div><h3>Theme Cookbook</h3><p>Six axes make a theme. Console, Terminal, Swiss Editorial, Neo-Brutalist, Dense Desk.</p><div class="secs"><span>console</span><span>terminal</span><span>swiss</span><span>brutalist</span><span>dense</span></div></a>
+    <a class="card" href="ui-ref-09-theme-cookbook-2.html"><div class="num">09</div><h3>Theme Cookbook II</h3><p>Readable glass rules. Glass Refined, Frost Light, Material 3, Fluent 2, Document, Solarized, High Contrast, Print.</p><div class="secs"><span>glass refined</span><span>frost</span><span>material</span><span>fluent</span><span>document</span><span>solarized</span><span>high contrast</span><span>print</span></div></a>
+    <a class="card" href="ui-ref-10-theme-cookbook-3.html"><div class="num">10 <span class="new">new</span></div><h3>Theme Cookbook III</h3><p>Which theme for which product. Studio Light, Midnight, Mono Utility, Warm Paper, Carbon Industrial, Mission-Control HUD.</p><div class="secs"><span>studio light</span><span>midnight</span><span>mono utility</span><span>warm paper</span><span>carbon</span><span>hud</span><span>tabs</span><span>segmented</span></div></a>
+  </div>
+
+  <div class="grp">Screens &amp; systems</div>
+  <div class="grid">
+    <a class="card" href="ui-ref-11-console-compositions.html"><div class="num">11 <span class="new">new</span></div><h3>Console Compositions</h3><p>Five full screens: incident console, pipeline DAG with logs, fleet table, settings with permissions, status and SLO. Light, dark and density switches.</p><div class="secs"><span>app shell</span><span>incident</span><span>dag</span><span>fleet</span><span>settings</span><span>slo</span><span>bulk actions</span><span>inspector</span></div></a>
+    <a class="card" href="ui-ref-12-layout-responsive.html"><div class="num">12 <span class="new">+ board</span></div><h3>Layout &amp; Responsive</h3><p>Split panes, multi-pane and sticky, scroll-spy, masonry, responsive degradation, infinite scroll, kanban board.</p><div class="secs"><span>split panes</span><span>sticky</span><span>scroll-spy</span><span>masonry</span><span>responsive</span><span>kanban</span></div></a>
+    <a class="card" href="ui-ref-13-accessibility.html"><div class="num">13</div><h3>Accessibility</h3><p>Focus rings, skip links, roving tabindex, live regions, contrast, focus traps, vestibular safety.</p><div class="secs"><span>keyboard</span><span>live regions</span><span>contrast</span><span>focus trap</span></div></a>
+    <a class="card" href="ui-ref-14-onboarding.html"><div class="num">14</div><h3>Onboarding &amp; Adoption</h3><p>Coach marks, shortcut discovery, checklists, first-run, changelogs, progressive disclosure.</p><div class="secs"><span>tours</span><span>checklists</span><span>changelog</span></div></a>
+    <a class="card" href="ui-ref-15-print-export.html"><div class="num">15</div><h3>Print &amp; Export</h3><p>Report layout, export menus, print stylesheet, verification checklist.</p><div class="secs"><span>report</span><span>export</span><span>print css</span></div></a>
+    <a class="card" href="ui-ref-16-motion-choreography.html"><div class="num">16</div><h3>Motion Choreography</h3><p>Easing meaning, stagger, orchestration, shared elements, asymmetric enter and exit, duration reference.</p><div class="secs"><span>easing</span><span>stagger</span><span>continuity</span><span>reference</span></div></a>
+    <a class="card" href="ui-ref-17-microcopy.html"><div class="num">17</div><h3>Content &amp; Microcopy</h3><p>Errors, buttons, empty states, tone, formatting numbers and dates, notifications, the eight rules.</p><div class="secs"><span>errors</span><span>empty states</span><span>tone</span><span>formatting</span></div></a>
+    <a class="card" href="ui-ref-19-backgrounds.html"><div class="num">19 <span class="new">new</span></div><h3>Backgrounds</h3><p>Twenty-four shippable grounds: solids, single-hue gradients, ambient light, grids and contours, photo stand-ins, plus the recipe for treating a real photo. Overlay a card and glass chip on any of them.</p><div class="secs"><span>solids</span><span>gradients</span><span>ambient</span><span>grids</span><span>contours</span><span>photo recipe</span><span>pairing rules</span></div></a>
+    <a class="card" href="ui-ref-18-signature-restraint.html"><div class="num">18 <span class="new">new</span></div><h3>Signature &amp; Restraint</h3><p>Why a screen reads as AI-generated. Effect budget, five type pairings, accent choice, 8px grid, detail signatures, ship checklist.</p><div class="secs"><span>fingerprint</span><span>effect budget</span><span>type</span><span>accent</span><span>grid</span><span>signatures</span><span>checklist</span></div></a>
+  </div>
+
+  <div class="grp">Motion library</div>
+  <div class="grid">
+    <a class="card" href="ui-motion-reference.html"><div class="num">motion</div><h3>UI Motion Reference</h3><p>Count-ups, arcs and gauges, draw-in charts, badges, skeletons, staggered reveals, panels, inputs, table flashes, marquee.</p><div class="secs"><span>count-up</span><span>gauges</span><span>sparklines</span><span>skeletons</span><span>stagger</span><span>panels</span></div></a>
+    <a class="card" href="ui-motion-reference-compat.html"><div class="num">motion &middot; compat</div><h3>Motion Reference (compat)</h3><p>Same library with rgba fallbacks in place of color-mix() and explicit -webkit-backdrop-filter, for older Safari.</p><div class="secs"><span>no color-mix</span><span>safari</span></div></a>
+  </div>
+</div>
+<div class="foot"><b>Conventions.</b> Every file defines the same token set under <code>[data-t="dark"]</code> and <code>[data-t="light"]</code>
+and every component reads only from tokens, so a theme block from files 08&ndash;10 pasted over the dark block re-skins any file.
+Page chrome is always dark; demo panes switch. Files are numbered contiguously; the two motion files are unnumbered on purpose.</div>
+<script>
+const q=document.getElementById('q');
+q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();document.querySelectorAll('.card').forEach(c=>c.classList.toggle('hide',v&&!c.textContent.toLowerCase().includes(v)));
+  document.querySelectorAll('.grp').forEach(g=>{let n=g.nextElementSibling;g.style.display=n.querySelector('.card:not(.hide)')?'':'none';n.style.display=n.querySelector('.card:not(.hide)')?'':'none';});});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement!==q){e.preventDefault();q.focus();}if(e.key==='Escape'){q.value='';q.dispatchEvent(new Event('input'));q.blur();}});
+</script>
+</body>
+</html>

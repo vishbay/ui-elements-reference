@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 18 — Signature &amp; Restraint</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --scrim:rgba(0,0,0,.6);--code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --scrim:rgba(10,12,18,.42);--code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.pane-tag.bad{color:var(--danger)}.pane-tag.good{color:var(--good)}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid rgba(255,255,255,.09);border-radius:12px;overflow:hidden}
+.tbl th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#7f8492;padding:10px 14px;background:#111a1f;border-bottom:1px solid rgba(255,255,255,.08)}
+.tbl td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:#c9cbd6;vertical-align:top;line-height:1.5}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{color:#edeef2;font-weight:640;white-space:nowrap}
+.tbl .n{font-family:var(--mono);color:#3a9ad9;font-size:12px}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:14px}
+@media(max-width:820px){.notes{grid-template-columns:1fr}}
+.note{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px}
+.note h4{margin:0 0 4px;font-size:12.5px;color:#edeef2}
+.note p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.55}
+.check{counter-reset:c;list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 14px}
+@media(max-width:820px){.check{grid-template-columns:1fr}}
+.check li{counter-increment:c;display:flex;gap:11px;font-size:12.5px;color:#c9cbd6;line-height:1.5;padding:9px 12px;
+  background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:9px}
+.check li::before{content:counter(c,decimal-leading-zero);font-family:var(--mono);font-size:11px;color:#3a9ad9;font-weight:700;flex-shrink:0;padding-top:2px}
+.check li b{color:#edeef2}
+
+/* ---------- 01 fingerprint: generic vs considered ---------- */
+.g-hero{text-align:center;padding:10px 0 18px}
+.g-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 11px;border-radius:999px;
+  background:linear-gradient(90deg,rgba(124,127,244,.25),rgba(236,72,153,.25));border:1px solid rgba(124,127,244,.5);color:#c4b5fd;margin-bottom:10px}
+.g-h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:0 0 6px;
+  background:linear-gradient(90deg,#a78bfa,#60a5fa,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.g-sub{font-size:12.5px;color:var(--text-dim);max-width:320px;margin:0 auto 12px}
+.g-cta{display:inline-flex;gap:8px}
+.g-cta button{font:inherit;font-size:12px;font-weight:700;padding:8px 16px;border-radius:999px;border:none;cursor:pointer}
+.g-cta .p{background:linear-gradient(90deg,#7c7ff4,#a855f7);color:#fff;box-shadow:0 0 24px rgba(124,127,244,.6)}
+.g-cta .s{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.15)}
+.g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g-card{position:relative;padding:14px;border-radius:16px;text-align:center;
+  background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid transparent;background-clip:padding-box}
+.g-card::before{content:"";position:absolute;inset:-1px;border-radius:17px;z-index:-1;
+  background:linear-gradient(135deg,#a78bfa,#60a5fa,#f472b6);opacity:.7}
+.g-card .ic{font-size:22px;margin-bottom:6px}
+.g-card b{display:block;font-size:12.5px;margin-bottom:3px}
+.g-card span{font-size:11px;color:var(--text-dim);line-height:1.45;display:block}
+.g-pane{background:radial-gradient(500px circle at 20% 0%,rgba(124,58,237,.45),transparent 60%),
+  radial-gradient(400px circle at 90% 100%,rgba(236,72,153,.35),transparent 60%),var(--bg)}
+.g-pane .g-grid{position:relative;z-index:1}
+
+.c-top{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.c-top h3{margin:0;font-size:17px;font-weight:650;letter-spacing:-.015em}
+.c-top .meta{font-size:11.5px;color:var(--text-faint);font-family:var(--mono)}
+.c-top .st{margin-left:auto;font-size:11px;font-weight:640;color:var(--good);display:flex;align-items:center;gap:5px}
+.c-top .st i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.c-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.c-cell{background:var(--surface);padding:13px 14px}
+.c-cell .l{font-size:11px;color:var(--text-dim);font-weight:600;margin-bottom:6px}
+.c-cell .v{font-size:22px;font-weight:640;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.c-cell .v small{font-size:11px;color:var(--text-faint);font-weight:500;margin-left:4px}
+.c-cell .d{font-size:11px;margin-top:6px;color:var(--text-dim)}
+.c-cell .d b{color:var(--good);font-weight:640}.c-cell .d b.dn{color:var(--danger)}
+.c-cell.main{grid-row:span 2;display:flex;flex-direction:column}
+.c-cell.main .v{font-size:34px}
+.c-cell.main svg{margin-top:auto;width:100%;height:44px}
+.c-acts{display:flex;gap:7px;margin-top:12px}
+.c-acts button{font:inherit;font-size:11.5px;font-weight:620;height:28px;padding:0 11px;border-radius:7px;cursor:pointer;
+  border:1px solid var(--border-strong);background:var(--surface);color:var(--text)}
+.c-acts button.p{background:var(--text);color:var(--bg);border-color:transparent}
+
+/* ---------- 02 effect budget ---------- */
+.budget-demo{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
+@media(max-width:820px){.budget-demo{grid-template-columns:1fr}}
+.tog{display:flex;align-items:center;gap:9px;font-size:12px;padding:7px 0;border-bottom:1px solid var(--hairline);cursor:pointer;user-select:none}
+.tog:last-child{border-bottom:none}
+.tog .sw{width:28px;height:16px;border-radius:999px;background:var(--surface-3);border:1px solid var(--border-strong);position:relative;flex-shrink:0;transition:background var(--fast)}
+.tog .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--text-dim);transition:transform 200ms var(--ease-spring)}
+.tog.on .sw{background:var(--accent);border-color:var(--accent)}.tog.on .sw::after{transform:translateX(12px);background:#fff}
+.tog .cost{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-faint)}
+.meter{margin-top:12px;font-size:11.5px;color:var(--text-dim)}
+.meter .bar{height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden;margin:6px 0}
+.meter .bar i{display:block;height:100%;width:0;background:var(--good);transition:width 300ms var(--ease),background 300ms}
+.meter.over .bar i{background:var(--danger)}
+.meter b{color:var(--text)}.meter.over b{color:var(--danger)}
+.stage{position:relative;border-radius:12px;padding:18px;background:var(--surface);border:1px solid var(--border);overflow:hidden;min-height:230px}
+.stage.fx-blob{background:radial-gradient(360px circle at 15% 10%,rgba(124,58,237,.35),transparent 60%),radial-gradient(320px circle at 90% 90%,rgba(236,72,153,.3),transparent 60%),var(--surface)}
+.stage.fx-noise::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+.s-card{position:relative;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:all 250ms}
+.stage.fx-glass .s-card{background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.stage.fx-glow .s-card{box-shadow:0 0 0 1px rgba(124,127,244,.6),0 0 28px rgba(124,127,244,.45)}
+.stage.fx-shadow .s-card{box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.stage.fx-radius .s-card{border-radius:22px}
+.s-card h4{margin:0 0 4px;font-size:15px;font-weight:650;letter-spacing:-.01em}
+.stage.fx-gradtext .s-card h4{background:linear-gradient(90deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s-card p{margin:0;font-size:12px;color:var(--text-dim);line-height:1.5}
+.s-card .n{font-size:26px;font-weight:650;letter-spacing:-.02em;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.stage.fx-emoji .s-card h4::before{content:"\1F680  "}
+.stage.fx-center .s-card{text-align:center}
+
+/* ---------- 03 type ---------- */
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.sp{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text)}
+.sp .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between}
+.sp .tag code{font-size:10px;text-transform:none;letter-spacing:0}
+.sp h3{margin:0 0 4px;font-size:22px;line-height:1.15}
+.sp .m{font-size:11px;color:var(--text-faint);margin-bottom:10px}
+.sp .n{font-size:30px;line-height:1;margin:8px 0 10px;font-variant-numeric:tabular-nums}
+.sp p{margin:0;font-size:12.5px;color:var(--text-dim);line-height:1.55}
+.t1 h3{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:600;letter-spacing:-.005em}
+.t1 .n{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:500}
+.t2 h3{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:700;letter-spacing:-.035em;text-transform:uppercase;font-size:20px}
+.t2 .n{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:300;letter-spacing:-.02em}
+.t2 p{font-family:Georgia,"Times New Roman",serif;font-size:13px}
+.t3 h3{font-weight:600;letter-spacing:-.015em}
+.t3 .n{font-family:var(--mono);font-weight:500;font-size:26px;color:var(--accent-2)}
+.t3 .m{font-family:var(--mono)}
+.t4 h3{font-family:"Avenir Next",Futura,"Century Gothic","Segoe UI",sans-serif;font-weight:600;letter-spacing:.01em}
+.t4 .n{font-family:"Avenir Next",Futura,"Segoe UI",sans-serif;font-weight:500}
+.t4 p{font-family:Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif;font-size:13px}
+.t5 h3{font-weight:500;letter-spacing:-.02em;font-size:20px}
+.t5 .n{font-weight:700;letter-spacing:-.04em;font-size:34px}
+.t5 p{font-weight:400}
+
+/* ---------- 04 accent ---------- */
+.acc-row{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:820px){.acc-row{grid-template-columns:repeat(4,1fr)}}
+.acc{border-radius:10px;padding:10px 8px 8px;cursor:pointer;border:1px solid var(--border);background:var(--surface);text-align:center;transition:border-color var(--fast)}
+.acc:hover{border-color:var(--border-strong)}
+.acc.on{border-color:var(--text)}
+.acc i{display:block;height:28px;border-radius:6px;margin-bottom:6px;background:var(--a)}
+.acc b{display:block;font-size:11px;color:var(--text)}
+.acc span{font-size:9.5px;color:var(--text-faint);font-family:var(--mono)}
+.acc.trap i{background:repeating-linear-gradient(135deg,var(--a) 0 6px,transparent 6px 9px)}
+.acc-demo{--a:#3a9ad9;--a-soft:rgba(58,154,217,.16);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;transition:all 250ms}
+@media(max-width:820px){.acc-demo{grid-template-columns:1fr}}
+.acc-demo .nav{display:flex;flex-direction:column;gap:2px}
+.acc-demo .ni{font-size:12px;color:var(--text-dim);padding:6px 9px;border-radius:6px}
+.acc-demo .ni.on{background:var(--a-soft);color:var(--a);font-weight:640}
+.acc-demo .btns{display:flex;gap:7px;margin-top:10px}
+.acc-demo .btns button{font:inherit;font-size:11.5px;font-weight:620;height:28px;padding:0 11px;border-radius:7px;cursor:pointer;border:1px solid var(--border-strong);background:transparent;color:var(--text)}
+.acc-demo .btns button.p{background:var(--a);color:#fff;border-color:transparent}
+.acc-demo input{width:100%;height:28px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);border-radius:7px;padding:0 9px;font:inherit;font-size:12px;outline:none;margin-top:8px}
+.acc-demo input:focus{border-color:var(--a);box-shadow:0 0 0 3px var(--a-soft)}
+.acc-demo .sem{display:flex;gap:6px;margin-top:10px;font-size:10.5px;font-weight:640}
+.acc-demo .sem span{padding:2px 8px;border-radius:999px}
+.acc-demo .tr{display:flex;align-items:center;gap:8px;font-size:12px;padding:6px 8px;border-radius:6px}
+.acc-demo .tr.sel{background:var(--a-soft)}
+.acc-demo .tr .k{width:8px;height:8px;border-radius:2px;background:var(--good)}
+
+/* ---------- 05 grid ---------- */
+.grid-demo{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;overflow:hidden}
+.grid-demo.show::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background-image:linear-gradient(rgba(58,154,217,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(58,154,217,.18) 1px,transparent 1px);background-size:8px 8px}
+.grid-demo.show::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background-image:linear-gradient(rgba(58,154,217,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(58,154,217,.35) 1px,transparent 1px);background-size:32px 32px}
+.gd-h{display:flex;align-items:center;gap:8px;height:32px;margin-bottom:16px}
+.gd-h b{font-size:16px;font-weight:650;letter-spacing:-.01em}
+.gd-h .b{margin-left:auto;height:32px;padding:0 12px;border-radius:8px;background:var(--text);color:var(--bg);font-size:12px;font-weight:640;display:flex;align-items:center}
+.gd-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.gd-c{height:88px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:16px}
+.gd-c .l{height:8px;width:56px;background:var(--surface-3);border-radius:4px;margin-bottom:12px}
+.gd-c .v{height:24px;width:96px;background:var(--surface-3);border-radius:4px}
+.gd-list{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.gd-li{height:40px;display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid var(--hairline)}
+.gd-li:last-child{border-bottom:none}
+.gd-li i{width:16px;height:16px;border-radius:4px;background:var(--surface-3)}
+.gd-li span{height:8px;width:160px;background:var(--surface-3);border-radius:4px}
+.gd-li em{margin-left:auto;height:8px;width:48px;background:var(--surface-3);border-radius:4px}
+.scale{display:flex;align-items:flex-end;gap:10px;margin-top:14px}
+.scale div{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:var(--text-faint);font-family:var(--mono)}
+.scale i{display:block;width:var(--s);height:var(--s);background:var(--accent);border-radius:2px;opacity:.85}
+.optical{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.op{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px}
+.op .t{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:8px}
+.op .line{display:flex;align-items:center;gap:8px;height:28px;border:1px dashed var(--border-strong);border-radius:6px;padding:0 10px}
+.op .line svg{width:14px;height:14px}
+.op.bad .line{align-items:flex-start;padding-top:4px}
+.op .line .arrow{margin-left:auto;font-size:14px}
+.op.bad .line .arrow{margin-top:-2px}
+.op .line .arrow.fixed{position:relative;top:-1px}
+
+/* ---------- 06 signatures ---------- */
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:820px){.sig-grid{grid-template-columns:1fr}}
+.sig{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;color:var(--text)}
+.sig .t{font-size:12px;font-weight:650;margin-bottom:2px}
+.sig .d{font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:11px}
+.sig .ex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.fr{font:inherit;font-size:11.5px;height:28px;padding:0 11px;border-radius:7px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text)}
+.fr.glow{outline:none;box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent)}
+.fr.ring{outline:2px solid var(--accent);outline-offset:2px}
+.fr.under{border-radius:0;border-width:0 0 2px;border-color:var(--accent);background:transparent}
+.rowx{display:flex;align-items:center;gap:8px;font-size:11.5px;padding:6px 9px;border-radius:6px;width:100%}
+.rowx.bar{background:var(--accent-soft);font-weight:640}
+.rowx.fill{background:var(--accent);color:#fff}
+.rowx.pill{background:var(--surface-3);border-radius:999px}
+.cbx{width:15px;height:15px;border:1.5px solid var(--border-strong);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:#fff}
+.cbx.sq{border-radius:3px}.cbx.rd{border-radius:50%}.cbx.on{background:var(--accent);border-color:var(--accent)}
+.cbx.sq.on::after{content:"\2713"}.cbx.rd.on::after{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
+.cbx.dash.on::after{content:"\2013"}
+.numx{font-size:18px;font-weight:640;letter-spacing:-.02em}
+.numx.tab{font-variant-numeric:tabular-nums}
+.numx.mono{font-family:var(--mono);font-weight:500;font-size:16px}
+.numx.slash{font-variant-numeric:tabular-nums slashed-zero}
+.tick{position:relative;padding:10px 12px;border:1px solid var(--border);font-size:11.5px;width:100%}
+.tick::before,.tick::after{content:"";position:absolute;width:7px;height:7px;border:solid var(--accent)}
+.tick::before{top:-1px;left:-1px;border-width:1px 0 0 1px}.tick::after{bottom:-1px;right:-1px;border-width:0 1px 1px 0}
+.divl{display:flex;align-items:center;gap:10px;width:100%;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:700}
+.divl::before,.divl::after{content:"";flex:1;height:1px;background:var(--border)}
+.divl.left::before{display:none}
+.tagx{font-size:10.5px;padding:2px 8px;border-radius:4px;font-weight:640}
+.tagx.a{background:var(--good-soft);color:var(--good)}
+.tagx.b{border:1px solid var(--good);color:var(--good);border-radius:999px}
+.tagx.c{background:var(--good);color:#fff;border-radius:2px;text-transform:uppercase;letter-spacing:.06em;font-size:9.5px}
+.emp{width:100%;text-align:center;padding:12px;border:1px dashed var(--border-strong);border-radius:8px;font-size:11.5px;color:var(--text-dim)}
+.emp svg{display:block;margin:0 auto 6px;width:56px;height:36px}
+.hover-demo{width:100%;font-size:11.5px}
+.hover-demo div{padding:6px 9px;border-radius:6px;display:flex;justify-content:space-between}
+.hover-demo div:hover{background:var(--surface-2)}
+.hover-demo.lift div:hover{background:var(--surface);box-shadow:var(--e2);transform:translateY(-1px)}
+.hover-demo.acc div:hover{color:var(--accent);background:transparent}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 18</div>
+  <h1>Signature &amp; Restraint</h1>
+  <p>Why a screen reads as AI-generated, and what to do instead. The fingerprint is a recognisable set of
+  effects used together; the cure is an effect budget, a real type decision, one accent chosen on purpose, a grid
+  you actually obey, and two or three detail signatures applied everywhere. This file makes each of those concrete.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — The fingerprint</div>
+    <h2 class="sec-title">Same content, twice</h2>
+    <p class="sec-desc">Left is what a prompt produces when nobody decides anything: gradient headline, glowing borders,
+    glass over an aurora, an emoji per card, a sparkle badge, everything centred and equal. Right is the same information
+    with decisions made: left-aligned, one surface, hairline grid, tabular numbers, a single strong action. Neither uses
+    a font that is not on your machine.</p>
+  </div>
+  <div class="tile">
+    <div class="pane g-pane" data-t="dark"><span class="pane-tag bad">Generic</span>
+      <div class="g-hero">
+        <div class="g-badge">&#10024; New &middot; AI-powered</div>
+        <h2 class="g-h1">Operations, reimagined.</h2>
+        <p class="g-sub">Monitor everything in one beautiful, unified dashboard experience.</p>
+        <div class="g-cta"><button class="p">Get started &rarr;</button><button class="s">Learn more</button></div>
+      </div>
+      <div class="g-grid">
+        <div class="g-card"><div class="ic">&#9889;</div><b>Real-time</b><span>Lightning fast updates as they happen</span></div>
+        <div class="g-card"><div class="ic">&#128737;&#65039;</div><b>Secure</b><span>Enterprise-grade security built in</span></div>
+        <div class="g-card"><div class="ic">&#128640;</div><b>Scalable</b><span>Grows with your team effortlessly</span></div>
+      </div>
+    </div>
+    <div class="pane" data-t="dark"><span class="pane-tag good">Considered</span>
+      <div class="c-top"><h3>Checkout</h3><span class="meta">eu-west-1 &middot; 08:52 UTC</span><span class="st"><i></i>Within SLO</span></div>
+      <div class="c-grid">
+        <div class="c-cell main"><div class="l">Requests, last hour</div><div class="v">1.42<small>M</small></div><div class="d"><b>+4.1%</b> vs. previous hour</div>
+          <svg viewBox="0 0 200 44" preserveAspectRatio="none"><path fill="var(--accent-soft)" d="M0,30 L25,28 L50,31 L75,22 L100,24 L125,14 L150,18 L175,10 L200,12 L200,44 L0,44Z"/><polyline fill="none" stroke="var(--accent)" stroke-width="1.5" points="0,30 25,28 50,31 75,22 100,24 125,14 150,18 175,10 200,12"/></svg></div>
+        <div class="c-cell"><div class="l">p99 latency</div><div class="v">812<small>ms</small></div><div class="d"><b>&minus;38ms</b></div></div>
+        <div class="c-cell"><div class="l">Error rate</div><div class="v">0.14<small>%</small></div><div class="d"><b class="dn">+0.03</b> pts</div></div>
+        <div class="c-cell"><div class="l">Saturation</div><div class="v">61<small>%</small></div><div class="d">pool 64 / 64</div></div>
+        <div class="c-cell"><div class="l">Open incidents</div><div class="v">0</div><div class="d">last: 9 days ago</div></div>
+      </div>
+      <div class="c-acts"><button class="p">Open service</button><button>Compare period</button><button>&#8615; Export</button></div>
+    </div>
+  </div>
+  <div class="notes">
+    <div class="note"><h4>The tells, named</h4><p>Gradient text, glow borders, glass on mesh, emoji as icons, sparkle badges, centred copy,
+      three equal cards, pill CTAs with a bloom, and an adjective-heavy headline. Any two together are a fingerprint.</p></div>
+    <div class="note"><h4>What replaced them</h4><p>A page title with a monospace meta line, a status that means something, a bento of
+      cells that are not the same size because the data is not the same importance, and a black primary button.</p></div>
+    <div class="note"><h4>The underlying error</h4><p>Decoration was doing the work that hierarchy should do. Once the hierarchy is right,
+      the effects have nothing left to do and can be removed.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Effect budget</div>
+    <h2 class="sec-title">Each effect costs a point; a screen gets two</h2>
+    <p class="sec-desc">Toggle effects on the stage and watch the budget. Two points per screen is generous. A marketing hero
+    can spend three. An operations console usually spends zero and looks better for it.</p>
+  </div>
+  <div class="tile"><div class="pane" data-t="dark" style="grid-column:1/-1">
+    <div class="budget-demo">
+      <div>
+        <div class="lbl">Effects</div>
+        <div class="tog" data-fx="fx-blob" data-cost="2" onclick="fx(this)"><span class="sw"></span>Aurora / blobs<span class="cost">2</span></div>
+        <div class="tog" data-fx="fx-glass" data-cost="1" onclick="fx(this)"><span class="sw"></span>Glass cards<span class="cost">1</span></div>
+        <div class="tog" data-fx="fx-glow" data-cost="2" onclick="fx(this)"><span class="sw"></span>Glow borders<span class="cost">2</span></div>
+        <div class="tog" data-fx="fx-gradtext" data-cost="2" onclick="fx(this)"><span class="sw"></span>Gradient text<span class="cost">2</span></div>
+        <div class="tog" data-fx="fx-noise" data-cost="1" onclick="fx(this)"><span class="sw"></span>Noise / grain<span class="cost">1</span></div>
+        <div class="tog" data-fx="fx-shadow" data-cost="1" onclick="fx(this)"><span class="sw"></span>Large shadow<span class="cost">1</span></div>
+        <div class="tog" data-fx="fx-radius" data-cost="1" onclick="fx(this)"><span class="sw"></span>Radius &gt; 16px<span class="cost">1</span></div>
+        <div class="tog" data-fx="fx-emoji" data-cost="2" onclick="fx(this)"><span class="sw"></span>Emoji icons<span class="cost">2</span></div>
+        <div class="tog" data-fx="fx-center" data-cost="1" onclick="fx(this)"><span class="sw"></span>Centred text<span class="cost">1</span></div>
+        <div class="meter" id="meter"><span>Spent <b id="spent">0</b> of 2</span><div class="bar"><i></i></div><span id="verdict">Within budget. Reads as a product.</span></div>
+      </div>
+      <div class="stage" id="stage">
+        <div class="s-card"><h4>Pipeline throughput</h4><p>Nightly reconciliation across 4 regions</p><div class="n">48,203</div><p>rows processed &middot; 12m 40s</p></div>
+        <div class="s-card"><h4>Error budget</h4><p>30-day window, checkout-api</p><div class="n">71%</div><p>remaining &middot; burn 0.8&times;</p></div>
+      </div>
+    </div>
+  </div></div>
+  <table class="tbl" style="margin-top:14px">
+    <thead><tr><th>Effect</th><th>Budget per screen</th><th>Where it earns its place</th><th>The tell</th></tr></thead>
+    <tbody>
+      <tr><td>Gradient mesh / aurora</td><td><span class="n">0&ndash;1</span></td><td>A login page or a pricing hero, desaturated, behind opaque cards</td><td>Anywhere data is read</td></tr>
+      <tr><td>Glass</td><td><span class="n">1</span></td><td>One floating layer: a command palette, a sticky toolbar over content</td><td>Every card is glass</td></tr>
+      <tr><td>Glow / gradient border</td><td><span class="n">0&ndash;1</span></td><td>A single "current" or "live" element that must be found across the room</td><td>Cards glowing at rest</td></tr>
+      <tr><td>Gradient text</td><td><span class="n">0</span></td><td>Logotype only</td><td>Any heading</td></tr>
+      <tr><td>Noise / grain</td><td><span class="n">1</span></td><td>Large flat dark areas that band; keep under 6% opacity</td><td>Visible texture on cards</td></tr>
+      <tr><td>Large shadow</td><td><span class="n">1</span></td><td>Overlays only: dialogs, menus, dragged items</td><td>Cards floating on the page</td></tr>
+      <tr><td>Radius above 16px</td><td><span class="n">1</span></td><td>Consumer surfaces: sheets, chat bubbles, a phone-shaped frame</td><td>Table containers with 24px corners</td></tr>
+      <tr><td>Emoji as icons</td><td><span class="n">0</span></td><td>Chat, reactions, user content</td><td>Feature cards, nav items</td></tr>
+      <tr><td>Spring / bounce easing</td><td><span class="n">1</span></td><td>Toggles and toasts: things that arrive</td><td>Page transitions that overshoot</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Type</div>
+    <h2 class="sec-title">Five pairings that need no font files</h2>
+    <p class="sec-desc">A type decision is the single cheapest signature. Each specimen below uses only fonts that ship with
+    macOS or Windows, with fallbacks. Pick one pairing per product and never mix two display faces.</p>
+  </div>
+  <div class="spec">
+    <div class="sp t1" data-t="dark"><div class="tag"><span>Old-style serif + system sans</span><code>Iowan Old Style / -apple-system</code></div>
+      <h3>Reconciliation summary</h3><div class="m">Nightly &middot; 4 regions &middot; 02:00 UTC</div><div class="n">48,203</div>
+      <p>The serif carries titles and the big number; everything operational stays in the system sans. Reads as a report, not a dashboard.</p></div>
+    <div class="sp t2" data-t="dark"><div class="tag"><span>Tight grotesk + Georgia body</span><code>Helvetica Neue 700 / Georgia</code></div>
+      <h3>Reconciliation summary</h3><div class="m">Nightly &middot; 4 regions &middot; 02:00 UTC</div><div class="n">48,203</div>
+      <p>Uppercase, tracked tight, weight 700 against a light 300 numeral. The serif body slows the reader down, which is right for explanatory text.</p></div>
+    <div class="sp t3" data-t="dark"><div class="tag"><span>Sans + mono numerals</span><code>system-ui / ui-monospace</code></div>
+      <h3>Reconciliation summary</h3><div class="m">nightly &middot; 4 regions &middot; 02:00Z</div><div class="n">48,203</div>
+      <p>The ops default. Every number, identifier and timestamp is mono; every sentence is sans. One accent colour reserved for the numeral.</p></div>
+    <div class="sp t4" data-t="dark"><div class="tag"><span>Geometric sans + Charter</span><code>Avenir Next / Charter</code></div>
+      <h3>Reconciliation summary</h3><div class="m">Nightly &middot; 4 regions &middot; 02:00 UTC</div><div class="n">48,203</div>
+      <p>Warmer and rounder than the system font, with a serif that was designed for low-resolution screens. Good for products with a human voice.</p></div>
+    <div class="sp t5" data-t="dark"><div class="tag"><span>One family, weight contrast only</span><code>-apple-system 500 / 700</code></div>
+      <h3>Reconciliation summary</h3><div class="m">Nightly &middot; 4 regions &middot; 02:00 UTC</div><div class="n">48,203</div>
+      <p>Headings at 500, numerals at 700 with tight negative tracking, body at 400. No second face at all. The Mono Utility theme in file 10 is built on this.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Accent</div>
+    <h2 class="sec-title">Pick one on purpose, then spend it on four things</h2>
+    <p class="sec-desc">Indigo on near-black is the default of every generator, which is the only reason to avoid it; the house accent is now an azure chosen on purpose. Click a swatch
+    to apply it. Note that the semantic colours (good, warn, danger) never change: the accent is for the current nav item, the
+    selected row, the primary button and focus, and nothing else.</p>
+  </div>
+  <div class="tile"><div class="pane" data-t="dark" style="grid-column:1/-1">
+    <div class="acc-row">
+      <div class="acc on" style="--a:#3a9ad9" onclick="acc(this,'#3a9ad9','rgba(58,154,217,.16)')"><i></i><b>Azure</b><span>house</span></div>
+      <div class="acc trap" style="--a:#7c7ff4" onclick="acc(this,'#7c7ff4','rgba(124,127,244,.16)')"><i></i><b>Indigo</b><span>the trap</span></div>
+      <div class="acc" style="--a:#ededef" onclick="acc(this,'#ededef','rgba(255,255,255,.09)')"><i></i><b>None</b><span>white</span></div>
+      <div class="acc" style="--a:#e8593c" onclick="acc(this,'#e8593c','rgba(232,89,60,.14)')"><i></i><b>Vermilion</b><span>#e8593c</span></div>
+      <div class="acc" style="--a:#2f9e8f" onclick="acc(this,'#2f9e8f','rgba(47,158,143,.14)')"><i></i><b>Teal</b><span>#2f9e8f</span></div>
+      <div class="acc" style="--a:#d9a441" onclick="acc(this,'#d9a441','rgba(217,164,65,.14)')"><i></i><b>Ochre</b><span>#d9a441</span></div>
+            <div class="acc" style="--a:#b48ead" onclick="acc(this,'#b48ead','rgba(180,142,173,.16)')"><i></i><b>Mauve</b><span>#b48ead</span></div>
+      <div class="acc" style="--a:#8fbf5f" onclick="acc(this,'#8fbf5f','rgba(143,191,95,.14)')"><i></i><b>Moss</b><span>#8fbf5f</span></div>
+    </div>
+    <div class="acc-demo" id="accDemo">
+      <div>
+        <div class="nav"><div class="ni">Overview</div><div class="ni on">Incidents</div><div class="ni">Services</div></div>
+        <div class="btns"><button class="p">Acknowledge</button><button>Escalate</button></div>
+        <input placeholder="Focus me" >
+      </div>
+      <div>
+        <div class="tr"><i class="k"></i>Daily sync <span style="margin-left:auto;color:var(--text-faint)">2h 41m</span></div>
+        <div class="tr sel"><i class="k" style="background:var(--danger)"></i>Reconciliation <span style="margin-left:auto;color:var(--text-faint)">0h 12m</span></div>
+        <div class="tr"><i class="k" style="background:var(--warn)"></i>Logistics <span style="margin-left:auto;color:var(--text-faint)">3h 13m</span></div>
+        <div class="sem"><span style="background:var(--good-soft);color:var(--good)">On time</span><span style="background:var(--warn-soft);color:var(--warn)">At risk</span><span style="background:var(--danger-soft);color:var(--danger)">Breached</span></div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Grid &amp; rhythm</div>
+    <h2 class="sec-title">An 8px grid you can see, and optical alignment you cannot</h2>
+    <p class="sec-desc">Toggle the overlay. Every height, gap and padding on the stage is a multiple of 8, with 4 allowed inside
+    components. Consistency of spacing is more visible than any colour choice, and its absence is the second most common tell.</p>
+  </div>
+  <div class="tile"><div class="pane" data-t="dark" style="grid-column:1/-1">
+    <div class="row" style="margin-bottom:12px"><button class="fr" onclick="document.getElementById('gd').classList.toggle('show')">Toggle 8px grid</button>
+      <span class="body-txt">Blue minor lines every 8px, major every 32px.</span></div>
+    <div class="grid-demo" id="gd">
+      <div class="gd-h"><b>Fleet</b><span class="b">Register host</span></div>
+      <div class="gd-row"><div class="gd-c"><div class="l"></div><div class="v"></div></div><div class="gd-c"><div class="l"></div><div class="v"></div></div><div class="gd-c"><div class="l"></div><div class="v"></div></div></div>
+      <div class="gd-list"><div class="gd-li"><i></i><span></span><em></em></div><div class="gd-li"><i></i><span></span><em></em></div><div class="gd-li"><i></i><span></span><em></em></div></div>
+    </div>
+    <div class="lbl" style="margin-top:16px">Spacing scale</div>
+    <div class="scale"><div><i style="--s:4px"></i>4</div><div><i style="--s:8px"></i>8</div><div><i style="--s:12px"></i>12</div><div><i style="--s:16px"></i>16</div><div><i style="--s:24px"></i>24</div><div><i style="--s:32px"></i>32</div><div><i style="--s:48px"></i>48</div><div><i style="--s:64px"></i>64</div></div>
+    <div class="optical">
+      <div class="op bad"><div class="t">Mathematically centred</div><div class="line"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Open in new tab<span class="arrow">&#8599;</span></div></div>
+      <div class="op"><div class="t">Optically centred</div><div class="line"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>Open in new tab<span class="arrow fixed">&#8599;</span></div></div>
+    </div>
+  </div></div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Detail signatures</div>
+    <h2 class="sec-title">Pick two or three, apply them everywhere</h2>
+    <p class="sec-desc">A signature is a small decision repeated without exception. Each card shows the same detail done three ways;
+    none is wrong. What is wrong is using all three in one product. Choose, then write it into the tokens.</p>
+  </div>
+  <div class="sig-grid">
+    <div class="sig" data-t="dark"><div class="t">Focus</div><div class="d">Soft halo, hard offset ring, or an underline. The ring is the most distinctive and the most accessible.</div>
+      <div class="ex"><input class="fr glow" value="Halo"><input class="fr ring" value="Ring"><input class="fr under" value="Underline"></div></div>
+    <div class="sig" data-t="dark"><div class="t">Selection</div><div class="d">Tint with bold text, full fill, or pill. The tint survives dense tables; the pill suits lists. No coloured edge bars.</div>
+      <div class="ex" style="flex-direction:column;align-items:stretch;gap:4px"><div class="rowx bar">Tint + weight</div><div class="rowx fill">Full fill</div><div class="rowx pill">Pill</div></div></div>
+    <div class="sig" data-t="dark"><div class="t">Checkbox</div><div class="d">Square with tick, round with dot, or square with dash. Round reads as a radio to many users; be sure.</div>
+      <div class="ex"><span class="cbx sq on"></span><span class="cbx sq"></span><span class="cbx rd on"></span><span class="cbx rd"></span><span class="cbx sq dash on"></span></div></div>
+    <div class="sig" data-t="dark"><div class="t">Numerals</div><div class="d">Proportional sans, tabular sans, mono, or slashed zero. Tables need tabular at minimum.</div>
+      <div class="ex"><span class="numx">10,204</span><span class="numx tab">10,204</span><span class="numx mono">10,204</span><span class="numx slash">10,204</span></div></div>
+    <div class="sig" data-t="dark"><div class="t">Row hover</div><div class="d">Tint, lift, or accent text. Tint is invisible in a good way; lift is a consumer signal; accent text is editorial.</div>
+      <div class="ex" style="flex-direction:column;align-items:stretch;gap:0"><div class="hover-demo"><div>Tint on hover <span>&rarr;</span></div></div><div class="hover-demo lift"><div>Lift on hover <span>&rarr;</span></div></div><div class="hover-demo acc"><div>Accent on hover <span>&rarr;</span></div></div></div></div>
+    <div class="sig" data-t="dark"><div class="t">Status tags</div><div class="d">Soft tint, outlined pill, or solid uppercase. Solid uppercase belongs to dense desks; tints to everything else.</div>
+      <div class="ex"><span class="tagx a">On time</span><span class="tagx b">On time</span><span class="tagx c">On time</span></div></div>
+    <div class="sig" data-t="dark"><div class="t">Frames</div><div class="d">Corner ticks on a bordered card. One of the few decorative details that reads as technical rather than as a template.</div>
+      <div class="ex"><div class="tick">Telemetry &middot; last 60s</div></div></div>
+    <div class="sig" data-t="dark"><div class="t">Labelled dividers</div><div class="d">A section label in the rule itself, centred or left. Replaces a heading and a divider with one element.</div>
+      <div class="ex" style="flex-direction:column;align-items:stretch"><div class="divl">Yesterday</div><div class="divl left">Yesterday</div></div></div>
+    <div class="sig" data-t="dark"><div class="t">Empty states</div><div class="d">A drawn shape in CSS or inline SVG, not an illustration pack. Two lines of copy from file 17, one action.</div>
+      <div class="ex"><div class="emp"><svg viewBox="0 0 56 36"><rect x="4" y="6" width="48" height="26" rx="3" fill="none" stroke="var(--border-strong)" stroke-width="1.5"/><path d="M4,14 H52" stroke="var(--border-strong)" stroke-width="1.5"/><circle cx="9" cy="10" r="1.2" fill="var(--text-faint)"/><circle cx="13" cy="10" r="1.2" fill="var(--text-faint)"/></svg>No incidents match this view</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">07 — Before shipping</div>
+    <h2 class="sec-title">Twelve checks</h2>
+    <p class="sec-desc">Run through this on a screenshot, not the live app. Screenshots remove motion and hover, which is
+    how most people will first see the product.</p>
+  </div>
+  <ol class="check">
+    <li><b>Effect budget</b> is two or fewer on every screen, and zero on data screens.</li>
+    <li><b>The accent</b> appears only on current nav, selected row, primary button and focus.</li>
+    <li><b>No gradient text, no glow at rest, no emoji as icons.</b></li>
+    <li><b>One display face</b> at most, chosen deliberately, with the pairing written into tokens.</li>
+    <li><b>Numbers</b> are tabular in tables and KPIs; identifiers and timestamps are mono.</li>
+    <li><b>Left-aligned</b> everywhere except a login page and an empty state.</li>
+    <li><b>Cards are not equal</b> unless the data is. Size follows importance.</li>
+    <li><b>Three surface levels</b> only: page, surface, chrome. Overlays get the only large shadow.</li>
+    <li><b>8px grid</b> holds for every gap, padding and control height; 4px only inside components.</li>
+    <li><b>Two or three detail signatures</b> chosen from section 06 and applied without exception.</li>
+    <li><b>Copy is operational</b> (file 17): what happened, what is safe, what to do next. No adjectives.</li>
+    <li><b>Light and dark</b> both pass contrast (file 13), and the theme was tested with real data, not lorem.</li>
+  </ol>
+</section>
+</div>
+<div class="foot"><b>How this fits the set.</b> File 01 is a catalogue of every effect; this file is the rule for spending them.
+Files 08&ndash;10 give you nineteen themes, of which Studio Light, Midnight, Mono Utility, Carbon, Dense Desk and HUD are already at or under budget.
+File 11 shows the rules applied to full screens. If a screen still looks generic after all twelve checks pass, the problem
+is the content: replace placeholder copy and even numbers with real, uneven data and look again.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+function fx(t){t.classList.toggle('on');const st=document.getElementById('stage');st.classList.toggle(t.dataset.fx,t.classList.contains('on'));
+  let spent=0;document.querySelectorAll('.tog.on').forEach(x=>spent+=+x.dataset.cost);
+  const m=document.getElementById('meter');document.getElementById('spent').textContent=spent;
+  m.querySelector('.bar i').style.width=Math.min(100,spent/2*100)+'%';m.classList.toggle('over',spent>2);
+  document.getElementById('verdict').textContent=spent===0?'Within budget. Reads as a product.':spent<=2?'Within budget. One deliberate effect is fine.':
+    spent<=4?'Over budget. Starting to read as a template.':'Well over. This is the fingerprint.';}
+function acc(el,a,soft){document.querySelectorAll('.acc').forEach(x=>x.classList.remove('on'));el.classList.add('on');
+  const d=document.getElementById('accDemo');d.style.setProperty('--a',a);d.style.setProperty('--a-soft',soft);
+  d.querySelector('.btns .p').style.color=(a==='#ededef')?'#0b0c0e':'#fff';}
+</script>
+</body>
+</html>

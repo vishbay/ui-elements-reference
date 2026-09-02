@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 15 — Print &amp; Export</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.paper{background:#fff;color:#000;font-family:Georgia,"Times New Roman",serif;
+  border:1px solid var(--border);border-radius:4px;padding:26px 24px;font-size:12px;line-height:1.6;
+  box-shadow:var(--e2);position:relative}
+.paper *{font-family:inherit}
+.pp-head{display:flex;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:9px;
+  margin-bottom:14px}
+.pp-title{font-size:15px;font-weight:700;letter-spacing:.01em}
+.pp-sub{font-size:10.5px;color:#444;margin-top:2px}
+.pp-meta{margin-left:auto;text-align:right;font-size:9.5px;color:#444;line-height:1.5}
+.pp-h2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;
+  border-bottom:1px solid #000;padding-bottom:3px;margin:16px 0 8px}
+.pp-p{margin:0 0 9px;font-size:11.5px}
+.pp-tbl{width:100%;border-collapse:collapse;font-size:10.5px;margin:8px 0}
+.pp-tbl th{text-align:left;border-bottom:1.5px solid #000;padding:5px 6px;font-size:9px;
+  text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.pp-tbl td{border-bottom:1px solid #bbb;padding:5px 6px}
+.pp-tbl tr:nth-child(even) td{background:#f4f4f4}
+.pp-badge{display:inline-block;border:1px solid #000;border-radius:0;padding:1px 6px;font-size:9px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pp-badge.fill{background:#000;color:#fff}
+.pp-foot{border-top:1px solid #000;margin-top:16px;padding-top:7px;display:flex;font-size:9px;color:#444}
+.pp-foot span:last-child{margin-left:auto}
+.pp-break{border:none;border-top:1px dashed #999;margin:16px 0;position:relative;height:0}
+.pp-break::after{content:"PAGE BREAK";position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  background:#fff;padding:0 8px;font-size:8px;letter-spacing:.1em;color:#999;font-family:var(--mono)}
+.pp-chart{border:1px solid #000;padding:9px;margin:8px 0}
+.pp-bar{display:flex;align-items:center;gap:8px;font-size:10px;margin-bottom:5px}
+.pp-bar .nm{width:96px;flex-shrink:0}
+.pp-bar .tk{flex:1;height:9px;border:1px solid #000;position:relative}
+.pp-bar .fl{position:absolute;top:0;bottom:0;left:0;background:#000}
+.pp-bar .fl.hatch{background:repeating-linear-gradient(45deg,#000 0 2px,#fff 2px 5px)}
+.pp-bar .fl.light{background:repeating-linear-gradient(90deg,#000 0 1px,#fff 1px 4px)}
+.pp-bar .v{width:34px;text-align:right;flex-shrink:0}
+.pp-note{font-size:9.5px;color:#444;font-style:italic;margin-top:6px}
+
+.exp-menu{position:relative;display:inline-block}
+.exp-list{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:206px;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--e3);
+  padding:5px;opacity:0;transform:translateY(-6px) scale(.97);pointer-events:none;
+  transition:all 220ms var(--ease-spring)}
+.exp-list.open{opacity:1;transform:none;pointer-events:auto}
+.exp-item{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+  color:var(--text);font-size:12.5px;padding:8px 10px;border-radius:7px;cursor:pointer;
+  text-align:left;font-family:inherit}
+.exp-item:hover{background:var(--surface-2)}
+.exp-item .ic{width:26px;height:26px;border-radius:6px;background:var(--surface-3);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;
+  flex-shrink:0;font-family:var(--mono)}
+.exp-item .d{font-size:10px;color:var(--text-faint);margin-top:1px}
+.exp-sep{height:1px;background:var(--hairline);margin:4px 2px}
+.exp-opts{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);
+  padding:13px}
+.opt-row{display:flex;align-items:center;gap:10px;font-size:12.5px;padding:6px 0}
+.opt-sw{width:38px;height:22px;border-radius:var(--r-pill);background:var(--surface-3);
+  border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;
+  transition:background var(--fast)}
+.opt-sw.on{background:var(--accent);border-color:var(--accent)}
+.opt-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform 260ms var(--ease-spring)}
+.opt-sw.on::after{transform:translateX(16px)}
+.opt-hint{font-size:10.5px;color:var(--text-faint);margin-left:auto}
+
+.pcss{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:13px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--text-dim);
+  overflow-x:auto;white-space:pre}
+.pcss .sel{color:var(--accent)}
+.pcss .prop{color:var(--good)}
+.pcss .cm{color:var(--text-faint)}
+
+.checkrow{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.55;
+  padding:7px 0;border-bottom:1px solid var(--hairline)}
+.checkrow:last-child{border-bottom:none}
+.checkrow .m{flex-shrink:0;width:17px;height:17px;border-radius:5px;display:flex;
+  align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-top:1px}
+.m-ok{background:var(--good-soft);color:var(--good)}
+.m-no{background:var(--danger-soft);color:var(--danger)}
+.checkrow b{color:var(--text)}
+.checkrow span{color:var(--text-dim)}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 15</div>
+  <h1>Print &amp; Export</h1>
+  <p>A paper-first report layout with hatched greyscale-safe charts, export menus that state size and format, the six print-stylesheet rules that matter, and a pre-ship verification checklist.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Report layout</div>
+    <h2 class="sec-title">A page designed for paper, not a screen</h2>
+    <p class="sec-desc">Serif body, hard rules instead of shadows, hatched chart fills, a running header with generation time and page numbers. The dashed marker shows where a forced page break sits.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Print-ready report layout</div>
+<div class="paper">
+  <div class="pp-head">
+    <div><div class="pp-title">APEX Pipeline Operations Summary</div>
+      <div class="pp-sub">Processing cycle 09/01 &rarr; 09/02</div></div>
+    <div class="pp-meta">Generated 02 Sep 2026 00:14 CT<br>Page 1 of 3<br>Confidential &mdash; internal</div>
+  </div>
+
+  <div class="pp-h2">Executive summary</div>
+  <p class="pp-p">The September 1 processing cycle completed within its committed window. All Daily
+  Sync and Events for Reports deliveries finished, and all nine critical deliveries arrived on
+  time or ahead of schedule. Two items require follow-up before the next cycle.</p>
+
+  <div class="pp-h2">Cycle progress</div>
+  <div class="pp-chart">
+    <div class="pp-bar"><span class="nm">Daily Sync</span>
+      <span class="tk"><span class="fl" style="width:100%"></span></span><span class="v">100%</span></div>
+    <div class="pp-bar"><span class="nm">Events</span>
+      <span class="tk"><span class="fl hatch" style="width:100%"></span></span><span class="v">100%</span></div>
+    <div class="pp-bar"><span class="nm">Logistics Notify</span>
+      <span class="tk"><span class="fl light" style="width:18%"></span></span><span class="v">18%</span></div>
+    <div class="pp-note">Fills use hatching rather than colour so the chart survives greyscale printing.</div>
+  </div>
+
+  <div class="pp-h2">Service detail</div>
+  <table class="pp-tbl">
+    <thead><tr><th>Service</th><th>Status</th><th>Duration</th><th>SLA</th></tr></thead>
+    <tbody>
+      <tr><td>Daily Sync</td><td><span class="pp-badge">Complete</span></td><td>2h 41m</td><td>Met</td></tr>
+      <tr><td>Events for Reports</td><td><span class="pp-badge">Complete</span></td><td>1h 08m</td><td>Met</td></tr>
+      <tr><td>Order Fulfilment</td><td><span class="pp-badge fill">Running</span></td><td>3h 13m</td><td>At risk</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="pp-break">
+
+  <div class="pp-h2">Follow-up required</div>
+  <p class="pp-p">The Reports event pre-process did not complete and requires manual
+  intervention. The Order Fulfilment project has 707 deliveries still executing with
+  approximately 90 minutes of margin remaining.</p>
+
+  <div class="pp-foot"><span>APEX Pipeline Ops Console</span><span>Page 1 of 3</span></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Print-ready report layout</div>
+<div class="paper">
+  <div class="pp-head">
+    <div><div class="pp-title">APEX Pipeline Operations Summary</div>
+      <div class="pp-sub">Processing cycle 09/01 &rarr; 09/02</div></div>
+    <div class="pp-meta">Generated 02 Sep 2026 00:14 CT<br>Page 1 of 3<br>Confidential &mdash; internal</div>
+  </div>
+
+  <div class="pp-h2">Executive summary</div>
+  <p class="pp-p">The September 1 processing cycle completed within its committed window. All Daily
+  Sync and Events for Reports deliveries finished, and all nine critical deliveries arrived on
+  time or ahead of schedule. Two items require follow-up before the next cycle.</p>
+
+  <div class="pp-h2">Cycle progress</div>
+  <div class="pp-chart">
+    <div class="pp-bar"><span class="nm">Daily Sync</span>
+      <span class="tk"><span class="fl" style="width:100%"></span></span><span class="v">100%</span></div>
+    <div class="pp-bar"><span class="nm">Events</span>
+      <span class="tk"><span class="fl hatch" style="width:100%"></span></span><span class="v">100%</span></div>
+    <div class="pp-bar"><span class="nm">Logistics Notify</span>
+      <span class="tk"><span class="fl light" style="width:18%"></span></span><span class="v">18%</span></div>
+    <div class="pp-note">Fills use hatching rather than colour so the chart survives greyscale printing.</div>
+  </div>
+
+  <div class="pp-h2">Service detail</div>
+  <table class="pp-tbl">
+    <thead><tr><th>Service</th><th>Status</th><th>Duration</th><th>SLA</th></tr></thead>
+    <tbody>
+      <tr><td>Daily Sync</td><td><span class="pp-badge">Complete</span></td><td>2h 41m</td><td>Met</td></tr>
+      <tr><td>Events for Reports</td><td><span class="pp-badge">Complete</span></td><td>1h 08m</td><td>Met</td></tr>
+      <tr><td>Order Fulfilment</td><td><span class="pp-badge fill">Running</span></td><td>3h 13m</td><td>At risk</td></tr>
+    </tbody>
+  </table>
+
+  <hr class="pp-break">
+
+  <div class="pp-h2">Follow-up required</div>
+  <p class="pp-p">The Reports event pre-process did not complete and requires manual
+  intervention. The Order Fulfilment project has 707 deliveries still executing with
+  approximately 90 minutes of margin remaining.</p>
+
+  <div class="pp-foot"><span>APEX Pipeline Ops Console</span><span>Page 1 of 3</span></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Export UI</div>
+    <h2 class="sec-title">Menus and options that set expectations</h2>
+    <p class="sec-desc">Each format states what it produces and how large it will be. &ldquo;+40 pages&rdquo; next to the raw log is the single most useful label in this menu &mdash; it prevents the accidental hundred-page PDF.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Export menu</div>
+<div class="exp-menu" style="margin-bottom:88px">
+  <button class="opt-btn" onclick="expTog(this)"
+    style="background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);
+    padding:8px 15px;font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit">
+    &#8681; Export</button>
+  <div class="exp-list">
+    <button class="exp-item"><span class="ic">PDF</span>
+      <span><div>Formatted report</div><div class="d">Print layout, 3 pages</div></span></button>
+    <button class="exp-item"><span class="ic">CSV</span>
+      <span><div>Raw table data</div><div class="d">Current filters applied</div></span></button>
+    <button class="exp-item"><span class="ic">XLS</span>
+      <span><div>Excel workbook</div><div class="d">One sheet per service</div></span></button>
+    <div class="exp-sep"></div>
+    <button class="exp-item"><span class="ic">&#9993;</span>
+      <span><div>Email to&hellip;</div><div class="d">Send as PDF attachment</div></span></button>
+    <button class="exp-item"><span class="ic">&#8981;</span>
+      <span><div>Copy shareable link</div><div class="d">Preserves date and filters</div></span></button>
+  </div>
+</div>
+
+<div class="lbl">Export options</div>
+<div class="exp-opts">
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Include charts<span class="opt-hint">+2 pages</span></div>
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Repeat table headers<span class="opt-hint">per page</span></div>
+  <div class="opt-row"><div class="opt-sw" onclick="this.classList.toggle('on')"></div>
+    Include raw run log<span class="opt-hint">+40 pages</span></div>
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Greyscale safe<span class="opt-hint">hatching</span></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Export menu</div>
+<div class="exp-menu" style="margin-bottom:88px">
+  <button class="opt-btn" onclick="expTog(this)"
+    style="background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);
+    padding:8px 15px;font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit">
+    &#8681; Export</button>
+  <div class="exp-list">
+    <button class="exp-item"><span class="ic">PDF</span>
+      <span><div>Formatted report</div><div class="d">Print layout, 3 pages</div></span></button>
+    <button class="exp-item"><span class="ic">CSV</span>
+      <span><div>Raw table data</div><div class="d">Current filters applied</div></span></button>
+    <button class="exp-item"><span class="ic">XLS</span>
+      <span><div>Excel workbook</div><div class="d">One sheet per service</div></span></button>
+    <div class="exp-sep"></div>
+    <button class="exp-item"><span class="ic">&#9993;</span>
+      <span><div>Email to&hellip;</div><div class="d">Send as PDF attachment</div></span></button>
+    <button class="exp-item"><span class="ic">&#8981;</span>
+      <span><div>Copy shareable link</div><div class="d">Preserves date and filters</div></span></button>
+  </div>
+</div>
+
+<div class="lbl">Export options</div>
+<div class="exp-opts">
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Include charts<span class="opt-hint">+2 pages</span></div>
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Repeat table headers<span class="opt-hint">per page</span></div>
+  <div class="opt-row"><div class="opt-sw" onclick="this.classList.toggle('on')"></div>
+    Include raw run log<span class="opt-hint">+40 pages</span></div>
+  <div class="opt-row"><div class="opt-sw on" onclick="this.classList.toggle('on')"></div>
+    Greyscale safe<span class="opt-hint">hatching</span></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Print stylesheet</div>
+    <h2 class="sec-title">The six rules that do the work</h2>
+    <p class="sec-desc">Most print output is broken by four omissions: interactive chrome left in, dark backgrounds carried over, no break control, and table headers appearing only once. This block fixes all four.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span><div class="pcss"><span class="cm">/* Ship this alongside your app stylesheet */</span>
+<span class="sel">@media print</span> {
+  <span class="cm">/* 1. Remove all interactive chrome */</span>
+  nav, aside, .toolbar, .fab,
+  button, .no-print       { <span class="prop">display</span>: none !important; }
+
+  <span class="cm">/* 2. Force economical colour */</span>
+  *                       { <span class="prop">background</span>: #fff !important;
+                            <span class="prop">color</span>: #000 !important;
+                            <span class="prop">box-shadow</span>: none !important; }
+
+  <span class="cm">/* 3. Control page breaks */</span>
+  h1, h2, h3              { <span class="prop">break-after</span>: avoid; }
+  table, figure, .card    { <span class="prop">break-inside</span>: avoid; }
+  .page-break             { <span class="prop">break-before</span>: page; }
+
+  <span class="cm">/* 4. Repeat table headers on every page */</span>
+  thead                   { <span class="prop">display</span>: table-header-group; }
+  tfoot                   { <span class="prop">display</span>: table-footer-group; }
+
+  <span class="cm">/* 5. Expose link targets */</span>
+  a[href^="http"]::after  { <span class="prop">content</span>: " (" attr(href) ")";
+                            <span class="prop">font-size</span>: 9pt; }
+
+  <span class="cm">/* 6. Page setup */</span>
+  <span class="sel">@page</span>                   { <span class="prop">margin</span>: 18mm 15mm;
+                            <span class="prop">size</span>: A4 portrait; }
+}</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span><div class="pcss"><span class="cm">/* Ship this alongside your app stylesheet */</span>
+<span class="sel">@media print</span> {
+  <span class="cm">/* 1. Remove all interactive chrome */</span>
+  nav, aside, .toolbar, .fab,
+  button, .no-print       { <span class="prop">display</span>: none !important; }
+
+  <span class="cm">/* 2. Force economical colour */</span>
+  *                       { <span class="prop">background</span>: #fff !important;
+                            <span class="prop">color</span>: #000 !important;
+                            <span class="prop">box-shadow</span>: none !important; }
+
+  <span class="cm">/* 3. Control page breaks */</span>
+  h1, h2, h3              { <span class="prop">break-after</span>: avoid; }
+  table, figure, .card    { <span class="prop">break-inside</span>: avoid; }
+  .page-break             { <span class="prop">break-before</span>: page; }
+
+  <span class="cm">/* 4. Repeat table headers on every page */</span>
+  thead                   { <span class="prop">display</span>: table-header-group; }
+  tfoot                   { <span class="prop">display</span>: table-footer-group; }
+
+  <span class="cm">/* 5. Expose link targets */</span>
+  a[href^="http"]::after  { <span class="prop">content</span>: " (" attr(href) ")";
+                            <span class="prop">font-size</span>: 9pt; }
+
+  <span class="cm">/* 6. Page setup */</span>
+  <span class="sel">@page</span>                   { <span class="prop">margin</span>: 18mm 15mm;
+                            <span class="prop">size</span>: A4 portrait; }
+}</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Checklist</div>
+    <h2 class="sec-title">What to verify before shipping export</h2>
+    <p class="sec-desc">Test by actually printing to PDF and scrolling every page. Print bugs are invisible in the browser and obvious the moment someone brings a stack of paper to a meeting.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Pre-export checklist</div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Headers repeat per page.</b> <code>thead { display: table-header-group }</code> &mdash;
+  without it, page four is an unlabelled grid of numbers.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Charts survive greyscale.</b> Hatching and fill density instead of hue. Test by printing
+  in black and white, not by looking at the colour preview.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Generation timestamp and page numbers.</b> A printed report with no date is worthless three
+  weeks later.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Link URLs exposed.</b> A hyperlink on paper is dead unless the href is printed.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Dark theme carried into print.</b> A dark background wastes an entire toner cartridge and
+  most printers render it as muddy grey.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Screenshots of tables.</b> Rasterised data cannot be searched, copied or reflowed. Render
+  real markup.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Interactive elements left in.</b> Buttons, filters and empty search boxes printed on paper
+  look like a bug.</span></div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Pre-export checklist</div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Headers repeat per page.</b> <code>thead { display: table-header-group }</code> &mdash;
+  without it, page four is an unlabelled grid of numbers.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Charts survive greyscale.</b> Hatching and fill density instead of hue. Test by printing
+  in black and white, not by looking at the colour preview.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Generation timestamp and page numbers.</b> A printed report with no date is worthless three
+  weeks later.</span></div>
+<div class="checkrow"><span class="m m-ok">&#10003;</span>
+  <span><b>Link URLs exposed.</b> A hyperlink on paper is dead unless the href is printed.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Dark theme carried into print.</b> A dark background wastes an entire toner cartridge and
+  most printers render it as muddy grey.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Screenshots of tables.</b> Rasterised data cannot be searched, copied or reflowed. Render
+  real markup.</span></div>
+<div class="checkrow"><span class="m m-no">&times;</span>
+  <span><b>Interactive elements left in.</b> Buttons, filters and empty search boxes printed on paper
+  look like a bug.</span></div></div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Build the print stylesheet at the same time as the screen one, not as a
+retrofit &mdash; retrofitting means hunting every <code>box-shadow</code> and dark background across the
+whole app. Verify with an actual export to PDF rather than the browser print preview, which lies about
+page breaks. If executives receive the output by email, assume it will be printed and forwarded, so
+the header must carry the date range, the generation timestamp and a confidentiality marking.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+function expTog(b){
+  const l=b.parentNode.querySelector('.exp-list');
+  const was=l.classList.contains('open');
+  document.querySelectorAll('.exp-list.open').forEach(x=>x.classList.remove('open'));
+  if(!was)l.classList.add('open');}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.exp-menu'))
+    document.querySelectorAll('.exp-list.open').forEach(x=>x.classList.remove('open'));});
+
+</script>
+</body>
+</html>

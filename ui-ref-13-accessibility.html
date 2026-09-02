@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 13 — Accessibility</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:11px;top:-42px;background:var(--accent);color:#fff;
+  padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:660;z-index:60;
+  transition:top var(--fast) var(--ease)}
+.skip:focus{top:11px}
+
+.fdemo button,.fdemo a,.fdemo input{outline:none}
+.fdemo .fx:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:var(--r-sm)}
+.fdemo .fx-bad:focus-visible{outline:none}
+.fdemo .fx-thin:focus-visible{outline:1px dotted var(--text-faint);outline-offset:1px}
+.fdemo .fx-hc:focus-visible{outline:3px solid var(--warn);outline-offset:3px;
+  box-shadow:0 0 0 6px var(--warn-soft)}
+
+.abtn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);
+  background:var(--surface-2);color:var(--text);border-radius:var(--r-sm);padding:8px 14px;
+  font-size:12.5px;font-weight:620;cursor:pointer;font-family:inherit}
+.abtn:hover{border-color:var(--accent)}
+.abtn.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.roving{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.rv{display:flex;align-items:center;gap:9px;padding:9px 12px;font-size:12.5px;cursor:pointer;
+  border-bottom:1px solid var(--hairline);outline:none}
+.rv:last-child{border-bottom:none}
+.rv[aria-selected="true"]{background:var(--accent-soft);color:var(--accent);font-weight:640}
+.rv:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.kbd{font-family:var(--mono);font-size:10px;border:1px solid var(--border-strong);
+  border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--text-dim);
+  background:var(--surface-2)}
+
+.live-box{border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface);
+  padding:14px}
+.live-num{font-size:29px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.live-note{font-size:11.5px;color:var(--text-faint);margin-top:4px}
+.live-log{margin-top:11px;border-top:1px solid var(--hairline);padding-top:9px;
+  font-family:var(--mono);font-size:10.5px;color:var(--text-dim);line-height:1.7;max-height:74px;
+  overflow-y:auto}
+.live-log div::before{content:"\1F509 ";opacity:.6}
+
+.st-row{display:flex;align-items:center;gap:9px;padding:8px 0;font-size:12.5px}
+.st-ico{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0}
+.si-good{background:var(--good-soft);color:var(--good)}
+.si-warn{background:var(--warn-soft);color:var(--warn)}
+.si-dang{background:var(--danger-soft);color:var(--danger)}
+.dot-only{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+.contrast-row{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;
+  margin-bottom:7px;font-size:12.5px}
+.cr-ratio{margin-left:auto;font-family:var(--mono);font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:var(--r-pill)}
+.pass{background:var(--good-soft);color:var(--good)}
+.fail{background:var(--danger-soft);color:var(--danger)}
+
+.trap-stage{position:relative;height:186px;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--surface-2);padding:13px;overflow:hidden}
+.trap-scrim{position:absolute;inset:0;background:var(--scrim);display:none;
+  align-items:center;justify-content:center}
+.trap-scrim.on{display:flex}
+.trap-modal{background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;
+  padding:16px;width:80%;box-shadow:var(--e3)}
+.trap-modal h4{margin:0 0 6px;font-size:13.5px}
+.trap-modal p{margin:0 0 12px;font-size:12px;color:var(--text-dim);line-height:1.55}
+
+.motion-demo{display:flex;gap:11px;align-items:center}
+.mo-box{width:52px;height:52px;border-radius:10px;background:var(--accent);
+  animation:slide 2.4s ease-in-out infinite alternate}
+@keyframes slide{to{transform:translateX(58px) rotate(180deg)}}
+.mo-safe{background:var(--good);animation:fadeonly 2.4s ease-in-out infinite alternate}
+@keyframes fadeonly{to{opacity:.45}}
+
+.err-field{margin-bottom:13px}
+.err-field label{display:block;font-size:11.5px;font-weight:640;margin-bottom:5px}
+.err-field input{width:100%;background:var(--surface-2);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:8px 11px;font-size:12.5px;color:var(--text);
+  font-family:inherit;outline:none}
+.err-field.bad input{border-color:var(--danger);border-width:2px}
+.err-field input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.err-msg{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--danger);margin-top:5px;
+  font-weight:600}
+.hint{font-size:11px;color:var(--text-faint);margin-top:4px}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 13</div>
+  <h1>Accessibility</h1>
+  <p>Focus rings and skip links, roving tabindex for long lists, ARIA live regions for auto-refreshing data, status that does not depend on colour, contrast ratios, accessible form errors, focus traps and vestibular-safe motion.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Keyboard</div>
+    <h2 class="sec-title">Focus rings, skip links, roving tabindex</h2>
+    <p class="sec-desc">Everything here is operable without a mouse. The roving-tabindex pattern is the one most internal tools miss: a long list should be a single tab stop with arrow-key movement inside, not one stop per row.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="fdemo">
+<a class="skip fx" href="#main">Skip to main content</a>
+<div class="lbl">Focus rings &mdash; press <span class="kbd">Tab</span> through these</div>
+<div class="row" style="margin-bottom:6px">
+  <button class="abtn fx-bad">No ring (fails)</button>
+  <button class="abtn fx-thin">1px dotted (weak)</button>
+  <button class="abtn fx">3px offset (good)</button>
+  <button class="abtn fx-hc">3px + halo (best)</button>
+</div>
+<div class="body-txt" style="margin-bottom:16px">Use <code>:focus-visible</code>, not
+<code>:focus</code> &mdash; the former skips the ring on mouse clicks while keeping it for keyboards.
+<code>outline</code> beats <code>box-shadow</code> because it survives Windows High Contrast Mode.</div>
+
+<div class="lbl">Skip link</div>
+<div class="body-txt" style="margin-bottom:16px">Press <span class="kbd">Tab</span> from the very top of
+this pane &mdash; a skip link slides down. Keyboard users otherwise tab through the whole nav on every
+page.</div>
+
+<div class="lbl">Roving tabindex list &mdash; <span class="kbd">&uarr;</span>
+  <span class="kbd">&darr;</span> to move</div>
+<div class="roving" id="main">
+  <div class="rv" tabindex="0" aria-selected="true" onkeydown="rove(event,this)">
+    INC&hellip;39865 <span class="kbd" style="margin-left:auto">Enter</span></div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;39631</div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;39122</div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;38213</div>
+</div>
+<div class="body-txt" style="margin-top:8px">One tab stop for the whole list, arrows move within it.
+Without this, a 200-row table means 200 tab presses to get past.</div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="fdemo">
+<a class="skip fx" href="#main">Skip to main content</a>
+<div class="lbl">Focus rings &mdash; press <span class="kbd">Tab</span> through these</div>
+<div class="row" style="margin-bottom:6px">
+  <button class="abtn fx-bad">No ring (fails)</button>
+  <button class="abtn fx-thin">1px dotted (weak)</button>
+  <button class="abtn fx">3px offset (good)</button>
+  <button class="abtn fx-hc">3px + halo (best)</button>
+</div>
+<div class="body-txt" style="margin-bottom:16px">Use <code>:focus-visible</code>, not
+<code>:focus</code> &mdash; the former skips the ring on mouse clicks while keeping it for keyboards.
+<code>outline</code> beats <code>box-shadow</code> because it survives Windows High Contrast Mode.</div>
+
+<div class="lbl">Skip link</div>
+<div class="body-txt" style="margin-bottom:16px">Press <span class="kbd">Tab</span> from the very top of
+this pane &mdash; a skip link slides down. Keyboard users otherwise tab through the whole nav on every
+page.</div>
+
+<div class="lbl">Roving tabindex list &mdash; <span class="kbd">&uarr;</span>
+  <span class="kbd">&darr;</span> to move</div>
+<div class="roving" id="main">
+  <div class="rv" tabindex="0" aria-selected="true" onkeydown="rove(event,this)">
+    INC&hellip;39865 <span class="kbd" style="margin-left:auto">Enter</span></div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;39631</div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;39122</div>
+  <div class="rv" tabindex="-1" onkeydown="rove(event,this)">INC&hellip;38213</div>
+</div>
+<div class="body-txt" style="margin-top:8px">One tab stop for the whole list, arrows move within it.
+Without this, a 200-row table means 200 tab presses to get past.</div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Announcements</div>
+    <h2 class="sec-title">Live regions and non-colour status</h2>
+    <p class="sec-desc">Auto-refreshing dashboards are silently broken for screen readers &mdash; the number changes and nothing is announced. Watch the log fill as the value updates.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">ARIA live region &mdash; auto-refreshing numbers</div>
+<div class="live-box">
+  <div class="live-num"><span class="lv-val">485</span></div>
+  <div class="live-note">Total runs &middot; refreshes every 4s</div>
+  <div aria-live="polite" aria-atomic="true" class="sr-only lv-announce"></div>
+  <div class="live-log"><div>Screen reader announcements appear here</div></div>
+</div>
+<div class="body-txt" style="margin:9px 0 16px">A number that changes silently is invisible to a screen
+reader. Wrap it in <code>aria-live="polite"</code> and announce the <em>meaning</em>, not the digits:
+&ldquo;Total runs updated to 487&rdquo; rather than &ldquo;487&rdquo;. Use <code>assertive</code> only
+for genuine emergencies &mdash; it interrupts whatever is being read.</div>
+
+<div class="lbl">Status without relying on colour</div>
+<div class="st-row"><span class="st-ico si-good">&#10003;</span>Completed &mdash; icon + colour + text</div>
+<div class="st-row"><span class="st-ico si-warn">!</span>At risk &mdash; distinguishable in greyscale</div>
+<div class="st-row"><span class="st-ico si-dang">&times;</span>Failed &mdash; shape differs, not just hue</div>
+<div class="st-row" style="opacity:.7"><span class="dot-only" style="background:var(--good)"></span>
+  Colour-only dot &mdash; invisible to 8% of men</div>
+<div class="body-txt" style="margin-top:8px">Red/green is the most common deficiency. Every status needs
+a second channel: an icon shape, a label, or a pattern.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">ARIA live region &mdash; auto-refreshing numbers</div>
+<div class="live-box">
+  <div class="live-num"><span class="lv-val">485</span></div>
+  <div class="live-note">Total runs &middot; refreshes every 4s</div>
+  <div aria-live="polite" aria-atomic="true" class="sr-only lv-announce"></div>
+  <div class="live-log"><div>Screen reader announcements appear here</div></div>
+</div>
+<div class="body-txt" style="margin:9px 0 16px">A number that changes silently is invisible to a screen
+reader. Wrap it in <code>aria-live="polite"</code> and announce the <em>meaning</em>, not the digits:
+&ldquo;Total runs updated to 487&rdquo; rather than &ldquo;487&rdquo;. Use <code>assertive</code> only
+for genuine emergencies &mdash; it interrupts whatever is being read.</div>
+
+<div class="lbl">Status without relying on colour</div>
+<div class="st-row"><span class="st-ico si-good">&#10003;</span>Completed &mdash; icon + colour + text</div>
+<div class="st-row"><span class="st-ico si-warn">!</span>At risk &mdash; distinguishable in greyscale</div>
+<div class="st-row"><span class="st-ico si-dang">&times;</span>Failed &mdash; shape differs, not just hue</div>
+<div class="st-row" style="opacity:.7"><span class="dot-only" style="background:var(--good)"></span>
+  Colour-only dot &mdash; invisible to 8% of men</div>
+<div class="body-txt" style="margin-top:8px">Red/green is the most common deficiency. Every status needs
+a second channel: an icon shape, a label, or a pattern.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Contrast &amp; forms</div>
+    <h2 class="sec-title">Ratios and accessible error messaging</h2>
+    <p class="sec-desc">Every token pair in a theme should be checked once and recorded, so component authors are not guessing. Form errors need four things wired together, not just a red border.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Contrast pairs</div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text)">
+  Body text on surface <span class="cr-ratio pass">14.8:1 AAA</span></div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text-dim)">
+  Secondary text <span class="cr-ratio pass">6.1:1 AA</span></div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text-faint)">
+  Faint text &mdash; labels only, never body
+  <span class="cr-ratio fail">3.2:1 fails AA</span></div>
+<div class="contrast-row" style="background:var(--accent);color:#fff">
+  White on accent <span class="cr-ratio pass">4.9:1 AA</span></div>
+<div class="body-txt" style="margin:9px 0 16px">AA needs 4.5:1 for body text and 3:1 for large text or
+UI borders. Faint tokens are fine for uppercase labels at 700 weight but must never carry a sentence.</div>
+
+<div class="lbl">Accessible form errors</div>
+<div class="err-field bad">
+  <label for="ae-l">Asset ID</label>
+  <input id="ae-l" value="not-an-id" aria-invalid="true" aria-describedby="ae-msg-l">
+  <div class="err-msg" id="ae-msg-l"><span>&#9888;</span>Asset ID must be numeric, for example 5341</div>
+</div>
+<div class="body-txt">Four things together: a real <code>&lt;label&gt;</code>,
+<code>aria-invalid</code>, <code>aria-describedby</code> pointing at the message, and an icon so the
+error is not signalled by red alone. The message says how to fix it, not just that it is wrong.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Contrast pairs</div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text)">
+  Body text on surface <span class="cr-ratio pass">14.8:1 AAA</span></div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text-dim)">
+  Secondary text <span class="cr-ratio pass">6.1:1 AA</span></div>
+<div class="contrast-row" style="background:var(--surface);color:var(--text-faint)">
+  Faint text &mdash; labels only, never body
+  <span class="cr-ratio fail">3.2:1 fails AA</span></div>
+<div class="contrast-row" style="background:var(--accent);color:#fff">
+  White on accent <span class="cr-ratio pass">4.9:1 AA</span></div>
+<div class="body-txt" style="margin:9px 0 16px">AA needs 4.5:1 for body text and 3:1 for large text or
+UI borders. Faint tokens are fine for uppercase labels at 700 weight but must never carry a sentence.</div>
+
+<div class="lbl">Accessible form errors</div>
+<div class="err-field bad">
+  <label for="ae-d">Asset ID</label>
+  <input id="ae-d" value="not-an-id" aria-invalid="true" aria-describedby="ae-msg-d">
+  <div class="err-msg" id="ae-msg-d"><span>&#9888;</span>Asset ID must be numeric, for example 5341</div>
+</div>
+<div class="body-txt">Four things together: a real <code>&lt;label&gt;</code>,
+<code>aria-invalid</code>, <code>aria-describedby</code> pointing at the message, and an icon so the
+error is not signalled by red alone. The message says how to fix it, not just that it is wrong.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Dialogs &amp; motion</div>
+    <h2 class="sec-title">Focus traps and vestibular safety</h2>
+    <p class="sec-desc">A dialog that does not trap focus lets keyboard users tab behind it into a page they cannot see. Reduced motion means replacing movement with a fade, not removing feedback entirely.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Focus trap &mdash; open, then <span class="kbd">Tab</span> repeatedly</div>
+<div class="trap-stage">
+  <button class="abtn p" onclick="openTrap(this)">Open dialog</button>
+  <div class="body-txt" style="margin-top:9px">Focus cycles inside the dialog and returns to this button
+  on close. <span class="kbd">Esc</span> closes.</div>
+  <div class="trap-scrim" onclick="if(event.target===this)closeTrap(this)">
+    <div class="trap-modal" role="dialog" aria-modal="true" aria-labelledby="tt-l">
+      <h4 id="tt-l">Resubmit this run?</h4>
+      <p>Focus is trapped here. Tab wraps from the last control back to the first.</p>
+      <div class="row" style="justify-content:flex-end">
+        <button class="abtn" onclick="closeTrap(this)">Cancel</button>
+        <button class="abtn p" onclick="closeTrap(this)">Resubmit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lbl" style="margin-top:16px">Reduced motion done properly</div>
+<div class="motion-demo" style="margin-bottom:9px">
+  <div class="mo-box"></div>
+  <div class="mo-box mo-safe"></div>
+</div>
+<div class="body-txt">Left: large translation, which triggers vestibular discomfort. Right: opacity only,
+safe under reduced motion. The right answer is rarely &ldquo;no animation&rdquo; &mdash; it is
+substituting a fade for a movement, so state changes remain legible.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Focus trap &mdash; open, then <span class="kbd">Tab</span> repeatedly</div>
+<div class="trap-stage">
+  <button class="abtn p" onclick="openTrap(this)">Open dialog</button>
+  <div class="body-txt" style="margin-top:9px">Focus cycles inside the dialog and returns to this button
+  on close. <span class="kbd">Esc</span> closes.</div>
+  <div class="trap-scrim" onclick="if(event.target===this)closeTrap(this)">
+    <div class="trap-modal" role="dialog" aria-modal="true" aria-labelledby="tt-d">
+      <h4 id="tt-d">Resubmit this run?</h4>
+      <p>Focus is trapped here. Tab wraps from the last control back to the first.</p>
+      <div class="row" style="justify-content:flex-end">
+        <button class="abtn" onclick="closeTrap(this)">Cancel</button>
+        <button class="abtn p" onclick="closeTrap(this)">Resubmit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lbl" style="margin-top:16px">Reduced motion done properly</div>
+<div class="motion-demo" style="margin-bottom:9px">
+  <div class="mo-box"></div>
+  <div class="mo-box mo-safe"></div>
+</div>
+<div class="body-txt">Left: large translation, which triggers vestibular discomfort. Right: opacity only,
+safe under reduced motion. The right answer is rarely &ldquo;no animation&rdquo; &mdash; it is
+substituting a fade for a movement, so state changes remain legible.</div></div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Four things carry most of the value and cost almost nothing:
+<code>:focus-visible</code> rings on every interactive element, real <code>&lt;label&gt;</code>
+elements on every input, <code>aria-live</code> on anything that updates itself, and a second
+non-colour channel on every status. Focus traps and roving tabindex take slightly more work but are
+the difference between a keyboard-usable tool and an unusable one. Test by unplugging the mouse for
+ten minutes &mdash; it finds more issues than any automated checker.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+function rove(e,el){
+  const items=[...el.parentNode.querySelectorAll('.rv')];
+  const i=items.indexOf(el);let n=null;
+  if(e.key==='ArrowDown')n=items[Math.min(items.length-1,i+1)];
+  if(e.key==='ArrowUp')n=items[Math.max(0,i-1)];
+  if(e.key==='Home')n=items[0];
+  if(e.key==='End')n=items[items.length-1];
+  if(!n)return;e.preventDefault();
+  items.forEach(x=>{x.tabIndex=-1;x.setAttribute('aria-selected','false');});
+  n.tabIndex=0;n.setAttribute('aria-selected','true');n.focus();}
+
+function startLive(){
+  document.querySelectorAll('.live-box').forEach(box=>{
+    let v=485;
+    setInterval(()=>{
+      v+=Math.floor(Math.random()*4);
+      box.querySelector('.lv-val').textContent=v;
+      const msg='Total runs updated to '+v;
+      box.querySelector('.lv-announce').textContent=msg;
+      const log=box.querySelector('.live-log');
+      const d=document.createElement('div');d.textContent=msg;
+      log.prepend(d);
+      while(log.children.length>6)log.lastChild.remove();
+    },4000);});}
+
+let trapPrev=null,trapEl=null;
+function openTrap(btn){
+  trapPrev=btn;trapEl=btn.closest('.trap-stage').querySelector('.trap-scrim');
+  trapEl.classList.add('on');
+  const f=trapEl.querySelectorAll('button');f[0].focus();
+  trapEl.onkeydown=e=>{
+    if(e.key==='Escape'){closeTrap(trapEl.querySelector('button'));return;}
+    if(e.key!=='Tab')return;
+    const list=[...trapEl.querySelectorAll('button')];
+    const i=list.indexOf(document.activeElement);
+    e.preventDefault();
+    const next=e.shiftKey?(i<=0?list.length-1:i-1):(i>=list.length-1?0:i+1);
+    list[next].focus();};}
+function closeTrap(el){
+  const s=el.closest('.trap-scrim')||trapEl;
+  if(s)s.classList.remove('on');
+  if(trapPrev){trapPrev.focus();trapPrev=null;}}
+window.addEventListener('load',startLive);
+
+</script>
+</body>
+</html>

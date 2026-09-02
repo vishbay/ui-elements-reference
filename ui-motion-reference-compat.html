@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Motion Reference — Zero Dependency Pattern Library</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.22, 1.4, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 180ms;
+  --dur-base: 400ms;
+  --dur-slow: 900ms;
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-pill: 999px;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-6: 24px; --sp-8: 32px;
+}
+[data-theme="dark"] {
+  --bg: #0b1215;
+  --surface: #151f24;
+  --surface-2: #1c272d;
+  --border: #293740;
+  --border-strong: #363a45;
+  --text: #edeef1;
+  --text-dim: #8a8d98;
+  --text-faint: #5f636e;
+  --accent: #3a9ad9;
+  --accent-soft: rgba(58,154,217,0.14);
+  --good: #34d399;
+  --good-soft: rgba(52,211,153,0.14);
+  --warn: #f6b83d;
+  --warn-soft: rgba(246,184,61,0.14);
+  --danger: #f4707f;
+  --danger-soft: rgba(244,112,127,0.14);
+  --info: #8a9bb8;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px rgba(0,0,0,.35);
+  --skeleton-1: #1c272d;
+  --skeleton-2: #26333a;
+}
+[data-theme="light"] {
+  --bg: #f6f6f8;
+  --surface: #ffffff;
+  --surface-2: #f0f0f3;
+  --border: #e4e4e9;
+  --border-strong: #d3d3da;
+  --text: #14151a;
+  --text-dim: #64666f;
+  --text-faint: #9a9ca5;
+  --accent: #1d6fae;
+  --accent-soft: rgba(29,111,174,0.10);
+  --good: #12a56b;
+  --good-soft: rgba(18,165,107,0.10);
+  --warn: #b47509;
+  --warn-soft: rgba(180,117,9,0.10);
+  --danger: #d64553;
+  --danger-soft: rgba(214,69,83,0.10);
+  --info: #5b6f8f;
+  --shadow: 0 1px 2px rgba(20,21,26,.05), 0 10px 28px rgba(20,21,26,.06);
+  --skeleton-1: #ececf0;
+  --skeleton-2: #f6f6f9;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+  padding-bottom: 100px;
+}
+/* Honors the OS "Reduce Motion" setting by default.
+   data-motion="force" on <html> overrides it so this reference
+   can still demonstrate the patterns. Ship the media query
+   WITHOUT the override in real projects. */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="force"]) *,
+  html:not([data-motion="force"]) *::before,
+  html:not([data-motion="force"]) *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+.motion-banner {
+  display: none;
+  align-items: center; gap: 12px;
+  background: var(--warn-soft); color: var(--warn);
+  border: 1px solid rgba(246,184,61,.38);
+  border-radius: var(--r-md); padding: 12px 16px;
+  font-size: 13px; margin-bottom: var(--sp-6);
+}
+.motion-banner.show { display: flex; }
+.motion-banner button {
+  margin-left: auto; background: var(--warn); color: var(--bg);
+  border: none; border-radius: var(--r-sm); padding: 7px 13px;
+  font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+
+/* header */
+.page-head {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-4) var(--sp-6);
+  display: flex; align-items: center; gap: var(--sp-4);
+}
+.page-head h1 { font-size: 15px; margin: 0; letter-spacing: .02em; }
+.page-head .tag { font-size: 11px; color: var(--text-dim); }
+.theme-toggle {
+  margin-left: auto;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: var(--r-sm);
+  padding: 7px 13px; font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: border-color var(--dur-fast), transform var(--dur-fast);
+}
+.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle:active { transform: scale(.96); }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: var(--sp-8) var(--sp-6); }
+
+section { margin-bottom: 56px; }
+.sec-head { margin-bottom: var(--sp-4); }
+.sec-num {
+  font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 700;
+}
+.sec-title { font-size: 19px; margin: 4px 0 4px; font-weight: 650; }
+.sec-desc { font-size: 13px; color: var(--text-dim); margin: 0; max-width: 620px; line-height: 1.55; }
+
+.grid { display: grid; gap: var(--sp-3); }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+.g4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 820px) { .g3, .g4 { grid-template-columns: repeat(2,1fr);} }
+@media (max-width: 560px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow);
+}
+.card-label {
+  font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text-faint); font-weight: 700; margin-bottom: var(--sp-2);
+}
+.note {
+  font-size: 11.5px; color: var(--text-faint); margin-top: var(--sp-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ============================================================
+   1. NUMBER ANIMATIONS
+   ============================================================ */
+.kpi { position: relative; overflow: hidden; }
+.kpi-num {
+  font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em; line-height: 1.1;
+}
+.kpi-num.good { color: var(--good); }
+.kpi-num.warn { color: var(--warn); }
+.kpi-num.danger { color: var(--danger); }
+.kpi-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.kpi-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700; margin-top: var(--sp-2);
+  padding: 3px 8px; border-radius: var(--r-pill);
+}
+.kpi-delta.up { background: var(--good-soft); color: var(--good); }
+.kpi-delta.down { background: var(--danger-soft); color: var(--danger); }
+
+/* odometer roll */
+.odometer { display: inline-flex; overflow: hidden; height: 38px; }
+.odo-col { width: .62em; overflow: hidden; height: 38px; position: relative; }
+.odo-strip {
+  display: flex; flex-direction: column;
+  font-size: 32px; font-weight: 700; line-height: 38px;
+  font-variant-numeric: tabular-nums;
+  transition: transform 1.2s var(--ease-spring);
+}
+
+/* ============================================================
+   2. RADIAL / ARC
+   ============================================================ */
+.arcs { display: flex; gap: var(--sp-6); flex-wrap: wrap; justify-content: space-around; }
+.arc-item { text-align: center; }
+.arc-wrap { position: relative; width: 96px; height: 96px; margin: 0 auto; }
+.arc-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.arc-track { stroke: var(--surface-2); }
+.arc-fill {
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  transition: stroke-dashoffset 1.5s var(--ease-out);
+}
+/* segment rotation for multi-part donuts */
+.arc-seg { transform-origin: 50px 50px; transform-box: view-box; }
+.arc-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.arc-val { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.arc-cap { font-size: 11px; color: var(--text-dim); margin-top: var(--sp-2); }
+
+/* half gauge */
+.gauge-needle {
+  transform-box: view-box;
+  transform-origin: 100px 90px;
+  transition: transform 1.4s var(--ease-spring);
+}
+
+/* ============================================================
+   3. BARS / PROGRESS
+   ============================================================ */
+.bar-row { margin-bottom: var(--sp-3); }
+.bar-top { display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 6px; }
+.bar-top .pct { font-variant-numeric: tabular-nums; color: var(--text-dim); }
+.bar-track {
+  height: 7px; background: var(--surface-2); border-radius: var(--r-pill); overflow: hidden;
+}
+.bar-fill {
+  height: 100%; width: 0%; border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft, var(--accent)));
+  transition: width 1.2s var(--ease-out);
+}
+.bar-fill.good { background: linear-gradient(90deg, var(--good), #6ee7b7); }
+.bar-fill.warn { background: linear-gradient(90deg, var(--warn), #fcd34d); }
+
+/* indeterminate */
+.bar-track.indet .bar-indet {
+  height: 100%; width: 35%; border-radius: var(--r-pill);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: indet 1.4s var(--ease-in-out) infinite;
+}
+@keyframes indet {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(320%); }
+}
+
+/* stacked segments */
+.seg-bar { display: flex; height: 9px; border-radius: var(--r-pill); overflow: hidden; background: var(--surface-2); }
+.seg { height: 100%; width: 0; transition: width 1.1s var(--ease-out); }
+.seg-legend { display: flex; gap: var(--sp-4); margin-top: var(--sp-3); flex-wrap: wrap; }
+.seg-legend span { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-dim); }
+.seg-legend i { width: 8px; height: 8px; border-radius: 3px; display: inline-block; }
+
+/* vertical bar chart */
+.vbars { display: flex; align-items: flex-end; gap: 6px; height: 110px; }
+.vbar {
+  flex: 1; border-radius: 4px 4px 0 0; height: 0;
+  background: linear-gradient(180deg, var(--accent-soft, var(--accent)), var(--accent));
+  transition: height 1s var(--ease-out), filter var(--dur-fast);
+  cursor: pointer;
+}
+.vbar:hover { filter: brightness(1.25); }
+.vbar-labels { display: flex; gap: 6px; margin-top: 6px; }
+.vbar-labels span { flex: 1; text-align: center; font-size: 10px; color: var(--text-faint); }
+
+/* ============================================================
+   4. LINE / AREA / SPARKLINE
+   ============================================================ */
+.line-svg { width: 100%; height: 140px; display: block; overflow: visible; }
+.line-path {
+  fill: none; stroke: var(--accent); stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke-dashoffset 1.8s var(--ease-in-out);
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.area-fill { opacity: 0; animation: fadeIn .9s var(--ease-out) 1s forwards; }
+@keyframes fadeIn { to { opacity: 1; } }
+.line-dot {
+  r: 0; fill: var(--accent);
+  animation: popDot .5s var(--ease-spring) forwards;
+}
+@keyframes popDot { to { r: 3.5; } }
+.pulse-dot {
+  fill: var(--accent);
+  animation: pulseR 2s ease-out infinite;
+}
+@keyframes pulseR {
+  0% { r: 4; opacity: .8; }
+  100% { r: 14; opacity: 0; }
+}
+.spark { width: 100%; height: 44px; display: block; overflow: visible; }
+.spark-line {
+  fill: none; stroke: var(--good); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  transition: stroke-dashoffset 1.4s var(--ease-in-out);
+}
+
+/* ============================================================
+   5. STATUS / BADGES
+   ============================================================ */
+.badges { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; font-weight: 650;
+  padding: 5px 11px; border-radius: var(--r-pill);
+  border: 1px solid transparent;
+}
+.badge i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.badge.good { background: var(--good-soft); color: var(--good); }
+.badge.warn { background: var(--warn-soft); color: var(--warn); }
+.badge.danger { background: var(--danger-soft); color: var(--danger); }
+.badge.info { background: var(--accent-soft); color: var(--accent); }
+.badge.neutral { background: var(--surface-2); color: var(--text-dim); }
+.badge.live i { animation: livePulse 2s infinite; }
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  70% { box-shadow: 0 0 0 5px transparent; opacity: .7; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+.badge.running i {
+  border-radius: 50%; width: 8px; height: 8px;
+  background: transparent;
+  border: 1.5px solid currentColor; border-top-color: transparent;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   6. LOADING / SKELETON
+   ============================================================ */
+.skel {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--skeleton-1) 25%, var(--skeleton-2) 50%, var(--skeleton-1) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+.skel-line { height: 11px; margin-bottom: 9px; }
+.skel-title { height: 16px; width: 55%; margin-bottom: 14px; }
+.skel-circle { width: 38px; height: 38px; border-radius: 50%; }
+
+.spinner {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2.5px solid var(--surface-2); border-top-color: var(--accent);
+  animation: spin .7s linear infinite;
+}
+.dots { display: flex; gap: 5px; align-items: center; }
+.dots span {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+  animation: bounce 1.2s infinite;
+}
+.dots span:nth-child(2) { animation-delay: .15s; }
+.dots span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce {
+  0%,60%,100% { transform: translateY(0); opacity: .35; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+.progress-ring { transform: rotate(-90deg); }
+.ring-fill {
+  stroke-dasharray: 100 100; stroke-dashoffset: 100;
+  animation: ringLoad 2s var(--ease-in-out) infinite;
+}
+@keyframes ringLoad {
+  0% { stroke-dashoffset: 100; }
+  50% { stroke-dashoffset: 25; }
+  100% { stroke-dashoffset: 100; transform: rotate(360deg); }
+}
+
+/* ============================================================
+   7. ENTRANCE / STAGGER
+   ============================================================ */
+.stagger-item {
+  background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 12px 14px; font-size: 13px;
+  margin-bottom: var(--sp-2);
+  opacity: 0; transform: translateY(12px);
+}
+.stagger-item.go { animation: riseIn .5s var(--ease-out) forwards; }
+@keyframes riseIn { to { opacity: 1; transform: translateY(0); } }
+
+.reveal-row { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.reveal-chip {
+  padding: 7px 13px; border-radius: var(--r-pill);
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 12px; font-weight: 600;
+  opacity: 0; transform: scale(.8);
+}
+.reveal-chip.go { animation: popIn .45s var(--ease-spring) forwards; }
+@keyframes popIn { to { opacity: 1; transform: scale(1); } }
+
+/* ============================================================
+   8. SLIDE-OUT PANEL
+   ============================================================ */
+.panel-demo {
+  position: relative; height: 260px; overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface);
+}
+.panel-bg { padding: var(--sp-4); transition: filter var(--dur-base) var(--ease-out); }
+.panel-bg.dim { filter: blur(3px) brightness(.55); }
+.panel-scrim {
+  position: absolute; inset: 0; background: rgba(0,0,0,0);
+  transition: background var(--dur-base); pointer-events: none;
+}
+.panel-scrim.on { background: rgba(0,0,0,.4); pointer-events: auto; }
+.slideout {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 62%;
+  background: var(--surface-2); border-left: 1px solid var(--border-strong);
+  box-shadow: -10px 0 30px rgba(0,0,0,.35);
+  transform: translateX(100%);
+  transition: transform 550ms var(--ease-spring);
+  padding: var(--sp-4);
+}
+.slideout.open { transform: translateX(0); }
+.slideout .so-item {
+  opacity: 0; transform: translateX(14px);
+  transition: opacity .35s var(--ease-out), transform .35s var(--ease-out);
+  font-size: 12.5px; padding: 9px 11px; margin-bottom: 7px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+}
+.slideout.open .so-item { opacity: 1; transform: translateX(0); }
+.slideout.open .so-item:nth-child(1) { transition-delay: .22s; }
+.slideout.open .so-item:nth-child(2) { transition-delay: .29s; }
+.slideout.open .so-item:nth-child(3) { transition-delay: .36s; }
+.slideout.open .so-item:nth-child(4) { transition-delay: .43s; }
+
+.orb {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #b3b5ff, var(--accent));
+  animation: breathe 3.2s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 var(--accent-soft); }
+  50% { transform: scale(1.09); box-shadow: 0 0 0 9px transparent; }
+}
+
+/* ============================================================
+   9. FEEDBACK — toast / modal / accordion / tabs
+   ============================================================ */
+.toast-stack {
+  position: fixed; bottom: 20px; right: 20px; z-index: 60;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 11px 15px;
+  font-size: 12.5px; box-shadow: var(--shadow);
+  animation: toastIn .45s var(--ease-spring) forwards;
+}
+.toast.out { animation: toastOut .3s var(--ease-out) forwards; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(.95); } }
+.toast > span:first-child { color: var(--good); font-weight: 700; }
+.toast.err > span:first-child { color: var(--danger); }
+.toast.warn > span:first-child { color: var(--warn); }
+
+.modal-scrim {
+  position: fixed; inset: 0; background: rgba(0,0,0,.5);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: none; align-items: center; justify-content: center; z-index: 70;
+  animation: fadeIn .25s var(--ease-out) forwards;
+}
+.modal-scrim.on { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: var(--sp-6); width: min(400px, 90vw);
+  box-shadow: var(--shadow);
+  animation: modalIn .45s var(--ease-spring) forwards;
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(.9) translateY(14px); } to { opacity: 1; transform: none; } }
+
+.acc-item { border-bottom: 1px solid var(--border); }
+.acc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 2px; cursor: pointer; font-size: 13.5px; font-weight: 550;
+}
+.acc-chev { transition: transform var(--dur-base) var(--ease-out); color: var(--text-dim); }
+.acc-item.open .acc-chev { transform: rotate(90deg); }
+.acc-body {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur-base) var(--ease-out);
+}
+.acc-item.open .acc-body { grid-template-rows: 1fr; }
+.acc-inner { overflow: hidden; font-size: 12.5px; color: var(--text-dim); line-height: 1.6; }
+.acc-item.open .acc-inner { padding-bottom: 14px; }
+
+.tabs { position: relative; display: flex; gap: var(--sp-1); border-bottom: 1px solid var(--border); }
+.tab {
+  background: none; border: none; color: var(--text-dim);
+  padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.tab.active { color: var(--text); }
+.tab-ink {
+  position: absolute; bottom: -1px; height: 2px; background: var(--accent);
+  border-radius: 2px;
+  transition: left .4s var(--ease-spring), width .4s var(--ease-spring);
+}
+.tab-panel { padding-top: var(--sp-4); font-size: 13px; color: var(--text-dim); }
+.tab-panel[hidden] { display: none; }
+.tab-panel.show { animation: fadeSlide .4s var(--ease-out); }
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+
+/* ============================================================
+   10. FORMS / CONTROLS
+   ============================================================ */
+.field { position: relative; margin-bottom: var(--sp-4); }
+.field input {
+  width: 100%; background: var(--surface-2); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 17px 12px 7px; font-size: 13.5px; outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.field label {
+  position: absolute; left: 12px; top: 13px;
+  font-size: 13px; color: var(--text-faint); pointer-events: none;
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label {
+  top: 5px; font-size: 10px; color: var(--accent); letter-spacing: .04em;
+}
+
+.switch {
+  width: 42px; height: 24px; border-radius: var(--r-pill);
+  background: var(--surface-2); border: 1px solid var(--border);
+  position: relative; cursor: pointer;
+  transition: background var(--dur-fast);
+}
+.switch.on { background: var(--accent); border-color: var(--accent); }
+.switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  transition: transform 280ms var(--ease-spring);
+}
+.switch.on::after { transform: translateX(18px); }
+
+.btn {
+  position: relative; overflow: hidden;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: var(--r-sm); padding: 9px 18px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: transform var(--dur-fast), filter var(--dur-fast);
+}
+.btn:hover { filter: brightness(1.1); }
+.btn:active { transform: scale(.96); }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.ripple {
+  position: absolute; border-radius: 50%; transform: scale(0);
+  background: rgba(255,255,255,.45); pointer-events: none;
+  animation: ripple .6s var(--ease-out) forwards;
+}
+@keyframes ripple { to { transform: scale(2.6); opacity: 0; } }
+
+.btn-load .btn-txt { transition: opacity var(--dur-fast); }
+.btn-load.loading .btn-txt { opacity: 0; }
+.btn-load .btn-spin {
+  position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+}
+.btn-load.loading .btn-spin { display: flex; }
+.btn-spin div {
+  width: 15px; height: 15px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
+  animation: spin .65s linear infinite;
+}
+.check-mark {
+  stroke: #fff; stroke-width: 3; fill: none; stroke-linecap: round;
+  stroke-dasharray: 30; stroke-dashoffset: 30;
+  animation: draw .4s var(--ease-out) forwards;
+}
+
+/* ============================================================
+   11. TABLE / LIST
+   ============================================================ */
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th {
+  text-align: left; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-faint); font-weight: 700; padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+td { padding: 11px 10px; border-bottom: 1px solid var(--border); }
+tbody tr {
+  opacity: 0; transform: translateY(6px);
+  transition: background var(--dur-fast);
+}
+tbody tr.go { animation: riseIn .45s var(--ease-out) forwards; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr.flash { animation: rowFlash 1.4s var(--ease-out); }
+@keyframes rowFlash {
+  0% { background: var(--accent-soft); }
+  100% { background: transparent; }
+}
+
+/* ============================================================
+   12. MICRO-INTERACTIONS
+   ============================================================ */
+.hover-lift {
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast), border-color var(--dur-fast);
+  cursor: pointer;
+}
+.hover-lift:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,.28); }
+
+.tip { position: relative; display: inline-block; }
+.tip-bubble {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) translateY(4px) scale(.94);
+  background: var(--text); color: var(--bg);
+  font-size: 11.5px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: all var(--dur-fast) var(--ease-spring);
+}
+.tip:hover .tip-bubble { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+.copy-btn { position: relative; }
+.copied {
+  position: absolute; left: 50%; top: -6px;
+  transform: translate(-50%,0); opacity: 0;
+  font-size: 11px; color: var(--good); font-weight: 700; pointer-events: none;
+}
+.copied.go { animation: floatUp 1.2s var(--ease-out) forwards; }
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -22px); }
+}
+
+.shake { animation: shake .4s var(--ease-in-out); }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.marquee-wrap { overflow: hidden; border-radius: var(--r-sm); background: var(--surface-2); padding: 9px 0; }
+.marquee { display: flex; gap: 32px; white-space: nowrap; animation: marquee 18s linear infinite; font-size: 12px; color: var(--text-dim); }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+.grad-text {
+  background: linear-gradient(90deg, var(--accent), var(--text), var(--accent));
+  background-size: 300% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: gradShift 6s linear infinite;
+  font-size: 22px; font-weight: 700;
+}
+@keyframes gradShift { to { background-position: 300% 0; } }
+
+.typewriter::after {
+  content: "▌"; color: var(--accent);
+  animation: caret 1s step-end infinite;
+}
+@keyframes caret { 50% { opacity: 0; } }
+
+/* empty state */
+.empty { text-align: center; padding: var(--sp-6) 0; }
+.empty-icon {
+  width: 54px; height: 54px; margin: 0 auto var(--sp-3);
+  border-radius: 50%; background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--accent);
+  animation: floaty 3.4s ease-in-out infinite;
+}
+@keyframes floaty { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-7px);} }
+
+/* replay */
+.replay {
+  position: fixed; bottom: 20px; left: 20px; z-index: 60;
+  background: var(--surface); border: 1px solid var(--border-strong);
+  color: var(--text); border-radius: var(--r-pill);
+  padding: 10px 18px; font-size: 12.5px; font-weight: 650; cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform var(--dur-fast), border-color var(--dur-fast);
+}
+.replay:hover { border-color: var(--accent); }
+.replay:active { transform: scale(.95); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div>
+    <h1>UI Motion Reference</h1>
+    <div class="tag">Zero dependencies · CSS + SVG + vanilla JS</div>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()">◐ Theme</button>
+</div>
+
+<div class="wrap">
+
+<div class="motion-banner" id="motionBanner">
+  <span>⚠</span>
+  <span><b>Reduce Motion is on in your OS.</b> All CSS animations are being suppressed — that's why arcs snap and lines look pre-drawn.</span>
+  <button onclick="forceMotion()">Enable anyway</button>
+</div>
+
+<!-- 1. NUMBERS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Numbers</div>
+    <h2 class="sec-title">Count-up & odometer</h2>
+    <p class="sec-desc">Numbers that animate to value on load. Use eased count-up for KPIs; odometer roll for numbers that update live and need the change to be noticed.</p>
+  </div>
+  <div class="grid g4">
+    <div class="card kpi">
+      <div class="kpi-num" data-count="1284">0</div>
+      <div class="kpi-sub">Total runs</div>
+      <span class="kpi-delta up">▲ 12.4%</span>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-num good" data-count="97" data-suffix="%">0</div>
+      <div class="kpi-sub">Success rate</div>
+      <span class="kpi-delta up">▲ 2.1%</span>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-num warn" data-count="134">0</div>
+      <div class="kpi-sub">Needs attention</div>
+      <span class="kpi-delta down">▼ 8.0%</span>
+    </div>
+    <div class="card kpi">
+      <div class="card-label">Odometer</div>
+      <div class="odometer" id="odo"></div>
+      <div class="kpi-sub">Live counter</div>
+    </div>
+  </div>
+  <div class="note">requestAnimationFrame + easeOutCubic · transform translateY for odometer</div>
+</section>
+
+<!-- 2. RADIAL -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Radial</div>
+    <h2 class="sec-title">Arcs, rings & gauges</h2>
+    <p class="sec-desc">stroke-dashoffset transitions on SVG circles. The single most reusable chart primitive — no library needed.</p>
+  </div>
+  <div class="card">
+    <div class="arcs">
+      <div class="arc-item">
+        <div class="arc-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="arc-track" cx="50" cy="50" r="42" stroke-width="8" fill="none"/>
+            <circle class="arc-fill" pathLength="100" cx="50" cy="50" r="42" stroke-width="8" fill="none" stroke="var(--accent)" data-pct="78"/>
+          </svg>
+          <div class="arc-center"><span class="arc-val" data-count="78" data-suffix="%">0</span></div>
+        </div>
+        <div class="arc-cap">Capacity</div>
+      </div>
+      <div class="arc-item">
+        <div class="arc-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="arc-track" cx="50" cy="50" r="42" stroke-width="8" fill="none"/>
+            <circle class="arc-fill" pathLength="100" cx="50" cy="50" r="42" stroke-width="8" fill="none" stroke="var(--good)" data-pct="94"/>
+          </svg>
+          <div class="arc-center"><span class="arc-val" data-count="94" data-suffix="%">0</span></div>
+        </div>
+        <div class="arc-cap">Health</div>
+      </div>
+      <div class="arc-item">
+        <div class="arc-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="arc-track" cx="50" cy="50" r="42" stroke-width="8" fill="none"/>
+            <circle class="arc-fill" pathLength="100" cx="50" cy="50" r="42" stroke-width="8" fill="none" stroke="var(--warn)" data-pct="41"/>
+          </svg>
+          <div class="arc-center"><span class="arc-val" data-count="41" data-suffix="%">0</span></div>
+        </div>
+        <div class="arc-cap">SLA margin</div>
+      </div>
+      <!-- multi segment donut -->
+      <div class="arc-item">
+        <div class="arc-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="arc-track" cx="50" cy="50" r="42" stroke-width="10" fill="none"/>
+            <circle class="arc-fill arc-seg" pathLength="100" cx="50" cy="50" r="42" stroke-width="10" fill="none" stroke="var(--good)" data-pct="55"/>
+            <circle class="arc-fill arc-seg" pathLength="100" cx="50" cy="50" r="42" stroke-width="10" fill="none" stroke="var(--warn)" data-pct="30" data-rotate="198"/>
+          </svg>
+          <div class="arc-center"><span class="arc-val">3</span></div>
+        </div>
+        <div class="arc-cap">Segmented</div>
+      </div>
+      <!-- half gauge -->
+      <div class="arc-item">
+        <div class="arc-wrap" style="width:130px;">
+          <svg viewBox="0 0 200 110" style="transform:none;">
+            <path d="M20 90 A80 80 0 0 1 180 90" fill="none" stroke="var(--surface-2)" stroke-width="12" stroke-linecap="round"/>
+            <path class="arc-fill" pathLength="100" d="M20 90 A80 80 0 0 1 180 90" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" data-pct="67"/>
+            <line class="gauge-needle" id="needle" x1="100" y1="90" x2="100" y2="34" stroke="var(--text)" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="100" cy="90" r="5" fill="var(--text)"/>
+          </svg>
+        </div>
+        <div class="arc-cap">Gauge · 67%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. BARS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Bars</div>
+    <h2 class="sec-title">Progress, segments & columns</h2>
+    <p class="sec-desc">Determinate bars animate width; indeterminate loops a gradient. Stacked segments are the cleanest way to show composition without a pie.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-label">Determinate</div>
+      <div class="bar-row">
+        <div class="bar-top"><span>Daily Sync</span><span class="pct">100%</span></div>
+        <div class="bar-track"><div class="bar-fill good" data-w="100"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-top"><span>Events</span><span class="pct">76%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-w="76"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-top"><span>Logistics Notify</span><span class="pct">18%</span></div>
+        <div class="bar-track"><div class="bar-fill warn" data-w="18"></div></div>
+      </div>
+      <div class="card-label" style="margin-top:18px;">Indeterminate</div>
+      <div class="bar-track indet"><div class="bar-indet"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Stacked composition</div>
+      <div class="seg-bar">
+        <div class="seg" style="background:var(--good)" data-w="62"></div>
+        <div class="seg" style="background:var(--warn)" data-w="24"></div>
+        <div class="seg" style="background:var(--danger)" data-w="14"></div>
+      </div>
+      <div class="seg-legend">
+        <span><i style="background:var(--good)"></i>Completed 62%</span>
+        <span><i style="background:var(--warn)"></i>Running 24%</span>
+        <span><i style="background:var(--danger)"></i>Failed 14%</span>
+      </div>
+      <div class="card-label" style="margin-top:22px;">Column chart</div>
+      <div class="vbars">
+        <div class="vbar" data-h="42"></div><div class="vbar" data-h="68"></div>
+        <div class="vbar" data-h="51"></div><div class="vbar" data-h="83"></div>
+        <div class="vbar" data-h="60"></div><div class="vbar" data-h="94"></div>
+        <div class="vbar" data-h="72"></div>
+      </div>
+      <div class="vbar-labels"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. LINES -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Lines</div>
+    <h2 class="sec-title">Draw-in lines, areas & sparklines</h2>
+    <p class="sec-desc">The stroke-dasharray trick: set dasharray to path length, animate dashoffset to 0. Area fill and dots fade in after the line lands.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-label">Area chart</div>
+      <svg class="line-svg" viewBox="0 0 400 140">
+        <defs>
+          <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--accent)" stop-opacity=".38"/>
+            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon class="area-fill" fill="url(#ag)" points="0,140 0,96 57,74 114,88 171,48 228,60 285,26 342,44 400,20 400,140"/>
+        <polyline pathLength="1" class="line-path" points="0,96 57,74 114,88 171,48 228,60 285,26 342,44 400,20"/>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="card-label">Live series + pulse marker</div>
+      <svg class="line-svg" viewBox="0 0 400 140">
+        <polyline pathLength="1" class="line-path" style="stroke:var(--good)" points="0,110 50,86 100,98 150,60 200,72 250,40 300,54 350,28 395,36"/>
+        <circle class="pulse-dot" cx="395" cy="36" style="fill:var(--good)"/>
+        <circle cx="395" cy="36" r="3.5" fill="var(--good)"/>
+      </svg>
+      <div class="card-label" style="margin-top:14px;">Sparklines</div>
+      <div class="grid g2" style="gap:10px;">
+        <div>
+          <svg class="spark" viewBox="0 0 120 40">
+            <polyline pathLength="1" class="spark-line" points="0,32 20,26 40,30 60,16 80,22 100,8 120,12"/>
+          </svg>
+          <div class="note" style="margin:0">Throughput ▲</div>
+        </div>
+        <div>
+          <svg class="spark" viewBox="0 0 120 40">
+            <polyline pathLength="1" class="spark-line" style="stroke:var(--danger)" points="0,10 20,16 40,12 60,24 80,20 100,30 120,34"/>
+          </svg>
+          <div class="note" style="margin:0">Failures ▼</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. STATUS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Status</div>
+    <h2 class="sec-title">Badges & state indicators</h2>
+    <p class="sec-desc">One shape, one meaning per color. Motion carries state: pulsing = live, spinning = in-progress, static = settled.</p>
+  </div>
+  <div class="card">
+    <div class="badges">
+      <span class="badge good"><i></i>Completed</span>
+      <span class="badge good live"><i></i>Live</span>
+      <span class="badge info running"><i></i>Running</span>
+      <span class="badge warn"><i></i>Needs attention</span>
+      <span class="badge danger"><i></i>Failed</span>
+      <span class="badge neutral"><i></i>Queued</span>
+      <span class="badge info"><i></i>Early</span>
+      <span class="badge warn"><i></i>Recurring</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6. LOADING -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Loading</div>
+    <h2 class="sec-title">Skeletons & spinners</h2>
+    <p class="sec-desc">Skeletons preserve layout and beat spinners for content. Reserve spinners for actions, dots for streaming responses.</p>
+  </div>
+  <div class="grid g3">
+    <div class="card">
+      <div class="card-label">Skeleton card</div>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;">
+        <div class="skel skel-circle"></div>
+        <div style="flex:1">
+          <div class="skel skel-line" style="width:60%"></div>
+          <div class="skel skel-line" style="width:40%;margin:0"></div>
+        </div>
+      </div>
+      <div class="skel skel-line"></div>
+      <div class="skel skel-line" style="width:85%"></div>
+      <div class="skel skel-line" style="width:65%;margin:0"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Spinners</div>
+      <div style="display:flex;gap:28px;align-items:center;padding:14px 0;">
+        <div class="spinner"></div>
+        <svg width="30" height="30" viewBox="0 0 36 36" class="progress-ring">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--surface-2)" stroke-width="3"/>
+          <circle class="ring-fill" cx="18" cy="18" r="15.9" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" pathLength="100"/>
+        </svg>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div>
+      <div class="note">Action · progress · streaming</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Streaming text</div>
+      <div class="typewriter" id="typer" style="font-size:13px;line-height:1.6;min-height:66px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. ENTRANCE -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">07 — Entrance</div>
+    <h2 class="sec-title">Staggered reveals</h2>
+    <p class="sec-desc">The single biggest "designed vs. generic" lever. Never reveal a list all at once — 50–70ms between items reads as intentional.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-label">Vertical stagger</div>
+      <div id="staggerList">
+        <div class="stagger-item">Pipeline health check completed</div>
+        <div class="stagger-item">4 deliveries arrived ahead of window</div>
+        <div class="stagger-item">SLA margin holding at 41%</div>
+        <div class="stagger-item">2 incidents auto-recovered</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Pop-in chips</div>
+      <div class="reveal-row" id="chipRow">
+        <span class="reveal-chip">Airflow</span><span class="reveal-chip">BigQuery</span>
+        <span class="reveal-chip">GCP</span><span class="reveal-chip">Jira</span>
+        <span class="reveal-chip">Harness</span><span class="reveal-chip">Vertex</span>
+      </div>
+      <div class="card-label" style="margin-top:20px;">Empty state</div>
+      <div class="empty">
+        <div class="empty-icon">◎</div>
+        <div style="font-size:13.5px;font-weight:600;">No incidents open</div>
+        <div class="note" style="margin-top:4px;">All clear — nothing flagged</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. PANEL -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">08 — Overlay</div>
+    <h2 class="sec-title">Slide-out panel</h2>
+    <p class="sec-desc">Spring easing + backdrop blur + sequenced content. Three things together are what make a drawer feel like a product rather than a div.</p>
+  </div>
+  <div class="panel-demo">
+    <div class="panel-bg" id="pBg">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:12.5px;font-weight:650;">Dashboard behind</span>
+        <button class="btn" onclick="togglePanel(true)">Open assistant →</button>
+      </div>
+      <div class="grid g3">
+        <div class="card" style="box-shadow:none"><div class="kpi-num" style="font-size:22px">485</div><div class="kpi-sub">Runs</div></div>
+        <div class="card" style="box-shadow:none"><div class="kpi-num warn" style="font-size:22px">135</div><div class="kpi-sub">Failed</div></div>
+        <div class="card" style="box-shadow:none"><div class="kpi-num good" style="font-size:22px">336</div><div class="kpi-sub">Done</div></div>
+      </div>
+    </div>
+    <div class="panel-scrim" id="pScrim" onclick="togglePanel(false)"></div>
+    <div class="slideout" id="pPanel">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div class="orb"></div>
+        <div>
+          <div style="font-size:13px;font-weight:700;">AI Assistant</div>
+          <div style="font-size:11px;color:var(--accent);">Operations Overview</div>
+        </div>
+        <button class="btn ghost" style="margin-left:auto;padding:4px 9px;font-size:11px;" onclick="togglePanel(false)">✕</button>
+      </div>
+      <div class="so-item">What's driving the failure rate?</div>
+      <div class="so-item">Which incidents need attention?</div>
+      <div class="so-item">Any recurring failures to escalate?</div>
+      <div class="so-item">Compare today vs. yesterday</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. FEEDBACK -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">09 — Feedback</div>
+    <h2 class="sec-title">Toasts, modals, accordions, tabs</h2>
+    <p class="sec-desc">Toasts spring in from the edge they'll exit toward. Accordions animate grid-template-rows (the only clean way to transition to auto height).</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-label">Events</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="btn" onclick="toast('Pipeline resubmitted','good')">Success toast</button>
+        <button class="btn ghost" onclick="toast('Run failed after 3 retries','err')">Error toast</button>
+        <button class="btn ghost" onclick="openModal()">Open modal</button>
+      </div>
+      <div class="card-label">Accordion</div>
+      <div class="acc-item" onclick="this.classList.toggle('open')">
+        <div class="acc-head"><span>Why did this run fail?</span><span class="acc-chev">›</span></div>
+        <div class="acc-body"><div class="acc-inner">The upstream dependency timed out after 3h13m. Three automatic resubmits were attempted; all hit the same timeout, which suggests a source-side issue rather than a transient failure.</div></div>
+      </div>
+      <div class="acc-item" onclick="this.classList.toggle('open')">
+        <div class="acc-head"><span>What is SLO vs SLA?</span><span class="acc-chev">›</span></div>
+        <div class="acc-body"><div class="acc-inner">SLO is the internal earlier target used to leave recovery room; SLA is the committed external deadline. Breaching SLO is a warning, breaching SLA is reportable.</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Tabs with sliding indicator</div>
+      <div class="tabs" id="tabs">
+        <button class="tab active" onclick="selTab(0,this)">Overview</button>
+        <button class="tab" onclick="selTab(1,this)">Run log</button>
+        <button class="tab" onclick="selTab(2,this)">History</button>
+        <div class="tab-ink" id="ink"></div>
+      </div>
+      <div class="tab-panel show" data-tab="0">Project: Northwind Retail Pipeline Delivery. Cause category: Other Processing Error.</div>
+      <div class="tab-panel" data-tab="1" hidden>12:02 started · 13:54 resubmitted · 22:46 failed after 10h43m.</div>
+      <div class="tab-panel" data-tab="2" hidden>Avg duration 8h31m over 30 days. Resubmit success rate 67%.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. FORMS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">10 — Controls</div>
+    <h2 class="sec-title">Inputs, switches & buttons</h2>
+    <p class="sec-desc">Floating labels, spring-toggled switches, ripple on press, and a button that transitions through loading into a drawn checkmark.</p>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-label">Fields</div>
+      <div class="field">
+        <input type="text" id="f1" placeholder=" ">
+        <label for="f1">Asset ID</label>
+      </div>
+      <div class="field">
+        <input type="text" id="f2" placeholder=" ">
+        <label for="f2">Project name</label>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="switch" onclick="this.classList.toggle('on')"></div>
+        <span style="font-size:13px;">Auto-refresh every 5m</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+        <div class="switch on" onclick="this.classList.toggle('on')"></div>
+        <span style="font-size:13px;">Notify on SLA breach</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Buttons</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;">
+        <button class="btn" onclick="ripple(event)">Ripple press</button>
+        <button class="btn btn-load" id="loadBtn" onclick="loadBtn(this)">
+          <span class="btn-txt">Submit</span>
+          <span class="btn-spin"><div></div></span>
+        </button>
+        <button class="btn ghost shake-trigger" onclick="this.classList.add('shake');setTimeout(()=>this.classList.remove('shake'),400)">Invalid (shake)</button>
+      </div>
+      <div class="card-label">Tooltip & copy</div>
+      <div style="display:flex;gap:20px;align-items:center;">
+        <div class="tip">
+          <button class="btn ghost">Hover me</button>
+          <span class="tip-bubble">Springs into place</span>
+        </div>
+        <button class="btn ghost copy-btn" onclick="doCopy(this)">
+          ⧉ Copy ID
+          <span class="copied">Copied!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11. TABLE -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">11 — Data</div>
+    <h2 class="sec-title">Table with row stagger & live flash</h2>
+    <p class="sec-desc">Rows cascade in on load; updated rows flash a fading highlight so live changes are noticed without a page jump.</p>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Incident</th><th>Service</th><th>Status</th><th>Duration</th></tr></thead>
+      <tbody id="tbody">
+        <tr><td>INC…39865</td><td>Northwind_Retail_EU</td><td><span class="badge warn"><i></i>Attention</span></td><td>9h 19m</td></tr>
+        <tr><td>INC…39631</td><td>Contoso_Lending</td><td><span class="badge danger"><i></i>Failed</span></td><td>10h 43m</td></tr>
+        <tr><td>INC…39122</td><td>Fabrikam_Trust_NA</td><td><span class="badge info running"><i></i>Running</span></td><td>3h 02m</td></tr>
+        <tr><td>INC…38213</td><td>Litware_FCU</td><td><span class="badge good"><i></i>Resolved</span></td><td>1h 47m</td></tr>
+      </tbody>
+    </table>
+    <button class="btn ghost" style="margin-top:14px;" onclick="flashRow()">Simulate live update</button>
+  </div>
+</section>
+
+<!-- 12. MICRO -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">12 — Micro</div>
+    <h2 class="sec-title">Hover, marquee & gradient text</h2>
+    <p class="sec-desc">Small touches that cost nothing. Lift on hover for anything clickable; gradient text sparingly, for a single hero number or title.</p>
+  </div>
+  <div class="grid g3">
+    <div class="card hover-lift">
+      <div class="card-label">Hover lift</div>
+      <div style="font-size:13px;color:var(--text-dim);">Rises and borders on hover. Use for any clickable card.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Gradient text</div>
+      <div class="grad-text">99.98% uptime</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Marquee ticker</div>
+      <div class="marquee-wrap">
+        <div class="marquee">
+          <span>Billing 100% · Orders 100% · Retail 18% · 9/9 deliveries on time · 0 SLA breaches ·</span>
+          <span>Billing 100% · Orders 100% · Retail 18% · 9/9 deliveries on time · 0 SLA breaches ·</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="toast-stack" id="toasts"></div>
+
+<div class="modal-scrim" id="modalScrim" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div style="font-size:16px;font-weight:700;margin-bottom:8px;">Resubmit this run?</div>
+    <div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:20px;">
+      This run has already been resubmitted 3 times. A fourth attempt will use the same configuration.
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="closeModal();toast('Resubmit queued','good')">Resubmit</button>
+    </div>
+  </div>
+</div>
+
+<button class="replay" onclick="runAll()">↻ Replay all animations</button>
+
+<script>
+/* ---------- theme ---------- */
+function toggleTheme(){
+  const r = document.documentElement;
+  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+}
+
+/* ---------- count up ---------- */
+function countUp(el){
+  const target = parseFloat(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1300, start = performance.now();
+  function tick(now){
+    const p = Math.min((now-start)/dur, 1);
+    const eased = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.round(target*eased).toLocaleString() + suffix;
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- odometer ---------- */
+function buildOdo(value){
+  const wrap = document.getElementById('odo');
+  wrap.innerHTML = '';
+  String(value).split('').forEach(d=>{
+    const col = document.createElement('div'); col.className='odo-col';
+    const strip = document.createElement('div'); strip.className='odo-strip';
+    for(let i=0;i<=9;i++){ const s=document.createElement('span'); s.textContent=i; strip.appendChild(s); }
+    col.appendChild(strip); wrap.appendChild(col);
+    requestAnimationFrame(()=>{ setTimeout(()=>{ strip.style.transform = `translateY(-${d*38}px)`; }, 60); });
+  });
+}
+
+/* ---------- arcs ---------- */
+function runArcs(){
+  document.querySelectorAll('.arc-fill').forEach(c=>{
+    const pct = parseFloat(c.dataset.pct);
+    const rot = parseFloat(c.dataset.rotate || 0);
+    // pathLength=100 means dasharray/offset are plain percentages
+    c.style.transition = 'none';
+    c.style.strokeDasharray = 100;
+    c.style.strokeDashoffset = 100;
+    if (rot) c.style.transform = `rotate(${rot}deg)`;
+    void c.getBoundingClientRect();          // commit the reset
+    c.style.transition = '';
+    requestAnimationFrame(()=>{ c.style.strokeDashoffset = 100 - pct; });
+  });
+  const n = document.getElementById('needle');
+  if(n){
+    n.style.transition='none';
+    n.style.transform='rotate(-90deg)';
+    void n.getBoundingClientRect();
+    n.style.transition='';
+    requestAnimationFrame(()=>{ n.style.transform='rotate(30deg)'; });
+  }
+}
+
+/* ---------- bars ---------- */
+function runBars(){
+  document.querySelectorAll('.bar-fill').forEach((b,i)=>{
+    b.style.width='0%';
+    setTimeout(()=>b.style.width=b.dataset.w+'%', 100+i*90);
+  });
+  document.querySelectorAll('.seg').forEach((s,i)=>{
+    s.style.width='0%';
+    setTimeout(()=>s.style.width=s.dataset.w+'%', 150+i*110);
+  });
+  document.querySelectorAll('.vbar').forEach((b,i)=>{
+    b.style.height='0';
+    setTimeout(()=>b.style.height=b.dataset.h+'%', 120+i*65);
+  });
+}
+
+/* ---------- lines replay ---------- */
+function runLines(){
+  // measure each path's real length, then animate dashoffset from full -> 0
+  document.querySelectorAll('.line-path,.spark-line').forEach(el=>{
+    const len = el.getTotalLength();
+    el.style.transition = 'none';
+    el.style.strokeDasharray = len;
+    el.style.strokeDashoffset = len;
+    void el.getBoundingClientRect();   // force reflow so the reset applies
+    el.style.transition = '';
+    requestAnimationFrame(()=>{ el.style.strokeDashoffset = 0; });
+  });
+  document.querySelectorAll('.area-fill').forEach(el=>{
+    el.style.animation='none'; void el.offsetWidth; el.style.animation='';
+  });
+}
+
+/* ---------- stagger ---------- */
+function runStagger(){
+  document.querySelectorAll('#staggerList .stagger-item').forEach((el,i)=>{
+    el.classList.remove('go'); void el.offsetWidth;
+    el.style.animationDelay = (i*70)+'ms';
+    el.classList.add('go');
+  });
+  document.querySelectorAll('#chipRow .reveal-chip').forEach((el,i)=>{
+    el.classList.remove('go'); void el.offsetWidth;
+    el.style.animationDelay = (i*55)+'ms';
+    el.classList.add('go');
+  });
+  document.querySelectorAll('#tbody tr').forEach((el,i)=>{
+    el.classList.remove('go'); void el.offsetWidth;
+    el.style.animationDelay = (i*80)+'ms';
+    el.classList.add('go');
+  });
+}
+
+/* ---------- typewriter ---------- */
+let typeTimer;
+function runTyper(){
+  const el = document.getElementById('typer');
+  const text = "All critical deliveries arrived on time. Two projects need review before the next cycle.";
+  clearTimeout(typeTimer); el.textContent='';
+  let i=0;
+  (function tick(){
+    el.textContent = text.slice(0,i++);
+    if(i<=text.length) typeTimer = setTimeout(tick, 22);
+  })();
+}
+
+/* ---------- panel ---------- */
+function togglePanel(open){
+  document.getElementById('pPanel').classList.toggle('open', open);
+  document.getElementById('pScrim').classList.toggle('on', open);
+  document.getElementById('pBg').classList.toggle('dim', open);
+}
+
+/* ---------- toast ---------- */
+function toast(msg, kind){
+  const t = document.createElement('div');
+  t.className = 'toast ' + (kind==='err'?'err':kind==='warn'?'warn':'');
+  t.innerHTML = `<span>${kind==='err'?'✕':'✓'}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(),300); }, 3200);
+}
+
+/* ---------- modal ---------- */
+function openModal(){ document.getElementById('modalScrim').classList.add('on'); }
+function closeModal(){ document.getElementById('modalScrim').classList.remove('on'); }
+
+/* ---------- tabs ---------- */
+function selTab(i, btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  moveInk(btn);
+  document.querySelectorAll('.tab-panel').forEach(p=>{
+    const on = p.dataset.tab == i;
+    p.hidden = !on;
+    p.classList.toggle('show', on);
+    if(on){ p.style.animation='none'; void p.offsetWidth; p.style.animation=''; }
+  });
+}
+function moveInk(btn){
+  const ink = document.getElementById('ink');
+  ink.style.left = btn.offsetLeft + 'px';
+  ink.style.width = btn.offsetWidth + 'px';
+}
+
+/* ---------- ripple ---------- */
+function ripple(e){
+  const btn = e.currentTarget;
+  const r = document.createElement('span');
+  r.className='ripple';
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  r.style.width = r.style.height = size+'px';
+  r.style.left = (e.clientX-rect.left-size/2)+'px';
+  r.style.top = (e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(r);
+  setTimeout(()=>r.remove(), 620);
+}
+
+/* ---------- loading button ---------- */
+function loadBtn(btn){
+  if(btn.classList.contains('loading')) return;
+  btn.classList.add('loading');
+  setTimeout(()=>{
+    btn.classList.remove('loading');
+    btn.querySelector('.btn-txt').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-3px"><polyline class="check-mark" points="4,13 9,18 20,6"/></svg> Done';
+    setTimeout(()=>{ btn.querySelector('.btn-txt').textContent='Submit'; }, 2200);
+  }, 1600);
+}
+
+/* ---------- copy ---------- */
+function doCopy(btn){
+  const c = btn.querySelector('.copied');
+  c.classList.remove('go'); void c.offsetWidth; c.classList.add('go');
+}
+
+/* ---------- table flash ---------- */
+function flashRow(){
+  const rows = document.querySelectorAll('#tbody tr');
+  const r = rows[Math.floor(Math.random()*rows.length)];
+  r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
+}
+
+/* ---------- run everything ---------- */
+function runAll(){
+  document.querySelectorAll('[data-count]').forEach(countUp);
+  buildOdo(4821);
+  runArcs(); runBars(); runLines(); runStagger(); runTyper();
+}
+function forceMotion(){
+  document.documentElement.dataset.motion = 'force';
+  document.getElementById('motionBanner').classList.remove('show');
+  runAll();
+}
+window.addEventListener('load', ()=>{
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.getElementById('motionBanner').classList.add('show');
+  }
+  runAll();
+  moveInk(document.querySelector('.tab.active'));
+});
+</script>
+</body>
+</html>

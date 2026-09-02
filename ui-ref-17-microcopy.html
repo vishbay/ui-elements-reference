@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 17 — Content &amp; Microcopy</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.cmp{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:14px;overflow:hidden}
+@media(max-width:820px){.cmp{grid-template-columns:1fr}}
+.side{background:var(--bg);color:var(--text);padding:20px;position:relative;min-height:120px}
+.side+.side{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.side+.side{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.side-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;font-weight:700;pointer-events:none}
+.bad .side-tag{color:var(--danger)}
+.good .side-tag{color:var(--good)}
+.bad{--edge:var(--danger)}
+.good{--edge:var(--good)}
+
+.ex{border:1px solid var(--border);border-radius:10px;background:var(--surface);
+  padding:14px;margin-bottom:11px}
+.ex:last-child{margin-bottom:0}
+.ex-h{font-size:13px;font-weight:660;margin-bottom:5px}
+.ex-b{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.ex-b code{font-size:11.5px}
+.why{font-size:11.5px;color:var(--text-faint);line-height:1.6;margin-top:9px;
+  padding-top:9px;border-top:1px solid var(--hairline)}
+.why b{color:var(--text-dim)}
+
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mb{border:1px solid var(--border-strong);background:transparent;color:var(--text);
+  border-radius:8px;padding:7px 13px;font-size:12px;font-weight:620;font-family:inherit;cursor:pointer}
+.mb.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.mb.d{background:var(--danger);border-color:var(--danger);color:#fff}
+
+.tone{border-left:2px solid var(--border);padding-left:13px;margin-bottom:13px}
+.tone:last-child{margin-bottom:0}
+.tone-l{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+  color:var(--text-faint);margin-bottom:4px}
+.tone-t{font-size:12.5px;line-height:1.6}
+.tone.pick .tone-l{color:var(--good)}
+
+.fmt{width:100%;border-collapse:collapse;font-size:12px}
+.fmt th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-faint);font-weight:700;padding:7px 8px;border-bottom:1px solid var(--border)}
+.fmt td{padding:8px;border-bottom:1px solid var(--hairline);vertical-align:top}
+.fmt .no{color:var(--danger);font-family:var(--mono);font-size:11px}
+.fmt .yes{color:var(--good);font-family:var(--mono);font-size:11px}
+.fmt .rz{font-size:11px;color:var(--text-faint);line-height:1.5}
+
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+@media(max-width:820px){.rules{grid-template-columns:1fr}}
+.rc{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px}
+.rc h4{margin:0 0 5px;font-size:12.5px;color:#edeef2}
+.rc p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.6}
+.rc code{font-size:10.5px}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 17</div>
+  <h1>Content &amp; Microcopy</h1>
+  <p>The non-visual half of interface design: error messages, button labels, empty states, tone,
+  number and date formatting, and notification copy. Shown as before/after pairs with the reasoning
+  for each change.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Errors</div>
+    <h2 class="sec-title">What failed, what is safe, what to do next</h2>
+    <p class="sec-desc">Three questions every error must answer. The third is the one most often missing — a message with no path forward is just an apology.</p>
+  </div>
+  <div class="cmp">
+  <div class="side bad" data-t="dark"><span class="side-tag">Before</span>
+<div class="ex"><div class="ex-h">Error</div>
+  <div class="ex-b">An error occurred. Please try again later.</div>
+  <div class="why"><b>Says nothing.</b> The user cannot tell what failed, whether their data is safe,
+  or what &ldquo;later&rdquo; means.</div></div>
+<div class="ex"><div class="ex-h">Invalid input</div>
+  <div class="ex-b">Field validation failed.</div>
+  <div class="why"><b>Which field, and why?</b> Blames the user without saying what correct looks like.</div></div>
+<div class="ex"><div class="ex-h">Error 500</div>
+  <div class="ex-b">HTTP 500 &mdash; INTERNAL_SERVER_ERROR at BatchExecutor.awaitUpstream</div>
+  <div class="why"><b>Leaks internals.</b> Useful in a log, meaningless in a dialog.</div></div>
+</div>
+  <div class="side good" data-t="dark"><span class="side-tag">After</span>
+<div class="ex"><div class="ex-h">Could not load run history</div>
+  <div class="ex-b">BigQuery timed out after three attempts. Your filters are unchanged &mdash;
+  nothing was lost.
+  <div class="btnrow"><button class="mb p">Retry</button>
+    <button class="mb">Copy error ID</button></div></div>
+  <div class="why"><b>What failed, what is safe, what to do.</b> The error ID gives support something
+  to trace without showing a stack trace.</div></div>
+<div class="ex"><div class="ex-h">Asset ID must be numeric</div>
+  <div class="ex-b">Enter digits only, for example <code>5341</code>.</div>
+  <div class="why"><b>Names the rule and shows a valid example.</b> The example does more work than the
+  rule.</div></div>
+<div class="ex"><div class="ex-h">Something went wrong on our end</div>
+  <div class="ex-b">This is usually temporary. If it keeps happening, share error ID
+  <code>a7f3-2201</code> with the pipeline team.
+  <div class="btnrow"><button class="mb p">Try again</button></div></div>
+  <div class="why"><b>Takes the blame, sets expectation, gives an escalation path.</b></div></div>
+</div>
+</div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Buttons &amp; confirmations</div>
+    <h2 class="sec-title">Labels that name their outcome</h2>
+    <p class="sec-desc">&ldquo;OK&rdquo; and &ldquo;Cancel&rdquo; are the two worst labels in software, and they are especially bad when the action itself involves cancelling something.</p>
+  </div>
+  <div class="cmp">
+  <div class="side bad" data-t="dark"><span class="side-tag">Before</span>
+<div class="ex"><div class="ex-h">Ambiguous confirmations</div>
+  <div class="ex-b">Are you sure you want to proceed?
+    <div class="btnrow"><button class="mb">Cancel</button><button class="mb p">OK</button></div></div>
+  <div class="why"><b>&ldquo;OK&rdquo; to what?</b> And &ldquo;Cancel&rdquo; is ambiguous when the
+  action itself is cancelling something.</div></div>
+<div class="ex"><div class="ex-h">Vague labels</div>
+  <div class="ex-b"><div class="btnrow"><button class="mb">Submit</button>
+    <button class="mb">Continue</button><button class="mb">Done</button></div></div>
+  <div class="why"><b>Generic verbs.</b> The user has to read surrounding text to learn what happens.</div></div>
+</div>
+  <div class="side good" data-t="dark"><span class="side-tag">After</span>
+<div class="ex"><div class="ex-h">Restate the action</div>
+  <div class="ex-b">This run has already been resubmitted 3 times. A fourth attempt uses the same
+  configuration.
+    <div class="btnrow"><button class="mb">Keep waiting</button>
+      <button class="mb d">Resubmit anyway</button></div></div>
+  <div class="why"><b>Both buttons name their outcome.</b> Neither says &ldquo;Cancel&rdquo;, which is
+  overloaded here. Destructive action is styled and worded as such.</div></div>
+<div class="ex"><div class="ex-h">Specific verbs</div>
+  <div class="ex-b"><div class="btnrow"><button class="mb p">Resubmit run</button>
+    <button class="mb">Save thresholds</button><button class="mb">Export as PDF</button></div></div>
+  <div class="why"><b>Verb plus object.</b> A button should be readable with no surrounding context
+  &mdash; screen readers announce it alone.</div></div>
+</div>
+</div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Empty states</div>
+    <h2 class="sec-title">Distinguish nothing-yet from nothing-matches</h2>
+    <p class="sec-desc">These are different situations needing different copy and different actions. Collapsing them into one generic message is the most common empty-state mistake.</p>
+  </div>
+  <div class="cmp">
+  <div class="side bad" data-t="dark"><span class="side-tag">Before</span>
+<div class="ex"><div class="ex-h">No data</div>
+  <div class="ex-b">There is nothing to display.</div>
+  <div class="why"><b>Dead end.</b> Is this broken, still loading, or genuinely empty?</div></div>
+<div class="ex"><div class="ex-h">No results found</div>
+  <div class="ex-b">Your search returned 0 results.</div>
+  <div class="why"><b>Restates the obvious</b> and offers no way forward.</div></div>
+</div>
+  <div class="side good" data-t="dark"><span class="side-tag">After</span>
+<div class="ex"><div class="ex-h">No incidents this cycle</div>
+  <div class="ex-b">Everything completed without needing attention. Incidents will appear here as
+  they are raised.</div>
+  <div class="why"><b>Explains that empty is good</b> and says what would change it.</div></div>
+<div class="ex"><div class="ex-h">No incidents match &ldquo;northwind&rdquo;</div>
+  <div class="ex-b">Nothing in the last 3 days. Try widening the date range or clearing the status
+  filter.
+    <div class="btnrow"><button class="mb">Clear filters</button>
+      <button class="mb">Search last 30 days</button></div></div>
+  <div class="why"><b>Names the constraint that excluded results</b> and offers the two most likely
+  fixes as actions.</div></div>
+</div>
+</div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Tone</div>
+    <h2 class="sec-title">The operational register</h2>
+    <p class="sec-desc">Ops copy has a narrow target: plain and specific, without either forced cheer or bureaucratic padding.</p>
+  </div>
+  <div class="cmp">
+<div class="side bad" data-t="dark"><span class="side-tag">Too far either way</span>
+  <div class="tone"><div class="tone-l">Too casual</div>
+    <div class="tone-t">Yikes! Looks like your pipeline face-planted 😅 No worries though, we'll get
+    it sorted!</div></div>
+  <div class="tone"><div class="tone-l">Too formal</div>
+    <div class="tone-t">The aforementioned pipeline process has experienced an execution failure event
+    necessitating remediation by the responsible operational team.</div></div>
+  <div class="tone"><div class="tone-l">Too alarming</div>
+    <div class="tone-t">CRITICAL FAILURE! Immediate action required! Your pipeline has FAILED!</div></div>
+  <div class="tone"><div class="tone-l">Too passive</div>
+    <div class="tone-t">It has been determined that a failure may have possibly occurred in relation
+    to the run in question.</div></div>
+</div>
+<div class="side good" data-t="dark"><span class="side-tag">Calibrated</span>
+  <div class="tone pick"><div class="tone-l">Operational register</div>
+    <div class="tone-t">The Reports run failed after three attempts. The pipeline team needs to look
+    at the setup step before the next cycle.</div></div>
+  <div class="why" style="margin-top:14px"><b>Plain, specific, unhurried.</b> Ops copy should read
+  like a competent colleague telling you what happened. No exclamation marks, no hedging, no jargon,
+  no drama. Severity is carried by the badge and colour, not by the wording &mdash; if every message
+  shouts, none of them do.</div>
+  <div class="why"><b>One more test:</b> read it aloud. If you would not say it to someone at their
+  desk, do not ship it.</div>
+</div></div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Formatting</div>
+    <h2 class="sec-title">Numbers, dates and identifiers</h2>
+    <p class="sec-desc">The details that make a dense console readable or exhausting. Most of these cost one formatting function and are never revisited.</p>
+  </div>
+  <div class="cmp">
+<div class="side" data-t="dark" style="grid-column:1 / -1">
+<table class="fmt">
+<thead><tr><th style="width:22%">Type</th><th style="width:24%">Avoid</th><th style="width:24%">Prefer</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>Duration</td><td class="no">38580 seconds</td><td class="yes">10h 43m</td>
+  <td class="rz">Nobody converts seconds mentally. Two units maximum.</td></tr>
+<tr><td>Recent time</td><td class="no">2026-09-01T13:54:03Z</td><td class="yes">9h ago &middot; 13:54</td>
+  <td class="rz">Relative for recency, absolute on hover or beside it. Both, not one.</td></tr>
+<tr><td>Older time</td><td class="no">241 days ago</td><td class="yes">14 Jan 2026</td>
+  <td class="rz">Relative stops helping after about a week.</td></tr>
+<tr><td>Timezone</td><td class="no">13:54</td><td class="yes">13:54 CT</td>
+  <td class="rz">Distributed teams. Always label, always the same zone across the app.</td></tr>
+<tr><td>Large counts</td><td class="no">1284391</td><td class="yes">1,284,391 &middot; 1.28M</td>
+  <td class="rz">Separators when exact matters, abbreviation in tiles.</td></tr>
+<tr><td>Percentages</td><td class="no">86.4213%</td><td class="yes">86%</td>
+  <td class="rz">One decimal only if the decision changes on it.</td></tr>
+<tr><td>Zero</td><td class="no">&mdash; &nbsp;or blank</td><td class="yes">0</td>
+  <td class="rz">Zero is data. Blank means "we do not know", which is different.</td></tr>
+<tr><td>Unknown</td><td class="no">0 &nbsp;or N/A</td><td class="yes">Not recorded</td>
+  <td class="rz">Never render missing data as zero; it corrupts every mental average.</td></tr>
+<tr><td>Ranges</td><td class="no">09/01-09/02</td><td class="yes">1&ndash;2 Sep 2026</td>
+  <td class="rz">Numeric dates are ambiguous internationally. En dash, not hyphen.</td></tr>
+<tr><td>IDs</td><td class="no">INC000012345678</td><td class="yes">INC…39631 <span style="opacity:.6">(full on hover)</span></td>
+  <td class="rz">Truncate the constant prefix; keep the distinguishing tail.</td></tr>
+<tr><td>File size</td><td class="no">1258291 bytes</td><td class="yes">1.2 MB</td>
+  <td class="rz">Nobody thinks in bytes.</td></tr>
+<tr><td>Alignment</td><td class="no">left-aligned numbers</td><td class="yes">right + tabular</td>
+  <td class="rz"><code>font-variant-numeric: tabular-nums</code> stops columns jittering on update.</td></tr>
+</tbody></table>
+</div></div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Notifications</div>
+    <h2 class="sec-title">Triage-able without opening the app</h2>
+    <p class="sec-desc">A notification that requires opening the app to understand has already failed. Include enough to decide whether to act.</p>
+  </div>
+  <div class="cmp">
+  <div class="side bad" data-t="dark"><span class="side-tag">Before</span>
+<div class="ex"><div class="ex-h">Alert</div>
+  <div class="ex-b">Pipeline status changed.</div>
+  <div class="why"><b>Which pipeline, to what, and do I care?</b> A notification that requires opening
+  the app to understand has failed.</div></div>
+<div class="ex"><div class="ex-h">3 new notifications</div>
+  <div class="ex-b">You have unread items.</div>
+  <div class="why"><b>Count without content.</b> Trains people to ignore the badge.</div></div>
+</div>
+  <div class="side good" data-t="dark"><span class="side-tag">After</span>
+<div class="ex"><div class="ex-h">Reports pre-process failed</div>
+  <div class="ex-b">Third failure today. Blocks 707 downstream deliveries. 90 minutes of SLA margin
+  remaining.</div>
+  <div class="why"><b>What, how bad, how urgent</b> &mdash; enough to triage without opening
+  anything.</div></div>
+<div class="ex"><div class="ex-h">2 projects need attention</div>
+  <div class="ex-b">Order Fulfilment (behind schedule) and Reports (setup step failed).</div>
+  <div class="why"><b>Grouped with specifics.</b> Summarise the count, then name the items.</div></div>
+</div>
+</div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">07 — Rules</div>
+    <h2 class="sec-title">The eight that cover most cases</h2>
+    <p class="sec-desc">Not a style guide — a checklist to run a message against before shipping it.</p>
+  </div>
+  
+<div class="rules">
+  <div class="rc"><h4>Say what happened, then what to do</h4>
+    <p>Every message answers two questions in order. If the second has no answer, the message is
+    probably not worth showing.</p></div>
+  <div class="rc"><h4>Blame the system, never the user</h4>
+    <p>&ldquo;We could not read that file&rdquo;, not &ldquo;You uploaded an invalid file&rdquo;.
+    Same information, no accusation.</p></div>
+  <div class="rc"><h4>An example beats a rule</h4>
+    <p>&ldquo;for example <code>5341</code>&rdquo; teaches faster than any description of the format.</p></div>
+  <div class="rc"><h4>Buttons name their outcome</h4>
+    <p>Readable with zero surrounding context &mdash; that is how screen readers announce them, and how
+    people actually scan dialogs.</p></div>
+  <div class="rc"><h4>Severity lives in the UI, not the words</h4>
+    <p>Badge, colour and placement carry urgency. Copy stays level. Shouting text next to a red badge
+    is redundant.</p></div>
+  <div class="rc"><h4>Never show a raw stack trace</h4>
+    <p>Give an error ID that support can trace. The trace belongs in the log, not the dialog.</p></div>
+  <div class="rc"><h4>Missing is not zero</h4>
+    <p>&ldquo;Not recorded&rdquo; and <code>0</code> mean different things. Conflating them silently
+    corrupts every average someone computes by eye.</p></div>
+  <div class="rc"><h4>Read it aloud</h4>
+    <p>If you would not say it to a colleague at their desk, rewrite it. Catches both jargon and
+    forced cheerfulness.</p></div>
+</div>
+</section>
+</div>
+<div class="foot"><b>How to use this.</b> Microcopy is usually the cheapest quality improvement available:
+no design work, no engineering, just better strings. Two habits carry most of the value &mdash;
+write the error message before writing the error handling, and read every message aloud before shipping.
+If you generate copy with an LLM, put these rules in the system prompt rather than editing the output
+afterwards; the executive-persona work is the same idea applied to summaries.</div>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+</script>
+</body>
+</html>

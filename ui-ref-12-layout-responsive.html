@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 12 — Layout &amp; Responsive</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:50px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.tile{display:grid;grid-template-columns:1fr 1fr;border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-lg);overflow:hidden}
+@media(max-width:820px){.tile{grid-template-columns:1fr}}
+.pane{background:var(--bg);color:var(--text);padding:22px;position:relative;min-height:130px}
+.pane+.pane{border-left:1px solid rgba(128,128,128,.22)}
+@media(max-width:820px){.pane+.pane{border-left:none;border-top:1px solid rgba(128,128,128,.22)}}
+.pane-tag{position:absolute;top:9px;right:11px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;pointer-events:none;z-index:5}
+.lbl{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:9px}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.stack{display:flex;flex-direction:column;gap:14px}
+.body-txt{font-size:12.5px;color:var(--text-dim);line-height:1.6}
+.foot{max-width:1180px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+
+.split-pane{display:flex;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;
+  height:210px;background:var(--surface);user-select:none}
+.sp-a{width:38%;padding:13px;overflow:auto;min-width:90px}
+.sp-b{flex:1;padding:13px;overflow:auto;min-width:90px;border-left:1px solid var(--border)}
+.sp-drag{width:7px;flex-shrink:0;cursor:col-resize;background:var(--surface-2);position:relative;
+  transition:background var(--fast)}
+.sp-drag:hover,.sp-drag.on{background:var(--accent)}
+.sp-drag::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:1.5px;height:22px;background:var(--border-strong);border-radius:2px}
+.sp-drag:hover::after{background:#fff}
+
+.vsplit{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:var(--r-md);
+  overflow:hidden;height:210px;background:var(--surface);user-select:none}
+.vs-a{height:46%;padding:13px;overflow:auto;min-height:44px}
+.vs-b{flex:1;padding:13px;overflow:auto;min-height:44px;border-top:1px solid var(--border)}
+.vs-drag{height:7px;flex-shrink:0;cursor:row-resize;background:var(--surface-2);position:relative;
+  transition:background var(--fast)}
+.vs-drag:hover,.vs-drag.on{background:var(--accent)}
+.vs-drag::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  height:1.5px;width:22px;background:var(--border-strong);border-radius:2px}
+
+.three{display:grid;grid-template-columns:118px 1fr 168px;border:1px solid var(--border);
+  border-radius:var(--r-md);overflow:hidden;height:190px;background:var(--surface)}
+.three > div{padding:11px;overflow:auto;font-size:11.5px;color:var(--text-dim)}
+.three > div + div{border-left:1px solid var(--border)}
+.three .t{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-faint);
+  font-weight:700;margin-bottom:8px}
+.three.narrow{grid-template-columns:46px 1fr}
+.three.narrow .detail{display:none}
+.rowitem{padding:6px 7px;border-radius:6px;margin-bottom:3px;font-size:11.5px;cursor:pointer}
+.rowitem:hover{background:var(--surface-2)}
+.rowitem.on{background:var(--accent-soft);color:var(--accent);font-weight:640}
+
+.spy{display:grid;grid-template-columns:118px 1fr;gap:13px;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--surface);padding:13px;height:220px}
+.spy-toc{font-size:11.5px}
+.spy-toc a{display:block;padding:5px 8px;border-radius:6px;color:var(--text-faint);
+  text-decoration:none;cursor:pointer;
+  transition:all var(--fast)}
+.spy-toc a.on{color:var(--accent);background:var(--accent-soft);font-weight:640}
+.spy-body{overflow-y:auto;padding-right:6px}
+.spy-sec{margin-bottom:18px}
+.spy-h{position:sticky;top:0;background:var(--surface);padding:5px 0;font-size:12.5px;
+  font-weight:660;z-index:2;border-bottom:1px solid var(--hairline);margin-bottom:7px}
+.spy-p{font-size:11.5px;color:var(--text-dim);line-height:1.65}
+
+.masonry{column-count:3;column-gap:9px}
+@media(max-width:520px){.masonry{column-count:2}}
+.mas-item{break-inside:avoid;margin-bottom:9px;border:1px solid var(--border);border-radius:10px;
+  padding:11px;background:var(--surface-2);font-size:11.5px;color:var(--text-dim)}
+.mas-item b{display:block;color:var(--text);font-size:12px;margin-bottom:4px}
+
+.resp{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.resp-bar{display:flex;gap:5px;padding:9px 11px;border-bottom:1px solid var(--border);
+  background:var(--surface-2);align-items:center}
+.resp-bar button{background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  border-radius:6px;font-size:10.5px;font-weight:700;padding:4px 9px;cursor:pointer;font-family:inherit}
+.resp-bar button.on{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.resp-bar .w{margin-left:auto;font-size:10.5px;color:var(--text-faint);font-family:var(--mono)}
+.resp-stage{padding:13px;transition:max-width var(--base) var(--ease);margin:0 auto}
+.resp-grid{display:grid;gap:9px;grid-template-columns:repeat(4,1fr)}
+.resp-stage[data-w="tablet"] .resp-grid{grid-template-columns:repeat(2,1fr)}
+.resp-stage[data-w="phone"] .resp-grid{grid-template-columns:1fr}
+.resp-card{border:1px solid var(--border);border-radius:9px;padding:11px;background:var(--surface-2)}
+.resp-card .n{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.resp-card .l{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;
+  font-weight:700;margin-top:2px}
+.resp-tbl{margin-top:9px}
+.resp-stage[data-w="phone"] .resp-tbl table{display:none}
+.resp-stage:not([data-w="phone"]) .resp-cards{display:none}
+.resp-cards .rc{border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:7px;
+  background:var(--surface-2);font-size:11.5px}
+.resp-cards .rc .k{color:var(--text-faint);font-size:10px;text-transform:uppercase;
+  letter-spacing:.06em;font-weight:700}
+.resp-cards .rc .r{display:flex;justify-content:space-between;padding:3px 0}
+table.mini{width:100%;border-collapse:collapse;font-size:11.5px}
+table.mini th{text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700;padding:6px 7px;border-bottom:1px solid var(--border)}
+table.mini td{padding:7px;border-bottom:1px solid var(--hairline)}
+
+.sticky-demo{height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--surface)}
+.sd-h{position:sticky;top:0;background:var(--surface-2);border-bottom:1px solid var(--border);
+  padding:7px 12px;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;
+  color:var(--text-faint);z-index:3;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sd-r{padding:9px 12px;font-size:12px;border-bottom:1px solid var(--hairline)}
+
+.inf{height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--surface);padding:11px}
+.inf-item{padding:9px 11px;border:1px solid var(--border);border-radius:8px;margin-bottom:7px;
+  font-size:12px;background:var(--surface-2);animation:fadeUp .4s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sentinel{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;
+  font-size:11.5px;color:var(--text-faint)}
+.sentinel i{width:13px;height:13px;border-radius:50%;border:2px solid var(--border-strong);
+  border-top-color:var(--accent);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+
+/* ---- 06 board ---- */
+.kb{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;min-height:300px;align-items:flex-start;min-width:0}
+.tile>.pane{min-width:0}
+.kb-col{flex:1 0 122px;min-width:122px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;max-height:300px;transition:flex-basis 260ms var(--ease-spring)}
+.kb-col.over{border-color:var(--accent)}
+.kb-col.collapsed{flex:0 0 36px;min-width:36px}
+.kb-col.collapsed .kb-body,.kb-col.collapsed .kb-add,.kb-col.collapsed .kb-wip{display:none}
+.kb-col.collapsed .kb-h{writing-mode:vertical-rl;transform:rotate(180deg);padding:10px 8px;border-bottom:none;justify-content:flex-end}
+.kb-h{display:flex;align-items:center;gap:6px;padding:9px 10px;font-size:11.5px;font-weight:650;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+.kb-h .n{font-family:var(--mono);font-size:10px;color:var(--text-faint);background:var(--surface);padding:0 5px;border-radius:999px;font-weight:600}
+.kb-h .n.over{background:var(--danger-soft);color:var(--danger)}
+.kb-h .wip{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--text-faint)}
+.kb-h .wip.over{color:var(--danger)}
+.kb-h .dotc{width:7px;height:7px;border-radius:50%}
+.kb-body{padding:8px;display:flex;flex-direction:column;gap:7px;overflow-y:auto;flex:1;min-height:40px}
+.kb-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 10px;cursor:grab;box-shadow:var(--e1);transition:box-shadow var(--fast),transform var(--fast)}
+.kb-card:hover{border-color:var(--border-strong)}
+.kb-card:active{cursor:grabbing}
+.kb-card.drag{opacity:.45;transform:rotate(1.5deg)}
+.kb-card .t{font-size:11.5px;font-weight:600;line-height:1.35;margin-bottom:6px}
+.kb-card .tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px}
+.kb-tag{font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--surface-2);color:var(--text-dim)}
+.kb-tag.a{background:var(--accent-soft);color:var(--accent)}.kb-tag.d{background:var(--danger-soft);color:var(--danger)}.kb-tag.w{background:var(--warn-soft);color:var(--warn)}.kb-tag.g{background:var(--good-soft);color:var(--good)}
+.kb-card .f{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-faint);font-family:var(--mono)}
+.kb-card .f .av{width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;font-family:inherit;margin-left:auto}
+.kb-card .f .pri{font-family:inherit;font-weight:700;letter-spacing:.04em}
+.kb-card .f .pri.p1{color:var(--danger)}.kb-card .f .pri.p2{color:var(--warn)}
+.kb-card .f .due.late{color:var(--danger)}
+.kb-add{margin:0 8px 8px;padding:7px;border:1px dashed var(--border-strong);border-radius:7px;font-size:11px;color:var(--text-faint);text-align:center;cursor:pointer}
+.kb-add:hover{color:var(--accent);border-color:var(--accent)}
+.kb-wip{font-size:10px;color:var(--danger);padding:0 10px 8px;display:none}
+.kb-col.wip-over .kb-wip{display:block}
+.kb-ph{height:2px;background:var(--accent);border-radius:1px;margin:-3px 0}
+
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 12</div>
+  <h1>Layout &amp; Responsive</h1>
+  <p>Draggable split panes, three-pane collapse order, sticky section headers, scroll-spy navigation, masonry, breakpoint behaviour for dense tables, and infinite-scroll sentinels.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Split panes</div>
+    <h2 class="sec-title">Draggable horizontal and vertical dividers</h2>
+    <p class="sec-desc">Store the ratio as a percentage rather than pixels so it survives a window resize, and give both panes a <code>min-width</code> so a fast drag cannot collapse one to zero. The cursor changes on the handle itself, not on hover of the whole edge.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Horizontal split &mdash; drag the divider</div>
+<div class="split-pane" style="margin-bottom:14px">
+  <div class="sp-a"><div class="body-txt"><b>Incident list</b><br>Drag the handle to rebalance.
+    Panes have a min-width so neither can collapse to nothing.</div></div>
+  <div class="sp-drag" onmousedown="startSplit(event,'h')"></div>
+  <div class="sp-b"><div class="body-txt"><b>Detail</b><br>Widths are stored as a percentage so the
+    ratio survives a window resize.</div></div>
+</div>
+<div class="lbl">Vertical split</div>
+<div class="vsplit">
+  <div class="vs-a"><div class="body-txt"><b>Run output</b><br>Log above, detail below.</div></div>
+  <div class="vs-drag" onmousedown="startSplit(event,'v')"></div>
+  <div class="vs-b"><div class="body-txt"><b>Stack trace</b><br>Common layout for a debugging view.</div></div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Horizontal split &mdash; drag the divider</div>
+<div class="split-pane" style="margin-bottom:14px">
+  <div class="sp-a"><div class="body-txt"><b>Incident list</b><br>Drag the handle to rebalance.
+    Panes have a min-width so neither can collapse to nothing.</div></div>
+  <div class="sp-drag" onmousedown="startSplit(event,'h')"></div>
+  <div class="sp-b"><div class="body-txt"><b>Detail</b><br>Widths are stored as a percentage so the
+    ratio survives a window resize.</div></div>
+</div>
+<div class="lbl">Vertical split</div>
+<div class="vsplit">
+  <div class="vs-a"><div class="body-txt"><b>Run output</b><br>Log above, detail below.</div></div>
+  <div class="vs-drag" onmousedown="startSplit(event,'v')"></div>
+  <div class="vs-b"><div class="body-txt"><b>Stack trace</b><br>Common layout for a debugging view.</div></div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Multi-pane &amp; sticky</div>
+    <h2 class="sec-title">Three-pane collapse and sticky headers</h2>
+    <p class="sec-desc">The nav/list/detail layout drops its detail pane first and collapses nav to icons second &mdash; never reverse that order, since the detail is reachable by other means and the nav is not. Sticky headers need a background; transparent ones let content scroll through them.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Three-pane &mdash; toggle to see it collapse</div>
+<div class="three" style="margin-bottom:11px">
+  <div><div class="t">Nav</div>
+    <div class="rowitem on">Overview</div><div class="rowitem">Incidents</div>
+    <div class="rowitem">Deliveries</div><div class="rowitem">Delivery</div></div>
+  <div><div class="t">List</div>
+    <div class="rowitem on">INC&hellip;39865</div><div class="rowitem">INC&hellip;39631</div>
+    <div class="rowitem">INC&hellip;39122</div><div class="rowitem">INC&hellip;38213</div></div>
+  <div class="detail"><div class="t">Detail</div>
+    Project: Northwind Retail<br>Status: Failed<br>Duration: 10h 43m</div>
+</div>
+<button class="lvbtn" onclick="this.previousElementSibling.previousElementSibling.classList.toggle('narrow')"
+  style="background:transparent;border:1px solid var(--border-strong);color:var(--text);
+  border-radius:7px;font-size:11.5px;padding:5px 11px;cursor:pointer;font-family:inherit;margin-bottom:16px">
+  Toggle narrow</button>
+
+<div class="lbl">Sticky section headers</div>
+<div class="sticky-demo">
+  <div class="sd-h">Today</div>
+  <div class="sd-r">Reports pre-process failed</div>
+  <div class="sd-r">SLA breach on Daily Sync</div>
+  <div class="sd-r">3 runs self-recovered</div>
+  <div class="sd-h">Yesterday</div>
+  <div class="sd-r">All critical deliveries on time</div>
+  <div class="sd-r">Cycle completed 02:14</div>
+  <div class="sd-r">2 configs updated</div>
+  <div class="sd-h">Last week</div>
+  <div class="sd-r">Timeout threshold raised to 360m</div>
+  <div class="sd-r">New project onboarded</div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Three-pane &mdash; toggle to see it collapse</div>
+<div class="three" style="margin-bottom:11px">
+  <div><div class="t">Nav</div>
+    <div class="rowitem on">Overview</div><div class="rowitem">Incidents</div>
+    <div class="rowitem">Deliveries</div><div class="rowitem">Delivery</div></div>
+  <div><div class="t">List</div>
+    <div class="rowitem on">INC&hellip;39865</div><div class="rowitem">INC&hellip;39631</div>
+    <div class="rowitem">INC&hellip;39122</div><div class="rowitem">INC&hellip;38213</div></div>
+  <div class="detail"><div class="t">Detail</div>
+    Project: Northwind Retail<br>Status: Failed<br>Duration: 10h 43m</div>
+</div>
+<button class="lvbtn" onclick="this.previousElementSibling.previousElementSibling.classList.toggle('narrow')"
+  style="background:transparent;border:1px solid var(--border-strong);color:var(--text);
+  border-radius:7px;font-size:11.5px;padding:5px 11px;cursor:pointer;font-family:inherit;margin-bottom:16px">
+  Toggle narrow</button>
+
+<div class="lbl">Sticky section headers</div>
+<div class="sticky-demo">
+  <div class="sd-h">Today</div>
+  <div class="sd-r">Reports pre-process failed</div>
+  <div class="sd-r">SLA breach on Daily Sync</div>
+  <div class="sd-r">3 runs self-recovered</div>
+  <div class="sd-h">Yesterday</div>
+  <div class="sd-r">All critical deliveries on time</div>
+  <div class="sd-r">Cycle completed 02:14</div>
+  <div class="sd-r">2 configs updated</div>
+  <div class="sd-h">Last week</div>
+  <div class="sd-r">Timeout threshold raised to 360m</div>
+  <div class="sd-r">New project onboarded</div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Scroll-spy &amp; masonry</div>
+    <h2 class="sec-title">Position-aware navigation</h2>
+    <p class="sec-desc">The TOC highlights based on which section header is nearest the top of the scroll container, not on click. Masonry via CSS <code>columns</code> costs nothing but reads top-to-bottom per column &mdash; wrong if reading order matters, fine for a dashboard of independent tiles.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Scroll-spy TOC &mdash; scroll the right side</div>
+<div class="spy" style="margin-bottom:14px">
+  <div class="spy-toc">
+    <a data-spy="s1" class="on">Overview</a><a data-spy="s2">Cause</a>
+    <a data-spy="s3">Timeline</a><a data-spy="s4">Resolution</a>
+  </div>
+  <div class="spy-body" onscroll="spyScroll(this)">
+    <div class="spy-sec" id="s1"><div class="spy-h">Overview</div>
+      <div class="spy-p">Run failed after three automatic resubmits. No customer impact recorded.
+      The project remains within its SLA window.</div></div>
+    <div class="spy-sec" id="s2"><div class="spy-h">Cause</div>
+      <div class="spy-p">Upstream dependency exceeded the read threshold. All three attempts hit an
+      identical signature, which points to a source-side problem rather than a transient fault.</div></div>
+    <div class="spy-sec" id="s3"><div class="spy-h">Timeline</div>
+      <div class="spy-p">12:02 submitted. 13:54 first timeout. 17:22 second. 22:46 marked failed and
+      escalated to the pipeline team for manual review.</div></div>
+    <div class="spy-sec" id="s4"><div class="spy-h">Resolution</div>
+      <div class="spy-p">Timeout raised from 180 to 360 minutes and alerting extended to include
+      SLA miss. Pending verification on the next cycle.</div></div>
+  </div>
+</div>
+
+<div class="lbl">Masonry</div>
+<div class="masonry">
+  <div class="mas-item"><b>Daily Sync</b>Completed 7 of 7 configs within window.</div>
+  <div class="mas-item"><b>Events</b>109 of 109 delivered. No retries needed this cycle, which is the
+    first clean run in eleven days.</div>
+  <div class="mas-item"><b>Logistics</b>707 running.</div>
+  <div class="mas-item"><b>Deliveries</b>9 of 9 arrived, two ahead of window.</div>
+  <div class="mas-item"><b>Alerts</b>None active.</div>
+  <div class="mas-item"><b>Transfer</b>0 of 7 files moved so far.</div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Scroll-spy TOC &mdash; scroll the right side</div>
+<div class="spy" style="margin-bottom:14px">
+  <div class="spy-toc">
+    <a data-spy="s1" class="on">Overview</a><a data-spy="s2">Cause</a>
+    <a data-spy="s3">Timeline</a><a data-spy="s4">Resolution</a>
+  </div>
+  <div class="spy-body" onscroll="spyScroll(this)">
+    <div class="spy-sec" id="s1"><div class="spy-h">Overview</div>
+      <div class="spy-p">Run failed after three automatic resubmits. No customer impact recorded.
+      The project remains within its SLA window.</div></div>
+    <div class="spy-sec" id="s2"><div class="spy-h">Cause</div>
+      <div class="spy-p">Upstream dependency exceeded the read threshold. All three attempts hit an
+      identical signature, which points to a source-side problem rather than a transient fault.</div></div>
+    <div class="spy-sec" id="s3"><div class="spy-h">Timeline</div>
+      <div class="spy-p">12:02 submitted. 13:54 first timeout. 17:22 second. 22:46 marked failed and
+      escalated to the pipeline team for manual review.</div></div>
+    <div class="spy-sec" id="s4"><div class="spy-h">Resolution</div>
+      <div class="spy-p">Timeout raised from 180 to 360 minutes and alerting extended to include
+      SLA miss. Pending verification on the next cycle.</div></div>
+  </div>
+</div>
+
+<div class="lbl">Masonry</div>
+<div class="masonry">
+  <div class="mas-item"><b>Daily Sync</b>Completed 7 of 7 configs within window.</div>
+  <div class="mas-item"><b>Events</b>109 of 109 delivered. No retries needed this cycle, which is the
+    first clean run in eleven days.</div>
+  <div class="mas-item"><b>Logistics</b>707 running.</div>
+  <div class="mas-item"><b>Deliveries</b>9 of 9 arrived, two ahead of window.</div>
+  <div class="mas-item"><b>Alerts</b>None active.</div>
+  <div class="mas-item"><b>Transfer</b>0 of 7 files moved so far.</div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Responsive</div>
+    <h2 class="sec-title">How a dense console degrades</h2>
+    <p class="sec-desc">Click through the three widths. The critical move is the table: at phone width each row becomes a stacked key/value card. Horizontal scroll is the lazy fallback and the one users complain about most.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Breakpoint behaviour &mdash; watch the table become cards</div>
+<div class="resp">
+  <div class="resp-bar">
+    <button class="on" onclick="setW(this,'desktop')">Desktop</button>
+    <button onclick="setW(this,'tablet')">Tablet</button>
+    <button onclick="setW(this,'phone')">Phone</button>
+    <span class="w">100%</span>
+  </div>
+  <div class="resp-stage" data-w="desktop">
+    <div class="resp-grid">
+      <div class="resp-card"><div class="n">485</div><div class="l">Runs</div></div>
+      <div class="resp-card"><div class="n">336</div><div class="l">Done</div></div>
+      <div class="resp-card"><div class="n">135</div><div class="l">Failed</div></div>
+      <div class="resp-card"><div class="n">0</div><div class="l">Breaches</div></div>
+    </div>
+    <div class="resp-tbl">
+      <table class="mini">
+        <thead><tr><th>Service</th><th>Status</th><th>Duration</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>Daily Sync</td><td>Done</td><td>2h 41m</td><td>Payments</td></tr>
+          <tr><td>Events</td><td>Done</td><td>1h 08m</td><td>Pipeline</td></tr>
+          <tr><td>Logistics</td><td>Running</td><td>3h 13m</td><td>Pipeline</td></tr>
+        </tbody>
+      </table>
+      <div class="resp-cards">
+        <div class="rc"><div class="r"><span class="k">Service</span><span>Daily Sync</span></div>
+          <div class="r"><span class="k">Status</span><span>Done</span></div>
+          <div class="r"><span class="k">Duration</span><span>2h 41m</span></div></div>
+        <div class="rc"><div class="r"><span class="k">Service</span><span>Events</span></div>
+          <div class="r"><span class="k">Status</span><span>Done</span></div>
+          <div class="r"><span class="k">Duration</span><span>1h 08m</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="body-txt" style="margin-top:9px">A dense table cannot shrink &mdash; below the tablet
+breakpoint each row becomes a stacked key/value card instead. Horizontal scrolling is the fallback
+people reach for and the one users hate most.</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Breakpoint behaviour &mdash; watch the table become cards</div>
+<div class="resp">
+  <div class="resp-bar">
+    <button class="on" onclick="setW(this,'desktop')">Desktop</button>
+    <button onclick="setW(this,'tablet')">Tablet</button>
+    <button onclick="setW(this,'phone')">Phone</button>
+    <span class="w">100%</span>
+  </div>
+  <div class="resp-stage" data-w="desktop">
+    <div class="resp-grid">
+      <div class="resp-card"><div class="n">485</div><div class="l">Runs</div></div>
+      <div class="resp-card"><div class="n">336</div><div class="l">Done</div></div>
+      <div class="resp-card"><div class="n">135</div><div class="l">Failed</div></div>
+      <div class="resp-card"><div class="n">0</div><div class="l">Breaches</div></div>
+    </div>
+    <div class="resp-tbl">
+      <table class="mini">
+        <thead><tr><th>Service</th><th>Status</th><th>Duration</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr><td>Daily Sync</td><td>Done</td><td>2h 41m</td><td>Payments</td></tr>
+          <tr><td>Events</td><td>Done</td><td>1h 08m</td><td>Pipeline</td></tr>
+          <tr><td>Logistics</td><td>Running</td><td>3h 13m</td><td>Pipeline</td></tr>
+        </tbody>
+      </table>
+      <div class="resp-cards">
+        <div class="rc"><div class="r"><span class="k">Service</span><span>Daily Sync</span></div>
+          <div class="r"><span class="k">Status</span><span>Done</span></div>
+          <div class="r"><span class="k">Duration</span><span>2h 41m</span></div></div>
+        <div class="rc"><div class="r"><span class="k">Service</span><span>Events</span></div>
+          <div class="r"><span class="k">Status</span><span>Done</span></div>
+          <div class="r"><span class="k">Duration</span><span>1h 08m</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="body-txt" style="margin-top:9px">A dense table cannot shrink &mdash; below the tablet
+breakpoint each row becomes a stacked key/value card instead. Horizontal scrolling is the fallback
+people reach for and the one users hate most.</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Progressive loading</div>
+    <h2 class="sec-title">Infinite scroll sentinel</h2>
+    <p class="sec-desc">The sentinel sits below the list and triggers a fetch when it approaches the viewport. Always pair infinite scroll with a visible count and a way to jump &mdash; users need to know how much is left, and deep-linking to item 400 is impossible otherwise.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Infinite scroll sentinel &mdash; scroll to the bottom</div>
+<div class="inf" onscroll="maybeLoad(this)">
+  <div class="inf-list">
+    <div class="inf-item">INC&hellip;39865 &middot; Northwind</div>
+    <div class="inf-item">INC&hellip;39631 &middot; Contoso</div>
+    <div class="inf-item">INC&hellip;39122 &middot; Fabrikam</div>
+    <div class="inf-item">INC&hellip;38213 &middot; Litware</div>
+    <div class="inf-item">INC&hellip;38375 &middot; StikkumLLC</div>
+  </div>
+  <div class="sentinel"><i></i>Loading more&hellip;</div>
+</div></div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Infinite scroll sentinel &mdash; scroll to the bottom</div>
+<div class="inf" onscroll="maybeLoad(this)">
+  <div class="inf-list">
+    <div class="inf-item">INC&hellip;39865 &middot; Northwind</div>
+    <div class="inf-item">INC&hellip;39631 &middot; Contoso</div>
+    <div class="inf-item">INC&hellip;39122 &middot; Fabrikam</div>
+    <div class="inf-item">INC&hellip;38213 &middot; Litware</div>
+    <div class="inf-item">INC&hellip;38375 &middot; StikkumLLC</div>
+  </div>
+  <div class="sentinel"><i></i>Loading more&hellip;</div>
+</div></div>
+  </div>
+</section>
+<section>
+  <div class="sec-head">
+    <div class="sec-num">06 — Board</div>
+    <h2 class="sec-title">Kanban with native drag and drop, WIP limits and collapsible columns</h2>
+    <p class="sec-desc">Columns are a horizontally scrolling flex row; cards move with the HTML5 drag API and a two-pixel placeholder line shows where the drop will land. The In-progress column carries a WIP limit of three: drag a fourth card in and the count, the limit and a warning all turn red. Column headers click to collapse into a vertical label.</p>
+  </div>
+  <div class="tile">
+    <div class="pane" data-t="light"><span class="pane-tag">Light</span>
+<div class="lbl">Drag cards between columns; the WIP limit on In progress is 3</div>
+<div class="kb">
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--text-faint)"></span>Backlog <span class="n">3</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Rotate CI deploy key before expiry</div><div class="tags"><span class="kb-tag">security</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 12</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Add burn-rate panel to status page</div><div class="tags"><span class="kb-tag a">slo</span><span class="kb-tag">ui</span></div><div class="f"><span class="pri">P3</span><span class="due">Sep 20</span><span class="av" style="background:#8b6b9e">MR</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Investigate GBP/TRY rate gaps</div><div class="tags"><span class="kb-tag w">data</span></div><div class="f"><span class="pri">P3</span><span class="due">&mdash;</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="3">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--accent)"></span>In progress <span class="n">2</span><span class="wip">2 / 3</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Roll back checkout-api pool change</div><div class="tags"><span class="kb-tag d">sev1</span><span class="kb-tag">checkout</span></div><div class="f"><span class="pri p1">P1</span><span class="due late">Sep 02</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Kafka consumer lag runbook v3</div><div class="tags"><span class="kb-tag">runbook</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 05</span><span class="av" style="background:#8b6b9e">MR</span></div></div>
+    </div>
+    <div class="kb-wip">WIP limit exceeded. Finish something before starting more.</div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--warn)"></span>Review <span class="n">1</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">WAF rule for unknown-ASN login spike</div><div class="tags"><span class="kb-tag">auth</span><span class="kb-tag g">ready</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 03</span><span class="av" style="background:#5f9c7f">AK</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--good)"></span>Done <span class="n">2</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Raise rate limits on auth edge</div><div class="tags"><span class="kb-tag">auth</span></div><div class="f"><span class="pri">P3</span><span class="due">Aug 24</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Search index rebuild tuning</div><div class="tags"><span class="kb-tag">search</span></div><div class="f"><span class="pri">P4</span><span class="due">Aug 29</span><span class="av" style="background:#5f9c7f">AK</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+</div>
+</div>
+    <div class="pane" data-t="dark"><span class="pane-tag">Dark</span>
+<div class="lbl">Drag cards between columns; the WIP limit on In progress is 3</div>
+<div class="kb">
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--text-faint)"></span>Backlog <span class="n">3</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Rotate CI deploy key before expiry</div><div class="tags"><span class="kb-tag">security</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 12</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Add burn-rate panel to status page</div><div class="tags"><span class="kb-tag a">slo</span><span class="kb-tag">ui</span></div><div class="f"><span class="pri">P3</span><span class="due">Sep 20</span><span class="av" style="background:#8b6b9e">MR</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Investigate GBP/TRY rate gaps</div><div class="tags"><span class="kb-tag w">data</span></div><div class="f"><span class="pri">P3</span><span class="due">&mdash;</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="3">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--accent)"></span>In progress <span class="n">2</span><span class="wip">2 / 3</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Roll back checkout-api pool change</div><div class="tags"><span class="kb-tag d">sev1</span><span class="kb-tag">checkout</span></div><div class="f"><span class="pri p1">P1</span><span class="due late">Sep 02</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Kafka consumer lag runbook v3</div><div class="tags"><span class="kb-tag">runbook</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 05</span><span class="av" style="background:#8b6b9e">MR</span></div></div>
+    </div>
+    <div class="kb-wip">WIP limit exceeded. Finish something before starting more.</div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--warn)"></span>Review <span class="n">1</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">WAF rule for unknown-ASN login spike</div><div class="tags"><span class="kb-tag">auth</span><span class="kb-tag g">ready</span></div><div class="f"><span class="pri p2">P2</span><span class="due">Sep 03</span><span class="av" style="background:#5f9c7f">AK</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+  <div class="kb-col" data-wip="0">
+    <div class="kb-h" onclick="kbCollapse(this)"><span class="dotc" style="background:var(--good)"></span>Done <span class="n">2</span></div>
+    <div class="kb-body" ondragover="kbOver(event)" ondragleave="kbLeave(event)" ondrop="kbDrop(event)">
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Raise rate limits on auth edge</div><div class="tags"><span class="kb-tag">auth</span></div><div class="f"><span class="pri">P3</span><span class="due">Aug 24</span><span class="av" style="background:#5d7ba8">VB</span></div></div>
+      <div class="kb-card" draggable="true" ondragstart="kbStart(event)" ondragend="kbEnd(event)"><div class="t">Search index rebuild tuning</div><div class="tags"><span class="kb-tag">search</span></div><div class="f"><span class="pri">P4</span><span class="due">Aug 29</span><span class="av" style="background:#5f9c7f">AK</span></div></div>
+    </div>
+    <div class="kb-add" onclick="kbAdd(this)">+ Add card</div>
+  </div>
+</div>
+</div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Split-pane ratios belong in percentages, not pixels, or every window
+resize breaks the layout. Persist them to storage per user &mdash; people rebalance panes once and
+expect it to stick. For responsive tables, decide early whether a column is essential or supplementary;
+the phone card view should show only the essentials, not every column stacked, which is just a slower
+version of horizontal scroll.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+
+let drag=null;
+function startSplit(e,dir){
+  const box=e.target.closest(dir==='h'?'.split-pane':'.vsplit');
+  drag={box,dir,handle:e.target};e.target.classList.add('on');e.preventDefault();}
+document.addEventListener('mousemove',e=>{
+  if(!drag)return;
+  const r=drag.box.getBoundingClientRect();
+  if(drag.dir==='h'){
+    let pct=((e.clientX-r.left)/r.width)*100;
+    pct=Math.min(78,Math.max(14,pct));
+    drag.box.querySelector('.sp-a').style.width=pct+'%';
+  }else{
+    let pct=((e.clientY-r.top)/r.height)*100;
+    pct=Math.min(80,Math.max(16,pct));
+    drag.box.querySelector('.vs-a').style.height=pct+'%';}});
+document.addEventListener('mouseup',()=>{
+  if(drag)drag.handle.classList.remove('on');drag=null;});
+function spyScroll(el){
+  const secs=[...el.querySelectorAll('.spy-sec')];
+  let cur=secs[0].id;
+  secs.forEach(s=>{if(s.offsetTop-el.scrollTop<=34)cur=s.id;});
+  el.closest('.spy').querySelectorAll('.spy-toc a').forEach(a=>
+    a.classList.toggle('on',a.dataset.spy===cur));}
+function setW(btn,w){
+  const bar=btn.closest('.resp-bar');
+  bar.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const stage=bar.nextElementSibling;
+  stage.dataset.w=w;
+  const px={desktop:'100%',tablet:'520px',phone:'320px'}[w];
+  stage.style.maxWidth=px;
+  bar.querySelector('.w').textContent=px;}
+let loading=false;
+function maybeLoad(el){
+  if(loading)return;
+  if(el.scrollTop+el.clientHeight < el.scrollHeight-30)return;
+  loading=true;
+  setTimeout(()=>{
+    const list=el.querySelector('.inf-list');
+    const names=['CapitalOne','WellsPoint','MeridianBank','NorthTrust','PineRidge'];
+    for(let i=0;i<3;i++){
+      const d=document.createElement('div');d.className='inf-item';
+      d.textContent='INC…'+Math.floor(10000+Math.random()*89999)+' · '+
+        names[Math.floor(Math.random()*names.length)];
+      list.appendChild(d);}
+    loading=false;},900);}
+
+
+/* ---- 06 board: native drag & drop, WIP limits, collapsible columns ---- */
+let kbDragging=null;
+function kbStart(e){kbDragging=e.currentTarget;e.currentTarget.classList.add('drag');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','');}
+function kbEnd(e){e.currentTarget.classList.remove('drag');document.querySelectorAll('.kb-col.over').forEach(c=>c.classList.remove('over'));document.querySelectorAll('.kb-ph').forEach(p=>p.remove());}
+function kbOver(e){e.preventDefault();const body=e.currentTarget;body.closest('.kb-col').classList.add('over');
+  const after=[...body.querySelectorAll('.kb-card:not(.drag)')].find(c=>e.clientY<c.getBoundingClientRect().top+c.offsetHeight/2);
+  document.querySelectorAll('.kb-ph').forEach(p=>p.remove());const ph=document.createElement('div');ph.className='kb-ph';
+  if(after)body.insertBefore(ph,after);else body.appendChild(ph);}
+function kbLeave(e){if(!e.currentTarget.contains(e.relatedTarget)){e.currentTarget.closest('.kb-col').classList.remove('over');}}
+function kbDrop(e){e.preventDefault();const body=e.currentTarget;const ph=body.querySelector('.kb-ph');
+  if(kbDragging){const from=kbDragging.closest('.kb-col');if(ph)body.insertBefore(kbDragging,ph);else body.appendChild(kbDragging);kbCount(from);kbCount(body.closest('.kb-col'));}
+  document.querySelectorAll('.kb-ph').forEach(p=>p.remove());body.closest('.kb-col').classList.remove('over');}
+function kbCount(col){const n=col.querySelectorAll('.kb-card').length;const wip=+col.dataset.wip;col.querySelector('.kb-h .n').textContent=n;
+  const w=col.querySelector('.kb-h .wip');if(w){w.textContent=n+' / '+wip;w.classList.toggle('over',n>wip);col.querySelector('.kb-h .n').classList.toggle('over',n>wip);}
+  col.classList.toggle('wip-over',wip>0&&n>wip);}
+function kbCollapse(h){h.closest('.kb-col').classList.toggle('collapsed');}
+function kbAdd(a){const body=a.closest('.kb-col').querySelector('.kb-body');const c=document.createElement('div');c.className='kb-card';c.draggable=true;
+  c.setAttribute('ondragstart','kbStart(event)');c.setAttribute('ondragend','kbEnd(event)');
+  c.innerHTML='<div class="t">New card</div><div class="tags"><span class="kb-tag">untriaged</span></div><div class="f"><span class="pri">P3</span><span class="due">&mdash;</span></div>';
+  body.appendChild(c);kbCount(a.closest('.kb-col'));c.scrollIntoView({block:'nearest',behavior:'smooth'});}
+
+</script>
+</body>
+</html>

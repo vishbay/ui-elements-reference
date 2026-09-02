@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 11 — Console Compositions</title>
+<style>
+[data-t="dark"]{
+  --bg:#0b1215;--bg-2:#111a1f;--surface:#172228;--surface-2:#1e2b32;--surface-3:#273640;
+  --border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.17);--hairline:rgba(255,255,255,.06);
+  --text:#edeef2;--text-dim:#9296a2;--text-faint:#626775;
+  --accent:#3a9ad9;--accent-soft:rgba(58,154,217,.16);--accent-2:#8a9bb8;
+  --good:#34d399;--good-soft:rgba(52,211,153,.15);
+  --warn:#fbbf24;--warn-soft:rgba(251,191,36,.15);
+  --danger:#f4707f;--danger-soft:rgba(244,112,127,.15);
+  --e1:0 1px 2px rgba(0,0,0,.5);
+  --e2:0 2px 4px rgba(0,0,0,.45),0 4px 10px rgba(0,0,0,.35);
+  --e3:0 4px 8px rgba(0,0,0,.45),0 12px 28px rgba(0,0,0,.4);
+  --e4:0 8px 16px rgba(0,0,0,.5),0 24px 56px rgba(0,0,0,.45);
+  --scrim:rgba(0,0,0,.6);
+  --skel-1:#1e2b32;--skel-2:#2c3b45;
+  --code-bg:#121c21;
+  --grid-dot:rgba(255,255,255,.06);
+}
+[data-t="light"]{
+  --bg:#f5f6f8;--bg-2:#fff;--surface:#fff;--surface-2:#f3f4f7;--surface-3:#e9ebf0;
+  --border:rgba(16,18,26,.10);--border-strong:rgba(16,18,26,.19);--hairline:rgba(16,18,26,.06);
+  --text:#121c21;--text-dim:#5c6070;--text-faint:#9297a6;
+  --accent:#1d6fae;--accent-soft:rgba(29,111,174,.10);--accent-2:#5b6f8f;
+  --good:#12a56b;--good-soft:rgba(18,165,107,.11);
+  --warn:#b47509;--warn-soft:rgba(180,117,9,.11);
+  --danger:#d64553;--danger-soft:rgba(214,69,83,.10);
+  --e1:0 1px 2px rgba(16,18,26,.06);
+  --e2:0 2px 4px rgba(16,18,26,.05),0 4px 10px rgba(16,18,26,.05);
+  --e3:0 4px 8px rgba(16,18,26,.05),0 12px 28px rgba(16,18,26,.07);
+  --e4:0 8px 16px rgba(16,18,26,.07),0 24px 56px rgba(16,18,26,.10);
+  --scrim:rgba(10,12,18,.42);
+  --skel-1:#ececf0;--skel-2:#f7f7fa;
+  --code-bg:#f3f4f7;
+  --grid-dot:rgba(16,18,26,.09);
+}
+:root{
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.22,1.4,.36,1);
+  --fast:180ms;--base:400ms;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:660px;line-height:1.6}
+.wrap{max-width:1280px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:56px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:690px;line-height:1.6}
+code,.sec-desc code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.foot{max-width:1280px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.rules{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+@media(max-width:900px){.rules{grid-template-columns:repeat(2,1fr)}}
+.rule{background:#141e23;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:13px}
+.rule h4{margin:0 0 4px;font-size:12.5px;color:#edeef2}
+.rule p{margin:0;font-size:11.5px;color:#8b909d;line-height:1.55}
+.rule code{font-size:10.5px}
+
+/* ---------- frame: page chrome around each composition ---------- */
+.frame{border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;margin-bottom:12px;background:#0e161a}
+.frame-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:11.5px;color:#9296a2;flex-wrap:wrap}
+.frame-bar .fname{font-weight:650;color:#edeef2;margin-right:6px}
+.fb-seg{display:inline-flex;background:#172228;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:2px}
+.fb-seg button{background:none;border:none;color:#9296a2;font:inherit;font-size:11px;padding:3px 9px;border-radius:5px;cursor:pointer}
+.fb-seg button.on{background:#273640;color:#edeef2}
+.fb-btn{background:#172228;border:1px solid rgba(255,255,255,.12);color:#c9cbd6;font:inherit;font-size:11px;
+  padding:4px 10px;border-radius:7px;cursor:pointer}
+.fb-btn:hover{border-color:#3a9ad9;color:#3a9ad9}
+.fb-note{margin-left:auto;font-size:11px;color:#626775}
+
+/* ---------- app shell tokens (density is a token, not a redesign) ---------- */
+.app{--pad:14px;--fs:12.5px;--fs-sm:11px;--row:40px;--nav-w:200px;--insp-w:300px;--ctl-h:30px;
+  display:flex;height:640px;background:var(--bg);color:var(--text);font-size:var(--fs);overflow:hidden;position:relative}
+[data-density="compact"] .app{--pad:9px;--fs:11.5px;--fs-sm:10px;--row:30px;--ctl-h:26px}
+.app *{font-family:inherit}
+.app button{font:inherit;color:inherit}
+
+/* nav */
+.nav{width:var(--nav-w);flex-shrink:0;background:var(--bg-2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;transition:width 320ms var(--ease-spring);overflow:hidden}
+.nav.mini{width:52px}
+.nav-brand{display:flex;align-items:center;gap:9px;padding:14px 14px 10px;white-space:nowrap}
+.nav-logo{width:24px;height:24px;border-radius:7px;flex-shrink:0;background:var(--text);
+  display:flex;align-items:center;justify-content:center;color:var(--bg);font-weight:800;font-size:12px}
+.nav-name{font-weight:680;font-size:13px}
+.nav-ws{font-size:10.5px;color:var(--text-faint);display:block}
+.nav-grp{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-faint);font-weight:700;
+  padding:12px 15px 4px;white-space:nowrap}
+.nav-item{display:flex;align-items:center;gap:10px;margin:1px 8px;padding:7px 8px;border-radius:7px;
+  color:var(--text-dim);cursor:pointer;white-space:nowrap;font-size:var(--fs)}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.on{background:var(--accent-soft);color:var(--accent);font-weight:640}
+.nav-item .ic{width:16px;text-align:center;flex-shrink:0;opacity:.85}
+.nav-item .cnt{margin-left:auto;font-size:10px;font-family:var(--mono);color:var(--text-faint);
+  background:var(--surface-2);padding:1px 6px;border-radius:999px}
+.nav-item.on .cnt{background:var(--accent);color:#fff}
+.nav.mini .tx,.nav.mini .cnt,.nav.mini .nav-grp,.nav.mini .nav-name,.nav.mini .nav-ws{display:none}
+.nav-foot{margin-top:auto;border-top:1px solid var(--border);padding:10px 12px;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.nav-foot .tx{font-size:11px;color:var(--text-dim);line-height:1.3}
+.nav-foot .tx b{display:block;color:var(--text);font-weight:640}
+
+/* main + top bar */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;container-type:inline-size}
+@container (max-width:800px){.c-opt{display:none}}
+.top{height:48px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 var(--pad);
+  border-bottom:1px solid var(--border);background:var(--bg-2)}
+.crumbs{display:flex;align-items:center;gap:4px;font-size:var(--fs);white-space:nowrap}
+.crumbs span{color:var(--text-dim)}.crumbs .cur{color:var(--text);font-weight:640}.crumbs .sep{color:var(--text-faint);opacity:.6}
+.top-search{margin-left:auto;display:flex;align-items:center;gap:8px;height:var(--ctl-h);width:230px;
+  background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:0 9px;color:var(--text-faint);font-size:var(--fs-sm)}
+.top-search .kbd{margin-left:auto}
+.kbd{font-family:var(--mono);font-size:10px;color:var(--text-faint);border:1px solid var(--border);border-bottom-width:2px;
+  border-radius:5px;padding:0 5px;line-height:16px}
+.env{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;
+  background:var(--warn-soft);color:var(--warn);border:1px solid transparent}
+.env.prod{background:var(--danger-soft);color:var(--danger)}
+.bell{position:relative;width:var(--ctl-h);height:var(--ctl-h);border:1px solid var(--border);border-radius:7px;
+  background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim)}
+.bell i{position:absolute;top:-4px;right:-4px;min-width:15px;height:15px;border-radius:999px;background:var(--danger);
+  color:#fff;font-size:9px;font-weight:700;font-style:normal;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.av{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-weight:700;color:#fff;flex-shrink:0;position:relative;letter-spacing:.02em}
+.av.h1{background:#5d7ba8}.av.h2{background:#8b6b9e}.av.h3{background:#5f9c7f}.av.h4{background:#b07a56}.av.h5{background:#6a6f88}
+.av.sm{width:20px;height:20px;font-size:8.5px}
+.av.lg{width:30px;height:30px;font-size:11px}
+.av .pr{position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border-radius:50%;background:var(--good);border:2px solid var(--bg-2)}
+.av .pr.away{background:var(--warn)}.av .pr.off{background:var(--text-faint)}
+.av-stack{display:inline-flex}.av-stack .av{margin-left:-7px;border:2px solid var(--surface)}.av-stack .av:first-child{margin-left:0}
+.av-stack .more{background:var(--surface-3);color:var(--text-dim)}
+
+.content{flex:1;min-height:0;overflow:auto;padding:var(--pad);display:flex;flex-direction:column;gap:var(--pad)}
+.page-h{display:flex;align-items:flex-start;gap:12px}
+.page-h h2{margin:0;font-size:16px;font-weight:660;letter-spacing:-.01em}
+.page-h p{margin:3px 0 0;font-size:var(--fs-sm);color:var(--text-dim)}
+.page-h .acts{margin-left:auto;display:flex;gap:7px}
+
+/* generic controls */
+.btn{display:inline-flex;align-items:center;gap:6px;height:var(--ctl-h);padding:0 11px;border-radius:7px;
+  border:1px solid transparent;font-size:var(--fs-sm);font-weight:620;cursor:pointer;background:transparent;white-space:nowrap;
+  transition:transform var(--fast),border-color var(--fast),background var(--fast)}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--accent);color:#fff}
+.btn-g{border-color:var(--border-strong);color:var(--text);background:var(--surface)}
+.btn-g:hover{border-color:var(--accent);color:var(--accent)}
+.btn-q{color:var(--text-dim)}.btn-q:hover{background:var(--surface-2);color:var(--text)}
+.btn-d{background:var(--danger);color:#fff}
+.btn-do{border-color:var(--danger);color:var(--danger)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .k{font-family:var(--mono);font-size:9.5px;opacity:.7;margin-left:2px}
+.split{display:inline-flex}
+.split .btn:first-child{border-radius:7px 0 0 7px}
+.split .btn:last-child{border-radius:0 7px 7px 0;padding:0 7px;border-left:1px solid rgba(255,255,255,.25)}
+.sel{height:var(--ctl-h);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);
+  border-radius:7px;font-size:var(--fs-sm);padding:0 26px 0 9px;appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,var(--text-dim) 50%),linear-gradient(135deg,var(--text-dim) 50%,transparent 50%);
+  background-position:calc(100% - 13px) 50%,calc(100% - 9px) 50%;background-size:4px 4px;background-repeat:no-repeat}
+.inp{height:var(--ctl-h);border:1px solid var(--border-strong);background:var(--surface);color:var(--text);
+  border-radius:7px;font-size:var(--fs-sm);padding:0 9px;outline:none;font:inherit;width:100%}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.inp::placeholder{color:var(--text-faint)}
+.sw{width:32px;height:18px;border-radius:999px;background:var(--surface-3);border:1px solid var(--border-strong);
+  position:relative;cursor:pointer;flex-shrink:0;transition:background var(--fast)}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--text-dim);
+  transition:transform 220ms var(--ease-spring),background var(--fast)}
+.sw.on{background:var(--accent);border-color:var(--accent)}.sw.on::after{transform:translateX(14px);background:#fff}
+.chk{width:14px;height:14px;border:1.5px solid var(--border-strong);border-radius:4px;background:var(--surface);
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:#fff;font-size:10px;
+  transition:all var(--fast)}
+.chk.on{background:var(--accent);border-color:var(--accent)}
+.chk.on::after{content:"\2713"}
+.chk.mix{background:var(--accent);border-color:var(--accent)}.chk.mix::after{content:"\2013"}
+.seg{display:inline-flex;height:var(--ctl-h);background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:2px}
+.seg span{font-size:var(--fs-sm);padding:0 9px;display:flex;align-items:center;border-radius:5px;color:var(--text-dim);cursor:pointer;font-weight:600}
+.seg span.on{background:var(--surface);color:var(--text);box-shadow:var(--e1)}
+
+/* kpi strip */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--pad)}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:calc(var(--pad)*.85) var(--pad);
+  display:flex;flex-direction:column;gap:3px;position:relative;overflow:hidden}
+.kpi .l{font-size:var(--fs-sm);color:var(--text-dim);font-weight:600;white-space:nowrap;padding-right:52px}
+.kpi .v{white-space:nowrap;font-size:calc(var(--fs) + 10px);font-weight:660;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:6px}
+.kpi .d{font-size:var(--fs-sm);font-weight:640}
+.kpi .d.up{color:var(--good)}.kpi .d.dn{color:var(--danger)}.kpi .d.flat{color:var(--text-faint)}
+.kpi svg{position:absolute;right:var(--pad);top:calc(var(--pad)*.8);width:46px;height:18px;opacity:.85}
+
+/* filter bar + saved views */
+.views{display:flex;gap:2px;border-bottom:1px solid var(--border)}
+.view{font-size:var(--fs);color:var(--text-dim);padding:6px 10px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;font-weight:600}
+.view:hover{color:var(--text)}
+.view.on{color:var(--text);border-bottom-color:var(--accent)}
+.view .n{font-family:var(--mono);font-size:10px;color:var(--text-faint);background:var(--surface-2);padding:0 5px;border-radius:999px}
+.view.add{color:var(--text-faint);font-weight:500}
+.fbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:5px;height:calc(var(--ctl-h) - 4px);padding:0 4px 0 9px;border-radius:999px;
+  font-size:var(--fs-sm);background:var(--surface-2);border:1px solid var(--border);color:var(--text);cursor:pointer;white-space:nowrap}
+.chip b{color:var(--text-dim);font-weight:500}
+.chip .x{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--text-faint);font-size:11px}
+.chip .x:hover{background:var(--surface-3);color:var(--text)}
+.chip.add{border-style:dashed;color:var(--text-dim);padding-right:9px;background:transparent}
+.fbar .sp{flex:1}
+.pop-wrap{position:relative}
+.pop{position:absolute;top:calc(100% + 6px);right:0;z-index:30;background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:10px;box-shadow:var(--e3);padding:6px;min-width:190px;display:none}
+.pop.open{display:block;animation:popIn .18s var(--ease-spring)}
+@keyframes popIn{from{opacity:0;transform:translateY(-5px) scale(.98)}to{opacity:1;transform:none}}
+.pop .it{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:6px;font-size:var(--fs-sm);cursor:pointer;color:var(--text)}
+.pop .it:hover{background:var(--surface-2)}
+.pop .it.on{background:var(--accent-soft);color:var(--accent);font-weight:640}
+.pop .it .k{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:var(--text-faint)}
+.pop .lbl{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:700;padding:6px 9px 3px}
+.pop .sep{height:1px;background:var(--hairline);margin:4px 2px}
+.pop.left{right:auto;left:0}
+.tr-custom{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 9px 8px}
+.tr-custom input{height:26px;border:1px solid var(--border-strong);background:var(--surface-2);border-radius:6px;color:var(--text);
+  font:inherit;font-size:10.5px;padding:0 7px;font-family:var(--mono)}
+
+/* data table */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.tbl-scroll{overflow:auto;flex:1;min-height:0}
+table.tbl{width:100%;border-collapse:collapse;font-size:var(--fs);font-variant-numeric:tabular-nums}
+.tbl th{position:sticky;top:0;z-index:2;background:var(--surface);text-align:left;font-size:var(--fs-sm);color:var(--text-dim);font-weight:640;
+  padding:0 10px;height:calc(var(--row) - 6px);border-bottom:1px solid var(--border);white-space:nowrap;letter-spacing:.01em}
+.tbl th.s{cursor:pointer}.tbl th.s::after{content:" \2195";opacity:.4;font-size:10px}.tbl th.s.asc::after{content:" \2191";opacity:1;color:var(--accent)}
+.tbl td{padding:0 10px;height:var(--row);border-bottom:1px solid var(--hairline);white-space:nowrap;color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{cursor:pointer;transition:background var(--fast)}
+.tbl tbody tr:hover td{background:var(--surface-2)}
+.tbl tbody tr.sel td{background:var(--accent-soft)}
+.tbl .dim{color:var(--text-dim)}.tbl .mono{font-family:var(--mono);font-size:var(--fs-sm)}
+.tbl td.num,.tbl th.num{text-align:right}
+.sev{display:inline-flex;align-items:center;gap:6px;font-weight:640;font-size:var(--fs-sm)}
+.sev i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.sev.s1 i{background:var(--danger)}.sev.s2 i{background:var(--warn)}.sev.s3 i{background:var(--accent-2)}.sev.s4 i{background:var(--text-faint)}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-sm);font-weight:640;padding:2px 8px;border-radius:999px}
+.st i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.st.open{background:var(--danger-soft);color:var(--danger)}.st.ack{background:var(--warn-soft);color:var(--warn)}
+.st.res{background:var(--good-soft);color:var(--good)}.st.mon{background:var(--accent-soft);color:var(--accent)}
+.st.live i{animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.2}}
+.spark{width:70px;height:18px;vertical-align:middle}
+.tbl-foot{display:flex;align-items:center;gap:10px;padding:0 10px;height:calc(var(--row) - 4px);border-top:1px solid var(--border);
+  font-size:var(--fs-sm);color:var(--text-dim);background:var(--surface);flex-shrink:0}
+.pager{margin-left:auto;display:flex;align-items:center;gap:3px}
+.pager button{width:24px;height:24px;border-radius:6px;border:1px solid transparent;background:none;color:var(--text-dim);cursor:pointer;font-size:11px}
+.pager button.on{background:var(--surface-3);color:var(--text);font-weight:700}
+.pager button:hover{border-color:var(--border-strong)}
+.bulk{position:absolute;left:50%;bottom:16px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:8px;background:var(--text);color:var(--bg);border-radius:10px;padding:7px 8px 7px 14px;
+  font-size:var(--fs-sm);font-weight:640;box-shadow:var(--e4);z-index:20;transition:all 260ms var(--ease-spring);white-space:nowrap}
+.bulk.show{opacity:1;transform:translateX(-50%);pointer-events:auto}
+.bulk .btn{height:26px;color:var(--bg);border-color:transparent;background:rgba(128,128,128,.25)}
+.bulk .btn:hover{background:rgba(128,128,128,.4)}
+.bulk .btn.d{color:#fff;background:var(--danger)}
+.bulk .x{margin-left:4px;opacity:.6;cursor:pointer;padding:0 4px}
+
+/* inspector */
+.insp{width:var(--insp-w);flex-shrink:0;border-left:1px solid var(--border);background:var(--bg-2);display:flex;flex-direction:column;min-height:0}
+.insp-h{padding:var(--pad);border-bottom:1px solid var(--border)}
+.insp-h .id{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text-faint)}
+.insp-h h3{margin:3px 0 6px;font-size:calc(var(--fs) + 1px);font-weight:650;line-height:1.35}
+.insp-tabs{display:flex;padding:0 var(--pad);border-bottom:1px solid var(--border)}
+.insp-tab{font-size:var(--fs-sm);font-weight:620;color:var(--text-dim);padding:8px 9px;border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+.insp-tab.on{color:var(--text);border-bottom-color:var(--accent)}
+.insp-body{flex:1;overflow:auto;padding:var(--pad)}
+.insp-pane{display:none}.insp-pane.on{display:block}
+.kv{display:grid;grid-template-columns:92px 1fr;gap:6px 10px;font-size:var(--fs-sm)}
+.kv dt{color:var(--text-faint);margin:0}.kv dd{margin:0;color:var(--text);font-weight:520}
+.kv dd.mono{font-family:var(--mono)}
+.insp .lbl{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin:14px 0 7px}
+.insp .lbl:first-child{margin-top:0}
+.tl{position:relative;padding-left:16px;font-size:var(--fs-sm)}
+.tl::before{content:"";position:absolute;left:4px;top:6px;bottom:6px;width:1px;background:var(--border)}
+.tl-i{position:relative;padding-bottom:11px}
+.tl-i::before{content:"";position:absolute;left:-14.5px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--text-faint);
+  box-shadow:0 0 0 2px var(--bg-2)}
+.tl-i.hot::before{background:var(--danger)}.tl-i.ok::before{background:var(--good)}
+.tl-i .t{color:var(--text-faint);font-family:var(--mono);font-size:10px}
+.tl-i .m{color:var(--text);margin-top:1px;line-height:1.45}
+.tl-i .m b{font-weight:640}
+.runbook li{margin:0 0 7px;font-size:var(--fs-sm);line-height:1.45;color:var(--text)}
+.runbook{padding-left:18px;margin:0}
+.runbook li.done{color:var(--text-faint);text-decoration:line-through}
+.insp-f{padding:var(--pad);border-top:1px solid var(--border);display:flex;gap:7px}
+.insp-f .btn{flex:1;justify-content:center}
+
+/* ---------- DAG ---------- */
+.dag-top{display:flex;align-items:center;gap:8px}
+.dag-top .sp{flex:1}
+.dag{flex:1;min-height:0;display:flex;flex-direction:column;gap:var(--pad)}
+.canvas{position:relative;flex:1;min-height:250px;background:radial-gradient(var(--grid-dot) 1px,transparent 1px) 0 0/16px 16px,var(--surface);
+  border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.canvas svg.edges{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.edge{fill:none;stroke:var(--border-strong);stroke-width:1.5;marker-end:url(#ah)}
+.edge.run{stroke:var(--accent);stroke-dasharray:5 4;animation:flow 1s linear infinite}
+.edge.ok{stroke:var(--good);opacity:.55}
+.edge.bad{stroke:var(--danger)}
+@keyframes flow{to{stroke-dashoffset:-9}}
+.node{position:absolute;width:140px;background:var(--bg-2);border:1px solid var(--border-strong);border-radius:8px;padding:7px 9px;
+  cursor:pointer;transition:box-shadow var(--fast),border-color var(--fast);box-shadow:var(--e1)}
+.node:hover{border-color:var(--accent)}
+.node.on{border-color:var(--accent);box-shadow:var(--e2)}
+.node .nm{font-size:var(--fs-sm);font-weight:640;display:flex;align-items:center;gap:6px}
+.node .nm i{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.node .mt{font-size:10px;color:var(--text-faint);font-family:var(--mono);margin-top:3px;display:flex;justify-content:space-between}
+.node.ok .nm i{background:var(--good)}
+.node.run .nm i{background:var(--accent);animation:blink 1s infinite}
+.node.bad{border-color:var(--danger)}.node.bad .nm i{background:var(--danger)}
+.node.pend .nm i{background:var(--text-faint)}.node.pend{opacity:.7}
+.node.skip{border-style:dashed;opacity:.5}.node.skip .nm i{background:transparent;border:1px solid var(--text-faint)}
+.legend{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;font-size:10px;color:var(--text-dim);
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 8px}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.zoom button{width:24px;height:22px;border:none;background:none;color:var(--text-dim);cursor:pointer;font-size:12px}
+.zoom button+button{border-top:1px solid var(--border)}
+.logp{height:190px;flex-shrink:0;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;overflow:hidden}
+[data-density="compact"] .logp{height:170px}
+.log-h{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:var(--fs-sm);color:var(--text-dim)}
+.log-h .nm{font-weight:640;color:var(--text);font-family:var(--mono)}
+.log-h .sp{flex:1}
+.follow{display:flex;align-items:center;gap:6px;font-size:10.5px;cursor:pointer}
+.log-b{flex:1;overflow:auto;padding:6px 0;font-family:var(--mono);font-size:10.5px;line-height:1.6}
+.ln{display:flex;gap:10px;padding:0 10px;white-space:pre}
+.ln:hover{background:var(--surface-2)}
+.ln .t{color:var(--text-faint);flex-shrink:0}
+.ln .lv{width:38px;flex-shrink:0;font-weight:700}
+.ln.info .lv{color:var(--accent-2)}.ln.warn .lv{color:var(--warn)}.ln.err .lv{color:var(--danger)}.ln.dbg .lv{color:var(--text-faint)}
+.ln.err{background:var(--danger-soft)}
+.ln .m{color:var(--text)}.ln .m .hl{background:var(--warn-soft);color:var(--warn);border-radius:2px}
+
+/* ---------- fleet ---------- */
+.uptime{display:inline-flex;gap:1.5px;vertical-align:middle}
+.uptime i{width:3px;height:14px;border-radius:1px;background:var(--good);opacity:.85}
+.uptime i.w{background:var(--warn)}.uptime i.b{background:var(--danger)}.uptime i.n{background:var(--surface-3)}
+.bar{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:var(--fs-sm)}
+.bar .tr{width:56px;height:5px;background:var(--surface-3);border-radius:3px;overflow:hidden}
+.bar .fl{height:100%;background:var(--accent);border-radius:3px}
+.bar.hot .fl{background:var(--warn)}.bar.crit .fl{background:var(--danger)}
+.cal{padding:8px;min-width:250px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-sm);font-weight:640;padding:2px 4px 8px}
+.cal-h button{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:12px}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cal-g .dw{font-size:9px;color:var(--text-faint);text-align:center;padding:2px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.cal-g .d{height:26px;display:flex;align-items:center;justify-content:center;font-size:10.5px;border-radius:5px;cursor:pointer;color:var(--text)}
+.cal-g .d:hover{background:var(--surface-2)}
+.cal-g .d.o{color:var(--text-faint);opacity:.5}
+.cal-g .d.in{background:var(--accent-soft);border-radius:0}
+.cal-g .d.st,.cal-g .d.en{background:var(--accent);color:#fff;font-weight:700}
+.cal-g .d.st{border-radius:5px 0 0 5px}.cal-g .d.en{border-radius:0 5px 5px 0}
+.cal-g .d.st.en{border-radius:5px}
+.cal-pre{display:flex;flex-direction:column;border-right:1px solid var(--border);padding:6px 4px;min-width:110px}
+.cal-wrap{display:flex}
+.cal-f{display:flex;justify-content:space-between;align-items:center;padding:8px 4px 2px;font-size:10.5px;color:var(--text-dim)}
+.cal-f b{font-family:var(--mono);color:var(--text);font-weight:600}
+.cols-pop .it .chk{margin-right:2px}
+
+/* ---------- settings ---------- */
+.set-nav{width:180px;flex-shrink:0;border-right:1px solid var(--border);padding:var(--pad) 8px;background:var(--bg-2)}
+.set-nav .nav-item{margin:1px 0}
+.set-body{flex:1;min-width:0;overflow:auto;padding:calc(var(--pad)*1.6) calc(var(--pad)*2)}
+.set-sec{max-width:720px;margin-bottom:calc(var(--pad)*2)}
+.set-sec h3{margin:0 0 3px;font-size:calc(var(--fs) + 2px);font-weight:650}
+.set-sec>p{margin:0 0 12px;font-size:var(--fs-sm);color:var(--text-dim)}
+.frow{display:grid;grid-template-columns:220px 1fr;gap:16px;padding:12px 0;border-top:1px solid var(--hairline);align-items:start}
+.frow:first-of-type{border-top:none}
+.frow .fl{font-size:var(--fs);font-weight:600}.frow .fh{font-size:var(--fs-sm);color:var(--text-dim);margin-top:2px;line-height:1.45}
+.frow .fc{display:flex;flex-direction:column;gap:7px}
+.frow .fc .inp{max-width:320px}
+.frow .fc .inline{display:flex;align-items:center;gap:9px;font-size:var(--fs-sm)}
+.radio-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:520px}
+.rc{border:1px solid var(--border-strong);border-radius:8px;padding:9px 10px;cursor:pointer;font-size:var(--fs-sm)}
+.rc b{display:block;font-size:var(--fs);margin-bottom:2px}
+.rc span{color:var(--text-dim)}
+.rc.on{border-color:var(--accent);background:var(--accent-soft)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card.danger{border-color:var(--danger)}
+.card .ch{padding:10px 14px;border-bottom:1px solid var(--border);font-size:var(--fs);font-weight:640;display:flex;align-items:center;gap:8px}
+.card.danger .ch{color:var(--danger)}
+.card .cb{padding:12px 14px;font-size:var(--fs-sm);color:var(--text-dim);line-height:1.5}
+.drow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--hairline)}
+.drow .t{flex:1}.drow .t b{display:block;color:var(--text);font-size:var(--fs);font-weight:600}
+.drow .t span{font-size:var(--fs-sm);color:var(--text-dim)}
+.perm{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.perm th{text-align:center;padding:8px 6px;color:var(--text-dim);font-weight:640;border-bottom:1px solid var(--border);background:var(--surface-2)}
+.perm th:first-child,.perm td:first-child{text-align:left;padding-left:14px}
+.perm td{padding:0 6px;height:34px;text-align:center;border-bottom:1px solid var(--hairline)}
+.perm td:first-child{color:var(--text);font-weight:520}
+.perm td:first-child small{display:block;color:var(--text-faint);font-weight:400;font-size:10px}
+.perm .pc{width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  border:1.5px solid var(--border-strong);color:transparent;font-size:9px;transition:all var(--fast)}
+.perm .pc.on{background:var(--good);border-color:var(--good);color:#fff}
+.perm .pc.lock{background:var(--surface-3);border-color:var(--surface-3);color:var(--text-faint);cursor:not-allowed}
+.perm .pc.lock::after{content:"\1F512";font-size:8px}
+.perm tr:hover td{background:var(--surface-2)}
+.members .av{margin-right:8px}
+.confirm{display:flex;gap:8px;margin-top:10px;max-width:420px}
+.confirm .inp{font-family:var(--mono)}
+
+/* ---------- status / SLO ---------- */
+.banner{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;background:var(--good-soft);border:1px solid transparent;color:var(--good);font-weight:650;font-size:var(--fs)}
+.banner.warn{background:var(--warn-soft);color:var(--warn)}
+.banner .sp{flex:1;font-weight:500;color:var(--text-dim);font-size:var(--fs-sm)}
+.banner .dot{width:10px;height:10px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px var(--good-soft)}
+.svc{display:grid;grid-template-columns:200px 1fr 60px;align-items:center;gap:14px;padding:10px 14px;border-top:1px solid var(--hairline)}
+.svc:first-child{border-top:none}
+.svc .n{font-weight:600;font-size:var(--fs)}.svc .n small{display:block;color:var(--text-faint);font-size:10px;font-family:var(--mono)}
+.svc .u90{display:flex;gap:2px}
+.svc .u90 i{flex:1;height:22px;border-radius:2px;background:var(--good);opacity:.8;cursor:pointer;transition:transform var(--fast)}
+.svc .u90 i:hover{transform:scaleY(1.2);opacity:1}
+.svc .u90 i.w{background:var(--warn)}.svc .u90 i.b{background:var(--danger)}.svc .u90 i.n{background:var(--surface-3)}
+.svc .pct{font-family:var(--mono);font-size:var(--fs-sm);text-align:right;color:var(--text-dim)}
+.svc .pct.bad{color:var(--danger)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--pad)}
+.slo{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+.gauge{width:120px;height:120px;position:relative}
+.gauge svg{width:100%;height:100%;transform:rotate(-90deg)}
+.gauge circle{fill:none;stroke-width:9;stroke-linecap:round}
+.gauge .bg{stroke:var(--surface-3)}
+.gauge .fg{stroke:var(--good);stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.2s var(--ease)}
+.gauge .fg.warn{stroke:var(--warn)}
+.gauge .c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .c b{font-size:20px;font-weight:660;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.gauge .c span{font-size:9.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.slo-kv{font-size:var(--fs-sm);display:grid;grid-template-columns:auto 1fr;gap:5px 12px}
+.slo-kv dt{color:var(--text-faint)}.slo-kv dd{margin:0;font-family:var(--mono);color:var(--text)}
+.budget{height:8px;background:var(--surface-3);border-radius:4px;overflow:hidden;margin:6px 0 4px}
+.budget i{display:block;height:100%;width:0;background:var(--good);transition:width 1.2s var(--ease)}
+.budget i.warn{background:var(--warn)}
+.burn{height:110px;position:relative}
+.burn svg{width:100%;height:100%}
+.burn .thr{stroke:var(--danger);stroke-dasharray:3 3;stroke-width:1}
+.burn .ln{stroke:var(--accent);stroke-width:1.5;fill:none}
+.burn .ar{fill:var(--accent);opacity:.12}
+.burn .ax{font-size:9px;fill:var(--text-faint);font-family:var(--mono)}
+.inc-list{font-size:var(--fs-sm)}
+.inc{display:flex;gap:10px;padding:9px 14px;border-top:1px solid var(--hairline);align-items:flex-start}
+.inc:first-child{border-top:none}
+.inc .d{font-family:var(--mono);color:var(--text-faint);width:64px;flex-shrink:0;padding-top:2px}
+.inc .b{flex:1}.inc .b b{display:block;color:var(--text);font-weight:600;margin-bottom:1px}
+.inc .b span{color:var(--text-dim)}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 11</div>
+  <h1>Console Compositions</h1>
+  <p>Five complete screens built from the earlier files: an incident console, a pipeline DAG with log tail,
+  a fleet table with date-range and bulk actions, a settings page with a permission matrix, and a status /
+  SLO view. Every frame has a light / dark switch, a density switch, and a collapsible nav. Composition is
+  where a console stops looking generic, so this file is about hierarchy and spacing more than any one control.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> CSS animations and transitions are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+
+<section>
+  <div class="sec-head">
+    <div class="sec-num">00 — Composition rules</div>
+    <h2 class="sec-title">Eight rules every frame below follows</h2>
+    <p class="sec-desc">These are the decisions that make a screen read as considered. They are cheap, and they are
+    the difference between a component pile and a product.</p>
+  </div>
+  <div class="rules">
+    <div class="rule"><h4>1 &middot; Three surface levels, no more</h4><p><code>--bg</code> for the page, <code>--surface</code> for cards and tables, <code>--bg-2</code> for chrome (nav, top bar, inspector). Nothing floats above that except overlays.</p></div>
+    <div class="rule"><h4>2 &middot; Density is a token</h4><p>Compact mode changes <code>--pad</code>, <code>--row</code>, <code>--fs</code> and control height. It never changes layout. Toggle it in any frame.</p></div>
+    <div class="rule"><h4>3 &middot; One accent, spent carefully</h4><p>The accent marks the current nav item, the selected row, the primary button and focus. It is not used for decoration, headings or icons.</p></div>
+    <div class="rule"><h4>4 &middot; Status colour is data</h4><p>Red, amber and green appear only where they mean something. A red KPI edge and a red row dot are both signals; a red header is noise.</p></div>
+    <div class="rule"><h4>5 &middot; Tabular numerals everywhere</h4><p><code>font-variant-numeric: tabular-nums</code> on tables and KPIs. Mono for identifiers, timestamps and log lines only.</p></div>
+    <div class="rule"><h4>6 &middot; Chrome is quiet</h4><p>Nav and top bar sit on <code>--bg-2</code> with hairline borders and no shadow. The content area is where contrast lives.</p></div>
+    <div class="rule"><h4>7 &middot; Selection drives the inspector</h4><p>Click a row or node and the right panel updates in place. No modals for read-only detail; modals are for destructive confirmation.</p></div>
+    <div class="rule"><h4>8 &middot; Bulk actions float</h4><p>Checking rows raises a floating action bar at the bottom centre. It carries the count, the actions and an escape hatch.</p></div>
+  </div>
+</section>
+
+<!-- ================================================================ 01 INCIDENT CONSOLE -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">01 — Incident console</div>
+    <h2 class="sec-title">Nav, KPI strip, saved views, filter bar, table, inspector</h2>
+    <p class="sec-desc">The canonical ops screen. Click a row to load the inspector; tick rows to raise the bulk bar;
+    open the time-range control for presets plus a custom range. The sidebar collapses to icons without reflowing the table.</p>
+  </div>
+  <div class="frame" data-t="dark" data-density="comfortable" id="f1">
+    <div class="frame-bar"><span class="fname">Incident console</span>
+      <div class="fb-seg"><button class="on" onclick="setT(this,'dark')">Dark</button><button onclick="setT(this,'light')">Light</button></div>
+      <div class="fb-seg"><button class="on" onclick="setD(this,'comfortable')">Comfortable</button><button onclick="setD(this,'compact')">Compact</button></div>
+      <button class="fb-btn" onclick="togNav(this)">Collapse nav</button>
+      <span class="fb-note">1280 &times; 640 &middot; house theme</span>
+    </div>
+    <div class="app">
+      <aside class="nav">
+        <div class="nav-brand"><div class="nav-logo">O</div><div><span class="nav-name">Orbit Ops</span><span class="nav-ws">acme-prod &middot; eu-west</span></div></div>
+        <div class="nav-grp">Monitor</div>
+        <div class="nav-item"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+        <div class="nav-item on"><span class="ic">&#9888;</span><span class="tx">Incidents</span><span class="cnt">14</span></div>
+        <div class="nav-item"><span class="ic">&#9673;</span><span class="tx">Services</span></div>
+        <div class="nav-item"><span class="ic">&#8776;</span><span class="tx">Pipelines</span><span class="cnt">3</span></div>
+        <div class="nav-grp">Operate</div>
+        <div class="nav-item"><span class="ic">&#9998;</span><span class="tx">Runbooks</span></div>
+        <div class="nav-item"><span class="ic">&#9783;</span><span class="tx">Fleet</span></div>
+        <div class="nav-item"><span class="ic">&#9201;</span><span class="tx">On-call</span></div>
+        <div class="nav-grp">Configure</div>
+        <div class="nav-item"><span class="ic">&#9881;</span><span class="tx">Settings</span></div>
+        <div class="nav-foot"><span class="av h1">VB<i class="pr"></i></span><div class="tx"><b>Vish B.</b>Incident commander</div></div>
+      </aside>
+      <div class="main">
+        <header class="top">
+          <div class="crumbs"><span>Monitor</span><span class="sep">/</span><span class="cur">Incidents</span></div>
+          <span class="env prod">prod</span>
+          <div class="top-search">&#8981; <span>Search incidents, hosts, runbooks</span><span class="kbd">&#8984;K</span></div>
+          <div class="bell">&#9993;<i>3</i></div>
+          <span class="av h1 lg">VB<i class="pr"></i></span>
+        </header>
+        <div class="content">
+          <div class="kpis">
+            <div class="kpi bad"><span class="l">Open incidents</span><span class="v">14 <span class="d dn">+3</span></span>
+              <svg viewBox="0 0 64 24" preserveAspectRatio="none"><polyline fill="none" stroke="var(--danger)" stroke-width="1.5" points="0,18 8,16 16,17 24,12 32,13 40,9 48,10 56,6 64,4"/></svg></div>
+            <div class="kpi warn"><span class="l">SLA at risk</span><span class="v">4 <span class="d flat">&plusmn;0</span></span>
+              <svg viewBox="0 0 64 24" preserveAspectRatio="none"><polyline fill="none" stroke="var(--warn)" stroke-width="1.5" points="0,12 8,14 16,10 24,12 32,11 40,13 48,12 56,12 64,12"/></svg></div>
+            <div class="kpi"><span class="l">MTTA</span><span class="v">4m 12s <span class="d up">&minus;38s</span></span>
+              <svg viewBox="0 0 64 24" preserveAspectRatio="none"><polyline fill="none" stroke="var(--good)" stroke-width="1.5" points="0,6 8,8 16,7 24,10 32,12 40,11 48,15 56,17 64,18"/></svg></div>
+            <div class="kpi"><span class="l">Error budget (30d)</span><span class="v">71<span style="font-size:.6em;color:var(--text-dim)">%</span> <span class="d up">healthy</span></span>
+              <svg viewBox="0 0 64 24" preserveAspectRatio="none"><polyline fill="none" stroke="var(--accent-2)" stroke-width="1.5" points="0,4 16,6 32,9 48,13 64,15"/></svg></div>
+          </div>
+
+          <div class="views">
+            <span class="view on">All open <span class="n">14</span></span>
+            <span class="view">Assigned to me <span class="n">2</span></span>
+            <span class="view">Sev1 &amp; Sev2 <span class="n">5</span></span>
+            <span class="view">Unacknowledged <span class="n">6</span></span>
+            <span class="view add">+ Save view</span>
+          </div>
+          <div class="fbar">
+            <span class="chip"><b>Status</b> is Open, Acked <span class="x">&times;</span></span>
+            <span class="chip"><b>Service</b> is any of 3 <span class="x">&times;</span></span>
+            <span class="chip add">+ Filter</span>
+            <span class="sp"></span>
+            <div class="pop-wrap">
+              <button class="btn btn-g" onclick="togPop(this)">&#9201; Last 24h &#9662;</button>
+              <div class="pop">
+                <div class="lbl">Presets</div>
+                <div class="it">Last 1h<span class="k">1</span></div><div class="it">Last 6h<span class="k">6</span></div>
+                <div class="it on">Last 24h<span class="k">D</span></div><div class="it">Last 7d<span class="k">W</span></div>
+                <div class="it">This month</div>
+                <div class="sep"></div><div class="lbl">Custom (UTC)</div>
+                <div class="tr-custom"><input value="2026-09-01 09:00"><input value="2026-09-02 09:00"></div>
+              </div>
+            </div>
+            <div class="seg"><span class="on">Table</span><span>Board</span><span>Timeline</span></div>
+            <div class="split"><button class="btn btn-p">Declare incident</button><button class="btn btn-p">&#9662;</button></div>
+          </div>
+
+          <div class="tbl-wrap">
+            <div class="tbl-scroll">
+            <table class="tbl" id="incTbl">
+              <thead><tr>
+                <th style="width:34px"><span class="chk" onclick="chkAll(this)"></span></th>
+                <th class="s asc" style="width:70px">Sev</th><th class="s">Incident</th><th class="s">Service</th>
+                <th class="s">Status</th><th class="c-opt">Responders</th><th class="s num">Age</th><th>Error rate</th>
+              </tr></thead>
+              <tbody>
+                <tr data-id="INC-4821" data-title="Checkout latency p99 above 2.4s" data-sev="Sev1" data-svc="checkout-api" class="sel">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s1"><i></i>Sev1</span></td>
+                  <td>Checkout latency p99 above 2.4s</td><td class="dim">checkout-api</td><td><span class="st open live"><i></i>Open</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h1">VB</span><span class="av sm h3">AK</span><span class="av sm more">+2</span></span></td>
+                  <td class="num mono">41m</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--danger)" stroke-width="1.5" points="0,14 10,13 20,12 30,9 40,10 50,5 60,4 70,2"/></svg></td></tr>
+                <tr data-id="INC-4819" data-title="Kafka consumer lag on orders topic" data-sev="Sev2" data-svc="order-stream">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s2"><i></i>Sev2</span></td>
+                  <td>Kafka consumer lag on orders topic</td><td class="dim">order-stream</td><td><span class="st ack"><i></i>Acked</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h2">MR</span></span></td><td class="num mono">1h 08m</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--warn)" stroke-width="1.5" points="0,10 10,11 20,9 30,12 40,8 50,9 60,7 70,8"/></svg></td></tr>
+                <tr data-id="INC-4816" data-title="Elevated 5xx from image resizer" data-sev="Sev2" data-svc="media-svc">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s2"><i></i>Sev2</span></td>
+                  <td>Elevated 5xx from image resizer</td><td class="dim">media-svc</td><td><span class="st open"><i></i>Open</span></td>
+                  <td class="c-opt"><span class="dim">Unassigned</span></td><td class="num mono">2h 21m</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--warn)" stroke-width="1.5" points="0,12 10,10 20,11 30,7 40,9 50,6 60,8 70,6"/></svg></td></tr>
+                <tr data-id="INC-4812" data-title="Cert expiry in 6 days: api.acme.io" data-sev="Sev3" data-svc="edge-proxy">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s3"><i></i>Sev3</span></td>
+                  <td>Cert expiry in 6 days: api.acme.io</td><td class="dim">edge-proxy</td><td><span class="st ack"><i></i>Acked</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h4">JL</span></span></td><td class="num mono">5h 02m</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--text-faint)" stroke-width="1.5" points="0,12 10,12 20,12 30,12 40,12 50,12 60,12 70,12"/></svg></td></tr>
+                <tr data-id="INC-4808" data-title="Nightly reconciliation job failed" data-sev="Sev3" data-svc="finance-batch">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s3"><i></i>Sev3</span></td>
+                  <td>Nightly reconciliation job failed</td><td class="dim">finance-batch</td><td><span class="st mon"><i></i>Monitoring</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h5">SP</span><span class="av sm h2">MR</span></span></td><td class="num mono">9h 44m</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--good)" stroke-width="1.5" points="0,4 10,6 20,5 30,9 40,12 50,13 60,14 70,15"/></svg></td></tr>
+                <tr data-id="INC-4803" data-title="Search index rebuild running slow" data-sev="Sev4" data-svc="search">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s4"><i></i>Sev4</span></td>
+                  <td>Search index rebuild running slow</td><td class="dim">search</td><td><span class="st mon"><i></i>Monitoring</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h3">AK</span></span></td><td class="num mono">1d 3h</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--good)" stroke-width="1.5" points="0,8 10,9 20,9 30,10 40,11 50,11 60,12 70,12"/></svg></td></tr>
+                <tr data-id="INC-4799" data-title="Login spike from unknown ASN" data-sev="Sev2" data-svc="auth">
+                  <td><span class="chk" onclick="chkRow(event,this)"></span></td><td><span class="sev s2"><i></i>Sev2</span></td>
+                  <td>Login spike from unknown ASN</td><td class="dim">auth</td><td><span class="st res"><i></i>Resolved</span></td>
+                  <td class="c-opt"><span class="av-stack"><span class="av sm h1">VB</span></span></td><td class="num mono">1d 9h</td>
+                  <td><svg class="spark" viewBox="0 0 70 18" preserveAspectRatio="none"><polyline fill="none" stroke="var(--good)" stroke-width="1.5" points="0,3 10,4 20,8 30,11 40,13 50,14 60,15 70,15"/></svg></td></tr>
+              </tbody>
+            </table>
+            </div>
+            <div class="tbl-foot"><span>Showing 1&ndash;7 of 14</span><span>&middot;</span><span>Updated 12s ago</span>
+              <div class="pager"><button>&lsaquo;</button><button class="on">1</button><button>2</button><button>&rsaquo;</button></div></div>
+          </div>
+        </div>
+      </div>
+      <aside class="insp" id="insp1">
+        <div class="insp-h"><div class="id">INC-4821 &middot; opened 41m ago</div><h3>Checkout latency p99 above 2.4s</h3>
+          <div class="fbar"><span class="sev s1"><i></i>Sev1</span><span class="st open live"><i></i>Open</span><span class="dim" style="font-size:var(--fs-sm);color:var(--text-faint)">checkout-api</span></div></div>
+        <div class="insp-tabs"><span class="insp-tab on" onclick="itab(this,0)">Overview</span><span class="insp-tab" onclick="itab(this,1)">Timeline</span><span class="insp-tab" onclick="itab(this,2)">Runbook</span></div>
+        <div class="insp-body">
+          <div class="insp-pane on">
+            <div class="lbl">Facts</div>
+            <dl class="kv"><dt>Commander</dt><dd>Vish B.</dd><dt>Detected by</dt><dd>latency-slo-burn</dd><dt>Region</dt><dd>eu-west-1</dd>
+              <dt>Deploy</dt><dd class="mono">checkout-api@8f21c0e</dd><dt>Customers</dt><dd>~4.2% of checkouts</dd><dt>SLA</dt><dd style="color:var(--warn)">breach in 1h 19m</dd></dl>
+            <div class="lbl">Impact</div>
+            <div style="font-size:var(--fs-sm);color:var(--text-dim);line-height:1.5">p99 rose from 820ms to 2.4s at 08:14 UTC following a config push. Error rate holding at 0.6%, no data loss. Retries from the mobile client are amplifying load.</div>
+            <div class="lbl">Linked</div>
+            <div class="fbar"><span class="chip">PR #2291 <span class="x">&#8599;</span></span><span class="chip">Dash: checkout-latency <span class="x">&#8599;</span></span></div>
+          </div>
+          <div class="insp-pane">
+            <div class="tl">
+              <div class="tl-i hot"><div class="t">08:14:02</div><div class="m"><b>Alert fired</b> latency-slo-burn crossed 14&times; burn rate</div></div>
+              <div class="tl-i"><div class="t">08:15:40</div><div class="m"><b>Paged</b> checkout-primary (Vish B.) via push, acked in 1m 38s</div></div>
+              <div class="tl-i"><div class="t">08:19:11</div><div class="m"><b>Sev raised</b> Sev2 &rarr; Sev1 by Vish B.: customer-facing</div></div>
+              <div class="tl-i"><div class="t">08:31:05</div><div class="m"><b>Hypothesis</b> config push <span class="mono">8f21c0e</span> changed pool size 64 &rarr; 16</div></div>
+              <div class="tl-i ok"><div class="t">08:48:50</div><div class="m"><b>Mitigation started</b> rollback queued, ETA 6m</div></div>
+            </div>
+          </div>
+          <div class="insp-pane">
+            <div class="lbl">checkout-latency-high &middot; v4</div>
+            <ol class="runbook">
+              <li class="done">Confirm alert is not a monitoring artefact (check synthetic probes).</li>
+              <li class="done">Identify most recent deploy or config change to checkout-api.</li>
+              <li>Roll back the change if under 60 minutes old; otherwise scale pool and page platform.</li>
+              <li>Post customer-impact statement in #status within 15 minutes of Sev1.</li>
+              <li>Schedule post-incident review within 2 business days.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="insp-f"><button class="btn btn-g">Escalate</button><button class="btn btn-p">Acknowledge</button></div>
+      </aside>
+      <div class="bulk"><span><b class="cnt">0</b> selected</span><button class="btn">Assign</button><button class="btn">Acknowledge</button><button class="btn d">Resolve</button><span class="x" onclick="clearChk(this)">&#10005;</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ 02 PIPELINE DAG -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">02 — Pipeline &amp; log tail</div>
+    <h2 class="sec-title">DAG canvas with animated edges and a filtered log panel</h2>
+    <p class="sec-desc">Nodes are positioned absolutely over a dot grid; edges are one SVG layer beneath them. Running edges
+    animate a dash offset, failed edges go red. Click a node to filter the log tail to that step. The Follow toggle
+    pins the log to the bottom as lines arrive.</p>
+  </div>
+  <div class="frame" data-t="dark" data-density="comfortable" id="f2">
+    <div class="frame-bar"><span class="fname">Pipeline run</span>
+      <div class="fb-seg"><button class="on" onclick="setT(this,'dark')">Dark</button><button onclick="setT(this,'light')">Light</button></div>
+      <div class="fb-seg"><button class="on" onclick="setD(this,'comfortable')">Comfortable</button><button onclick="setD(this,'compact')">Compact</button></div>
+      <button class="fb-btn" onclick="togNav(this)">Collapse nav</button>
+      <span class="fb-note">edges are SVG paths, nodes are HTML</span>
+    </div>
+    <div class="app">
+      <aside class="nav mini">
+        <div class="nav-brand"><div class="nav-logo">O</div><div><span class="nav-name">Orbit Ops</span><span class="nav-ws">acme-prod</span></div></div>
+        <div class="nav-grp">Monitor</div>
+        <div class="nav-item"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+        <div class="nav-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span><span class="cnt">14</span></div>
+        <div class="nav-item"><span class="ic">&#9673;</span><span class="tx">Services</span></div>
+        <div class="nav-item on"><span class="ic">&#8776;</span><span class="tx">Pipelines</span><span class="cnt">3</span></div>
+        <div class="nav-grp">Operate</div>
+        <div class="nav-item"><span class="ic">&#9998;</span><span class="tx">Runbooks</span></div>
+        <div class="nav-item"><span class="ic">&#9783;</span><span class="tx">Fleet</span></div>
+        <div class="nav-foot"><span class="av h1">VB<i class="pr"></i></span><div class="tx"><b>Vish B.</b>Incident commander</div></div>
+      </aside>
+      <div class="main">
+        <header class="top">
+          <div class="crumbs"><span>Pipelines</span><span class="sep">/</span><span>nightly-reconciliation</span><span class="sep">/</span><span class="cur mono">run #4,118</span></div>
+          <span class="st ack live"><i></i>Running &middot; 12m 40s</span>
+          <div class="top-search" style="width:180px">&#8981; <span>Search</span><span class="kbd">&#8984;K</span></div>
+          <span class="av h1 lg">VB<i class="pr"></i></span>
+        </header>
+        <div class="content">
+          <div class="dag-top">
+            <select class="sel"><option>run #4,118 &middot; today 02:00</option><option>run #4,117 &middot; yesterday</option></select>
+            <span class="seg"><span class="on">Graph</span><span>List</span><span>Gantt</span></span>
+            <span class="sp"></span>
+            <span style="font-size:var(--fs-sm);color:var(--text-dim)">Triggered by <b style="color:var(--text)">schedule</b> &middot; 6 of 9 steps</span>
+            <button class="btn btn-g">&#8635; Re-run failed</button>
+            <button class="btn btn-do">Cancel run</button>
+          </div>
+          <div class="dag">
+            <div class="canvas" id="dag">
+              <svg class="edges"><defs>
+                <marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L8,4 L0,8 Z" fill="context-stroke"/></marker>
+              </defs></svg>
+              <div class="node ok" style="left:30px;top:38px" id="n-extract" onclick="pick(this,'extract')"><div class="nm"><i></i>extract-ledger</div><div class="mt"><span>2m 04s</span><span>1.2 GB</span></div></div>
+              <div class="node ok" style="left:260px;top:38px" id="n-norm" onclick="pick(this,'normalise')"><div class="nm"><i></i>normalise</div><div class="mt"><span>48s</span><span>&#10003;</span></div></div>
+              <div class="node bad on" style="left:260px;top:128px" id="n-fx" onclick="pick(this,'match-fx')"><div class="nm"><i></i>match-fx-rates</div><div class="mt"><span>failed 3m 11s</span><span>exit 2</span></div></div>
+              <div class="node run" style="left:260px;top:218px" id="n-dedupe" onclick="pick(this,'dedupe')"><div class="nm"><i></i>dedupe</div><div class="mt"><span>running</span><span>61%</span></div></div>
+              <div class="node pend" style="left:490px;top:83px" id="n-recon" onclick="pick(this,'reconcile')"><div class="nm"><i></i>reconcile</div><div class="mt"><span>blocked</span><span>&mdash;</span></div></div>
+              <div class="node pend" style="left:490px;top:218px" id="n-agg" onclick="pick(this,'aggregate')"><div class="nm"><i></i>aggregate</div><div class="mt"><span>queued</span><span>&mdash;</span></div></div>
+              <div class="node skip" style="left:720px;top:128px" id="n-pub" onclick="pick(this,'publish')"><div class="nm"><i></i>publish-report</div><div class="mt"><span>skipped</span><span>&mdash;</span></div></div>
+              <div class="legend"><span><i style="background:var(--good)"></i>done</span><span><i style="background:var(--accent)"></i>running</span><span><i style="background:var(--danger)"></i>failed</span><span><i style="background:var(--text-faint)"></i>pending</span></div>
+              <div class="zoom"><button>+</button><button>&minus;</button><button>&#8862;</button></div>
+            </div>
+            <div class="logp">
+              <div class="log-h"><span>Logs</span><span class="nm" id="logStep">match-fx-rates</span><span class="sp"></span>
+                <span class="seg" style="height:22px"><span class="on">All</span><span>Warn+</span><span>Errors</span></span>
+                <label class="follow"><span class="sw on" onclick="this.classList.toggle('on')"></span>Follow</label></div>
+              <div class="log-b" id="logB">
+                <div class="ln info"><span class="t">02:03:11.204</span><span class="lv">INFO</span><span class="m">fetching fx table for 2026-09-01 from rates-svc</span></div>
+                <div class="ln dbg"><span class="t">02:03:11.390</span><span class="lv">DEBUG</span><span class="m">GET /v2/rates?date=2026-09-01 &rarr; 200 (186ms)</span></div>
+                <div class="ln info"><span class="t">02:03:12.010</span><span class="lv">INFO</span><span class="m">loaded 164 currency pairs</span></div>
+                <div class="ln warn"><span class="t">02:04:48.552</span><span class="lv">WARN</span><span class="m">pair <span class="hl">GBP/TRY</span> missing for 2026-09-01, falling back to prior day</span></div>
+                <div class="ln warn"><span class="t">02:04:48.553</span><span class="lv">WARN</span><span class="m">pair <span class="hl">EUR/ARS</span> missing for 2026-09-01, falling back to prior day</span></div>
+                <div class="ln info"><span class="t">02:05:02.118</span><span class="lv">INFO</span><span class="m">matching 48,203 ledger rows</span></div>
+                <div class="ln err"><span class="t">02:06:22.907</span><span class="lv">ERROR</span><span class="m">RateNotFound: no rate for USD/VES on 2026-09-01 or prior 3 days (row 31,877)</span></div>
+                <div class="ln err"><span class="t">02:06:22.910</span><span class="lv">ERROR</span><span class="m">step failed with exit code 2 after 3m 11s</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ 03 FLEET TABLE -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">03 — Fleet table</div>
+    <h2 class="sec-title">Date-range picker, column chooser, uptime bars, bulk actions, pagination</h2>
+    <p class="sec-desc">The dense-data screen. The date-range control combines presets with a two-month calendar that
+    supports click-to-start, click-to-end range selection. The column chooser is a checkbox popover. Uptime is a
+    30-day tick bar; resource pressure is a mini bar that changes colour at thresholds.</p>
+  </div>
+  <div class="frame" data-t="light" data-density="compact" id="f3">
+    <div class="frame-bar"><span class="fname">Fleet</span>
+      <div class="fb-seg"><button onclick="setT(this,'dark')">Dark</button><button class="on" onclick="setT(this,'light')">Light</button></div>
+      <div class="fb-seg"><button onclick="setD(this,'comfortable')">Comfortable</button><button class="on" onclick="setD(this,'compact')">Compact</button></div>
+      <button class="fb-btn" onclick="togNav(this)">Collapse nav</button>
+      <span class="fb-note">opens in light + compact to show the other end of the range</span>
+    </div>
+    <div class="app">
+      <aside class="nav">
+        <div class="nav-brand"><div class="nav-logo">O</div><div><span class="nav-name">Orbit Ops</span><span class="nav-ws">acme-prod &middot; eu-west</span></div></div>
+        <div class="nav-grp">Monitor</div>
+        <div class="nav-item"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+        <div class="nav-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span><span class="cnt">14</span></div>
+        <div class="nav-item"><span class="ic">&#9673;</span><span class="tx">Services</span></div>
+        <div class="nav-item"><span class="ic">&#8776;</span><span class="tx">Pipelines</span><span class="cnt">3</span></div>
+        <div class="nav-grp">Operate</div>
+        <div class="nav-item"><span class="ic">&#9998;</span><span class="tx">Runbooks</span></div>
+        <div class="nav-item on"><span class="ic">&#9783;</span><span class="tx">Fleet</span></div>
+        <div class="nav-item"><span class="ic">&#9201;</span><span class="tx">On-call</span></div>
+        <div class="nav-grp">Configure</div>
+        <div class="nav-item"><span class="ic">&#9881;</span><span class="tx">Settings</span></div>
+        <div class="nav-foot"><span class="av h1">VB<i class="pr"></i></span><div class="tx"><b>Vish B.</b>Incident commander</div></div>
+      </aside>
+      <div class="main">
+        <header class="top">
+          <div class="crumbs"><span>Operate</span><span class="sep">/</span><span class="cur">Fleet</span></div>
+          <span class="env">staging</span>
+          <div class="top-search">&#8981; <span>Search hosts</span><span class="kbd">/</span></div>
+          <div class="bell">&#9993;<i>3</i></div>
+          <span class="av h1 lg">VB<i class="pr"></i></span>
+        </header>
+        <div class="content">
+          <div class="page-h"><div><h2>Fleet</h2><p>1,248 hosts across 4 regions &middot; 11 degraded &middot; 2 unreachable</p></div>
+            <div class="acts"><button class="btn btn-g">&#8615; Export CSV</button><button class="btn btn-p">+ Register host</button></div></div>
+          <div class="fbar">
+            <div style="width:220px"><input class="inp" placeholder="Filter by host, tag or IP"></div>
+            <span class="chip"><b>Region</b> eu-west-1 <span class="x">&times;</span></span>
+            <span class="chip"><b>Status</b> not Healthy <span class="x">&times;</span></span>
+            <span class="chip add">+ Filter</span>
+            <span class="sp"></span>
+            <div class="pop-wrap">
+              <button class="btn btn-g" onclick="togPop(this)">&#128197; <span id="rangeLbl">Aug 24 &ndash; Sep 02</span> &#9662;</button>
+              <div class="pop cal" style="min-width:0">
+                <div class="cal-wrap">
+                  <div class="cal-pre">
+                    <div class="it" onclick="calPreset(this,33,33)">Today</div><div class="it" onclick="calPreset(this,32,32)">Yesterday</div><div class="it" onclick="calPreset(this,27,33)">Last 7 days</div><div class="it on" onclick="calPreset(this,24,33)">Last 10 days</div><div class="it" onclick="calPreset(this,4,33)">Last 30 days</div><div class="it" onclick="calPreset(this,32,33)">Month to date</div>
+                  </div>
+                  <div style="padding:0 6px">
+                    <div class="cal-h"><button>&lsaquo;</button><span>September 2026</span><button>&rsaquo;</button></div>
+                    <div class="cal-g" id="calG"></div>
+                    <div class="cal-f"><span>UTC</span><b id="calOut">2026-08-24 &rarr; 2026-09-02</b></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pop-wrap">
+              <button class="btn btn-g" onclick="togPop(this)">&#9776; Columns &#9662;</button>
+              <div class="pop cols-pop">
+                <div class="lbl">Visible</div>
+                <div class="it"><span class="chk on lock"></span>Host</div>
+                <div class="it" onclick="tcol(this,'c-region')"><span class="chk on"></span>Region</div>
+                <div class="it" onclick="tcol(this,'c-status')"><span class="chk on"></span>Status</div>
+                <div class="it" onclick="tcol(this,'c-up')"><span class="chk on"></span>Uptime 30d</div>
+                <div class="it" onclick="tcol(this,'c-cpu')"><span class="chk on"></span>CPU</div>
+                <div class="it" onclick="tcol(this,'c-mem')"><span class="chk on"></span>Memory</div>
+                <div class="it" onclick="tcol(this,'c-ver')"><span class="chk on"></span>Agent</div>
+                <div class="it" onclick="tcol(this,'c-seen')"><span class="chk on"></span>Last seen</div>
+              </div>
+            </div>
+          </div>
+          <div class="tbl-wrap">
+            <div class="tbl-scroll">
+            <table class="tbl" id="fleetTbl">
+              <thead><tr>
+                <th style="width:30px"><span class="chk" onclick="chkAll(this)"></span></th>
+                <th class="s">Host</th><th class="s c-region">Region</th><th class="s c-status">Status</th><th class="c-up">Uptime 30d</th>
+                <th class="s num c-cpu">CPU</th><th class="s num c-mem">Mem</th><th class="s c-ver">Agent</th><th class="s c-seen">Last seen</th>
+              </tr></thead>
+              <tbody id="fleetBody"></tbody>
+            </table>
+            </div>
+            <div class="tbl-foot"><span>Showing 1&ndash;12 of 1,248</span>
+              <select class="sel" style="height:22px;font-size:10.5px;padding-left:6px"><option>12 / page</option><option>25 / page</option><option>50 / page</option></select>
+              <div class="pager"><button>&lsaquo;</button><button class="on">1</button><button>2</button><button>3</button><span style="padding:0 4px">&hellip;</span><button>104</button><button>&rsaquo;</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="bulk"><span><b class="cnt">0</b> hosts selected</span><button class="btn">Tag</button><button class="btn">Drain</button><button class="btn">Restart agent</button><button class="btn d">Decommission</button><span class="x" onclick="clearChk(this)">&#10005;</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ 04 SETTINGS -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">04 — Settings</div>
+    <h2 class="sec-title">Section nav, two-column form rows, members, permission matrix, danger zone</h2>
+    <p class="sec-desc">Settings pages fail when every control is a different width in a single column. The two-column
+    row (label and help on the left, control on the right) fixes that. The permission matrix is a table of
+    tri-state dots; locked cells cannot be changed by the current role. The danger zone requires a typed confirmation.</p>
+  </div>
+  <div class="frame" data-t="dark" data-density="comfortable" id="f4">
+    <div class="frame-bar"><span class="fname">Settings</span>
+      <div class="fb-seg"><button class="on" onclick="setT(this,'dark')">Dark</button><button onclick="setT(this,'light')">Light</button></div>
+      <div class="fb-seg"><button class="on" onclick="setD(this,'comfortable')">Comfortable</button><button onclick="setD(this,'compact')">Compact</button></div>
+      <button class="fb-btn" onclick="togNav(this)">Collapse nav</button>
+      <span class="fb-note">scroll the settings body</span>
+    </div>
+    <div class="app">
+      <aside class="nav mini">
+        <div class="nav-brand"><div class="nav-logo">O</div><div><span class="nav-name">Orbit Ops</span><span class="nav-ws">acme-prod</span></div></div>
+        <div class="nav-grp">Monitor</div>
+        <div class="nav-item"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+        <div class="nav-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span></div>
+        <div class="nav-item"><span class="ic">&#9673;</span><span class="tx">Services</span></div>
+        <div class="nav-grp">Configure</div>
+        <div class="nav-item on"><span class="ic">&#9881;</span><span class="tx">Settings</span></div>
+        <div class="nav-foot"><span class="av h1">VB<i class="pr"></i></span><div class="tx"><b>Vish B.</b>Owner</div></div>
+      </aside>
+      <div class="main">
+        <header class="top">
+          <div class="crumbs"><span>Settings</span><span class="sep">/</span><span class="cur">Project</span></div>
+          <div class="top-search" style="width:200px">&#8981; <span>Search settings</span><span class="kbd">&#8984;K</span></div>
+          <span class="av h1 lg">VB<i class="pr"></i></span>
+        </header>
+        <div style="display:flex;flex:1;min-height:0">
+          <nav class="set-nav">
+            <div class="nav-grp" style="padding-top:2px">Project</div>
+            <div class="nav-item on"><span class="tx">General</span></div>
+            <div class="nav-item"><span class="tx">Members</span><span class="cnt">23</span></div>
+            <div class="nav-item"><span class="tx">Roles &amp; access</span></div>
+            <div class="nav-item"><span class="tx">Notifications</span></div>
+            <div class="nav-grp">Integrations</div>
+            <div class="nav-item"><span class="tx">Alert sources</span></div>
+            <div class="nav-item"><span class="tx">Chat &amp; paging</span></div>
+            <div class="nav-item"><span class="tx">API keys</span></div>
+            <div class="nav-grp">Account</div>
+            <div class="nav-item"><span class="tx">Billing</span></div>
+            <div class="nav-item" style="color:var(--danger)"><span class="tx">Danger zone</span></div>
+          </nav>
+          <div class="set-body">
+            <div class="set-sec">
+              <h3>General</h3><p>How this project identifies itself to responders and integrations.</p>
+              <div class="frow"><div><div class="fl">Project name</div><div class="fh">Shown in the nav, page titles and outgoing pages.</div></div>
+                <div class="fc"><input class="inp" value="Orbit Ops"></div></div>
+              <div class="frow"><div><div class="fl">Project slug</div><div class="fh">Used in URLs. Changing it breaks existing links.</div></div>
+                <div class="fc"><div class="inline"><span style="color:var(--text-faint);font-family:var(--mono)">orbit.app/</span><input class="inp" value="acme-prod" style="max-width:180px;font-family:var(--mono)"></div></div></div>
+              <div class="frow"><div><div class="fl">Default time zone</div><div class="fh">Timestamps display in UTC by default; this sets the fallback for schedules.</div></div>
+                <div class="fc"><select class="sel" style="max-width:320px"><option>UTC</option><option>Europe/London</option><option>America/New_York</option></select></div></div>
+              <div class="frow"><div><div class="fl">Incident numbering</div><div class="fh">Prefix applied to new incident identifiers.</div></div>
+                <div class="fc"><div class="radio-cards">
+                  <div class="rc on" onclick="rc(this)"><b>INC-####</b><span>Sequential, global</span></div>
+                  <div class="rc" onclick="rc(this)"><b>SVC-####</b><span>Per service</span></div>
+                  <div class="rc" onclick="rc(this)"><b>2026-####</b><span>Per year</span></div></div></div></div>
+              <div class="frow"><div><div class="fl">Require acknowledgement</div><div class="fh">Sev1 and Sev2 pages re-notify every 5 minutes until acknowledged.</div></div>
+                <div class="fc"><div class="inline"><span class="sw on" onclick="this.classList.toggle('on')"></span><span>Enabled for Sev1 and Sev2</span></div></div></div>
+            </div>
+
+            <div class="set-sec">
+              <h3>Members</h3><p>23 members &middot; 4 pending invitations.</p>
+              <div class="card members">
+                <div class="drow"><span class="av h1">VB<i class="pr"></i></span><div class="t"><b>Vish B.</b><span>vish@acme.io &middot; last active now</span></div><select class="sel" disabled><option>Owner</option></select></div>
+                <div class="drow"><span class="av h3">AK<i class="pr"></i></span><div class="t"><b>Ana K.</b><span>ana@acme.io &middot; 4m ago</span></div><select class="sel"><option>Admin</option><option>Responder</option><option>Viewer</option></select></div>
+                <div class="drow"><span class="av h2">MR<i class="pr away"></i></span><div class="t"><b>Marco R.</b><span>marco@acme.io &middot; 1h ago</span></div><select class="sel"><option>Responder</option><option>Admin</option><option>Viewer</option></select></div>
+                <div class="drow"><span class="av h4">JL<i class="pr off"></i></span><div class="t"><b>Jo L.</b><span>jo@acme.io &middot; invited, not accepted</span></div><span class="st ack"><i></i>Pending</span><button class="btn btn-q">Resend</button></div>
+              </div>
+            </div>
+
+            <div class="set-sec">
+              <h3>Roles &amp; access</h3><p>What each role can do. Owner rows are locked; click any other dot to toggle.</p>
+              <div class="card"><table class="perm">
+                <thead><tr><th>Capability</th><th>Owner</th><th>Admin</th><th>Responder</th><th>Viewer</th></tr></thead>
+                <tbody>
+                  <tr><td>View incidents<small>All severities, all services</small></td><td><span class="pc on lock"></span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td></tr>
+                  <tr><td>Acknowledge &amp; resolve</td><td><span class="pc on lock"></span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td></tr>
+                  <tr><td>Declare Sev1<small>Pages the whole rota</small></td><td><span class="pc on lock"></span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td></tr>
+                  <tr><td>Edit runbooks</td><td><span class="pc on lock"></span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td></tr>
+                  <tr><td>Manage members</td><td><span class="pc on lock"></span></td><td><span class="pc on" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td></tr>
+                  <tr><td>Billing &amp; plan</td><td><span class="pc on lock"></span></td><td><span class="pc" onclick="pc(this)">&#10003;</span></td><td><span class="pc lock"></span></td><td><span class="pc lock"></span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <div class="set-sec">
+              <h3 style="color:var(--danger)">Danger zone</h3><p>Irreversible actions. Each one asks you to type the project slug.</p>
+              <div class="card danger">
+                <div class="drow"><div class="t"><b>Transfer ownership</b><span>Hand this project to another admin. You keep admin rights.</span></div><button class="btn btn-do">Transfer</button></div>
+                <div class="drow" style="flex-direction:column;align-items:stretch"><div style="display:flex;align-items:center;gap:12px"><div class="t"><b>Delete project</b><span>Removes all incidents, runbooks and members after a 14-day grace period.</span></div></div>
+                  <div class="confirm"><input class="inp" placeholder="Type acme-prod to confirm" oninput="confirmSlug(this)"><button class="btn btn-d" disabled>Delete project</button></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ 05 STATUS / SLO -->
+<section>
+  <div class="sec-head">
+    <div class="sec-num">05 — Status &amp; SLO</div>
+    <h2 class="sec-title">Overall banner, 90-day uptime bars, error-budget gauge, burn-rate chart, incident history</h2>
+    <p class="sec-desc">The screen that gets projected on a wall. Big, calm, few numbers. Each uptime bar is 90 ticks
+    coloured by the worst state that day; hover one for the day. The gauge and budget bar animate on load. The burn-rate
+    chart shows the alerting threshold as a dashed line so the picture explains the pages.</p>
+  </div>
+  <div class="frame" data-t="dark" data-density="comfortable" id="f5">
+    <div class="frame-bar"><span class="fname">Status &amp; SLO</span>
+      <div class="fb-seg"><button class="on" onclick="setT(this,'dark')">Dark</button><button onclick="setT(this,'light')">Light</button></div>
+      <div class="fb-seg"><button class="on" onclick="setD(this,'comfortable')">Comfortable</button><button onclick="setD(this,'compact')">Compact</button></div>
+      <button class="fb-btn" onclick="togNav(this)">Collapse nav</button>
+      <span class="fb-note">no nav on wall displays; it is here for the switch</span>
+    </div>
+    <div class="app">
+      <aside class="nav mini">
+        <div class="nav-brand"><div class="nav-logo">O</div><div><span class="nav-name">Orbit Ops</span><span class="nav-ws">acme-prod</span></div></div>
+        <div class="nav-grp">Monitor</div>
+        <div class="nav-item"><span class="ic">&#9635;</span><span class="tx">Overview</span></div>
+        <div class="nav-item"><span class="ic">&#9888;</span><span class="tx">Incidents</span></div>
+        <div class="nav-item on"><span class="ic">&#9673;</span><span class="tx">Services</span></div>
+        <div class="nav-foot"><span class="av h1">VB<i class="pr"></i></span><div class="tx"><b>Vish B.</b>Owner</div></div>
+      </aside>
+      <div class="main">
+        <header class="top">
+          <div class="crumbs"><span>Services</span><span class="sep">/</span><span class="cur">Status &amp; SLO</span></div>
+          <span class="seg" style="margin-left:auto"><span>7d</span><span>30d</span><span class="on">90d</span></span>
+          <button class="btn btn-g">&#8599; Public page</button>
+        </header>
+        <div class="content">
+          <div class="banner warn"><span class="dot"></span>Degraded performance on checkout<span class="sp">1 active incident &middot; 4 services operational &middot; updated 12s ago</span><button class="btn btn-g" style="height:26px">Subscribe</button></div>
+          <div class="card">
+            <div class="svc"><div class="n">Checkout API<small>checkout-api &middot; eu-west-1</small></div><div class="u90" data-bad="87,88,89" data-warn="12,41,42,70"></div><div class="pct bad">99.71%</div></div>
+            <div class="svc"><div class="n">Order stream<small>order-stream</small></div><div class="u90" data-warn="5,6,57"></div><div class="pct">99.96%</div></div>
+            <div class="svc"><div class="n">Auth<small>auth &middot; global</small></div><div class="u90" data-bad="23"></div><div class="pct">99.93%</div></div>
+            <div class="svc"><div class="n">Search<small>search</small></div><div class="u90" data-warn="61,62,63,64"></div><div class="pct">99.98%</div></div>
+            <div class="svc"><div class="n">Media service<small>media-svc</small></div><div class="u90"></div><div class="pct">100.00%</div></div>
+          </div>
+          <div class="grid2">
+            <div class="card"><div class="ch">Checkout API &middot; availability SLO</div><div class="cb">
+              <div class="slo">
+                <div class="gauge"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg warn" cx="60" cy="60" r="50" data-pct="29"/></svg>
+                  <div class="c"><b>29%</b><span>budget left</span></div></div>
+                <div><dl class="slo-kv"><dt>Target</dt><dd>99.9% / 30d</dd><dt>Current</dt><dd>99.71%</dd><dt>Budget</dt><dd>12m 31s of 43m 12s left</dd><dt>Burn rate</dt><dd style="color:var(--warn)">3.4&times; (1h window)</dd></dl>
+                  <div class="budget"><i class="warn" data-w="29"></i></div><div style="font-size:10px;color:var(--text-faint)">Projected exhaustion: 6 days at current rate</div></div>
+              </div></div></div>
+            <div class="card"><div class="ch">Burn rate &middot; last 6h<span style="margin-left:auto;font-weight:500;font-size:10px;color:var(--text-faint)">alert at 14&times; (1h) / 6&times; (6h)</span></div><div class="cb">
+              <div class="burn"><svg viewBox="0 0 400 110" preserveAspectRatio="none">
+                <line class="thr" x1="0" y1="24" x2="400" y2="24"/>
+                <path class="ar" d="M0,95 L40,92 L80,90 L120,88 L160,84 L200,60 L240,22 L280,34 L320,48 L360,62 L400,66 L400,110 L0,110 Z"/>
+                <polyline class="ln" points="0,95 40,92 80,90 120,88 160,84 200,60 240,22 280,34 320,48 360,62 400,66"/>
+                <text class="ax" x="2" y="20">14&times;</text><text class="ax" x="2" y="106">0&times;</text>
+                <text class="ax" x="370" y="106">now</text><text class="ax" x="180" y="106">-3h</text><text class="ax" x="2" y="106" opacity="0">-6h</text>
+              </svg></div></div></div>
+          </div>
+          <div class="card"><div class="ch">Recent incidents</div><div class="inc-list">
+            <div class="inc"><span class="d">Sep 02</span><div class="b"><b>Checkout latency p99 above 2.4s</b><span>Sev1 &middot; ongoing &middot; mitigation in progress</span></div><span class="st open live"><i></i>Open</span></div>
+            <div class="inc"><span class="d">Aug 29</span><div class="b"><b>Search index rebuild running slow</b><span>Sev4 &middot; 6h 12m &middot; no customer impact</span></div><span class="st res"><i></i>Resolved</span></div>
+            <div class="inc"><span class="d">Aug 24</span><div class="b"><b>Login spike from unknown ASN</b><span>Sev2 &middot; 48m &middot; rate limits raised, WAF rule added</span></div><span class="st res"><i></i>Resolved</span></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="foot"><b>Porting notes.</b> Each frame is one <code>.app</code> flex row: nav, main (top bar + scrolling content), optional
+inspector. Density is applied by setting <code>data-density</code> on the frame and letting tokens do the rest; try it
+in compact mode on the fleet table to see how much of a real console fits in 640px. The bulk bar is positioned against
+<code>.app</code>, not the table, so it stays put while the table scrolls. The DAG uses absolute-positioned HTML nodes over
+one SVG for edges; for a real graph, compute both from the same layout output (dagre or ELK) and keep the animation on the
+edge class, not the node. The date-range calendar renders from a tiny script below; the range logic is thirty lines and
+worth owning rather than importing.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+/* frame controls */
+function segOn(b){b.parentNode.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+function setT(b,t){segOn(b);b.closest('.frame').dataset.t=t;}
+function setD(b,d){segOn(b);b.closest('.frame').dataset.density=d;}
+function togNav(b){const n=b.closest('.frame').querySelector('.nav');n.classList.toggle('mini');
+  b.textContent=n.classList.contains('mini')?'Expand nav':'Collapse nav';}
+
+/* popovers */
+function togPop(b){const p=b.parentNode.querySelector('.pop');const was=p.classList.contains('open');
+  document.querySelectorAll('.pop.open').forEach(x=>x.classList.remove('open'));if(!was)p.classList.add('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop-wrap'))document.querySelectorAll('.pop.open').forEach(x=>x.classList.remove('open'));});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.pop.open').forEach(x=>x.classList.remove('open'));});
+document.querySelectorAll('.pop .it').forEach(it=>{if(it.closest('.cols-pop')||it.closest('.cal-pre'))return;
+  it.addEventListener('click',()=>{it.parentNode.querySelectorAll('.it').forEach(x=>x.classList.remove('on'));it.classList.add('on');});});
+
+/* table selection + bulk bar */
+function updBulk(app){const rows=app.querySelectorAll('tbody .chk.on');const bulk=app.querySelector('.bulk');
+  bulk.querySelector('.cnt').textContent=rows.length;bulk.classList.toggle('show',rows.length>0);
+  const all=app.querySelector('thead .chk');const total=app.querySelectorAll('tbody .chk').length;
+  all.className='chk'+(rows.length===0?'':rows.length===total?' on':' mix');}
+function chkRow(e,c){e.stopPropagation();c.classList.toggle('on');updBulk(c.closest('.app'));}
+function chkAll(c){const on=!c.classList.contains('on');c.closest('table').querySelectorAll('tbody .chk').forEach(x=>x.classList.toggle('on',on));updBulk(c.closest('.app'));}
+function clearChk(x){const app=x.closest('.app');app.querySelectorAll('.chk.on').forEach(c=>c.classList.remove('on'));updBulk(app);}
+
+/* incident row -> inspector */
+document.querySelectorAll('#incTbl tbody tr').forEach(tr=>tr.addEventListener('click',()=>{
+  tr.parentNode.querySelectorAll('tr').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');
+  const h=document.querySelector('#insp1 .insp-h');h.querySelector('.id').textContent=tr.dataset.id+' · opened '+tr.querySelector('.num').textContent+' ago';
+  h.querySelector('h3').textContent=tr.dataset.title;
+  h.querySelector('.sev').className='sev '+tr.querySelector('.sev').classList[1];h.querySelector('.sev').innerHTML='<i></i>'+tr.dataset.sev;
+  h.querySelector('.st').outerHTML=tr.querySelector('.st').outerHTML;h.querySelector('.dim').textContent=tr.dataset.svc;}));
+function itab(t,i){const insp=t.closest('.insp');insp.querySelectorAll('.insp-tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
+  insp.querySelectorAll('.insp-pane').forEach((p,j)=>p.classList.toggle('on',i===j));}
+document.querySelectorAll('.views,.seg').forEach(g=>g.addEventListener('click',e=>{const el=e.target.closest('.view,.seg>span');
+  if(!el||el.classList.contains('add'))return;g.querySelectorAll('.view,span').forEach(x=>x.classList.remove('on'));el.classList.add('on');}));
+document.querySelectorAll('.chip .x').forEach(x=>x.addEventListener('click',e=>{if(x.textContent.trim()==='×')x.parentNode.remove();}));
+
+/* DAG edges: computed from the nodes' real positions, straight angled lines */
+const EDGES=[['n-extract','n-norm','ok'],['n-extract','n-fx','ok'],['n-extract','n-dedupe','ok'],['n-norm','n-recon','ok'],['n-fx','n-recon','bad'],['n-dedupe','n-agg','run'],['n-recon','n-pub',''],['n-agg','n-pub','']];
+function drawEdges(){const c=document.getElementById('dag');const svg=c.querySelector('svg.edges');if(!svg)return;
+  svg.setAttribute('width',c.clientWidth);svg.setAttribute('height',c.clientHeight);
+  svg.querySelectorAll('path.edge').forEach(p=>p.remove());
+  EDGES.forEach(([a,b,k])=>{const A=document.getElementById(a),B=document.getElementById(b);if(!A||!B)return;
+    const x1=A.offsetLeft+A.offsetWidth,y1=A.offsetTop+A.offsetHeight/2,x2=B.offsetLeft,y2=B.offsetTop+B.offsetHeight/2;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('class','edge '+k);
+    p.setAttribute('d','M'+x1+','+y1+' L'+(x2-2)+','+y2);svg.appendChild(p);});}
+window.addEventListener('load',drawEdges);window.addEventListener('resize',drawEdges);
+document.querySelectorAll('.frame .fb-seg button,.fb-btn').forEach(b=>b.addEventListener('click',()=>setTimeout(drawEdges,360)));
+const LOGS={
+ 'extract':[['info','01:59:03.100','opening ledger export s3://acme-ledger/2026-09-01/'],['info','02:00:11.420','streamed 1.2 GB in 68s'],['info','02:01:07.004','done, 48,203 rows']],
+ 'normalise':[['info','02:01:08.011','normalising column set (14 &rarr; 11)'],['dbg','02:01:20.500','coerced 812 rows with trailing whitespace'],['info','02:01:56.330','done in 48s']],
+ 'match-fx':null,
+ 'dedupe':[['info','02:02:00.900','hashing rows on (account, ts, amount)'],['info','02:07:41.102','31,004 of 48,203 checked (61%)'],['dbg','02:07:41.110','duplicates so far: 217']],
+ 'reconcile':[['warn','--:--:--.---','blocked: upstream step match-fx-rates failed']],
+ 'aggregate':[['dbg','--:--:--.---','queued behind dedupe']],
+ 'publish':[['dbg','--:--:--.---','skipped: reconcile did not run']]};
+let matchLogs=null;
+function pick(n,key){document.querySelectorAll('#dag .node').forEach(x=>x.classList.remove('on'));n.classList.add('on');
+  document.getElementById('logStep').textContent=n.querySelector('.nm').textContent.trim();
+  const b=document.getElementById('logB');if(matchLogs===null)matchLogs=b.innerHTML;
+  if(key==='match-fx'){b.innerHTML=matchLogs;}else{b.innerHTML=LOGS[key].map(l=>'<div class="ln '+l[0]+'"><span class="t">'+l[1]+'</span><span class="lv">'+l[0].toUpperCase()+'</span><span class="m">'+l[2]+'</span></div>').join('');}
+  b.scrollTop=b.scrollHeight;}
+
+/* fleet rows */
+const HOSTS=[['edge-eu1-a01','eu-west-1','ok',[],[],31,52,'2.14.0','12s'],['edge-eu1-a02','eu-west-1','ok',[],[9],28,49,'2.14.0','12s'],
+ ['api-eu1-b07','eu-west-1','warn',[],[3,4,22],84,71,'2.14.0','14s'],['api-eu1-b08','eu-west-1','ok',[],[],44,60,'2.13.2','9s'],
+ ['db-eu1-c01','eu-west-1','crit',[27],[26,28],97,91,'2.14.0','3m'],['db-eu1-c02','eu-west-1','ok',[],[],52,88,'2.14.0','11s'],
+ ['worker-eu1-d11','eu-west-1','ok',[],[15],61,44,'2.12.9','13s'],['worker-eu1-d12','eu-west-1','warn',[],[15,16,17],72,46,'2.12.9','13s'],
+ ['cache-eu1-e01','eu-west-1','ok',[],[],18,76,'2.14.0','10s'],['cache-eu1-e02','eu-west-1','down',[29,30],[],0,0,'2.14.0','41m'],
+ ['gw-eu1-f01','eu-west-1','ok',[],[],22,38,'2.14.0','12s'],['gw-eu1-f02','eu-west-1','ok',[],[6],25,40,'2.14.0','12s']];
+const STAT={ok:'<span class="st res"><i></i>Healthy</span>',warn:'<span class="st ack"><i></i>Degraded</span>',crit:'<span class="st open live"><i></i>Critical</span>',down:'<span class="st" style="background:var(--surface-3);color:var(--text-dim)"><i></i>Unreachable</span>'};
+function bar(v){const c=v>=90?' crit':v>=75?' hot':'';return '<span class="bar'+c+'"><span class="tr"><span class="fl" style="width:'+v+'%"></span></span>'+v+'%</span>';}
+document.getElementById('fleetBody').innerHTML=HOSTS.map(h=>{let up='';for(let d=0;d<30;d++)up+='<i class="'+(h[3].includes(d)?'b':h[4].includes(d)?'w':'')+'"></i>';
+  return '<tr><td><span class="chk" onclick="chkRow(event,this)"></span></td><td class="mono">'+h[0]+'</td><td class="dim c-region">'+h[1]+'</td><td class="c-status">'+STAT[h[2]]+'</td><td class="c-up"><span class="uptime">'+up+'</span></td><td class="num c-cpu">'+bar(h[5])+'</td><td class="num c-mem">'+bar(h[6])+'</td><td class="mono c-ver">'+h[7]+'</td><td class="dim c-seen">'+h[8]+'</td></tr>';}).join('');
+function tcol(it,cls){const c=it.querySelector('.chk');c.classList.toggle('on');const on=c.classList.contains('on');
+  it.closest('.app').querySelectorAll('.'+cls).forEach(x=>x.style.display=on?'':'none');}
+
+/* date-range calendar: click start, click end */
+let rs=null,re=null;
+function drawCal(){const g=document.getElementById('calG');const dows=['Mo','Tu','We','Th','Fr','Sa','Su'];let h=dows.map(d=>'<span class="dw">'+d+'</span>').join('');
+  const days=[];for(let d=24;d<=31;d++)days.push(['Aug',d,true]);for(let d=1;d<=30;d++)days.push(['Sep',d,false]);for(let d=1;d<=4;d++)days.push(['Oct',d,true]);
+  const key=(m,d)=>(m==='Aug'?0:m==='Sep'?31:61)+d;
+  days.forEach(([m,d,o])=>{const k=key(m,d);let c='d'+(o?' o':'');
+    if(rs!==null&&re!==null){if(k===rs)c+=' st';if(k===re)c+=' en';if(k>rs&&k<re)c+=' in';}else if(rs!==null&&k===rs)c+=' st en';
+    h+='<span class="'+c+'" onclick="calPick('+k+')">'+d+'</span>';});
+  g.innerHTML=h;}
+function calPick(k){if(rs===null||re!==null){rs=k;re=null;}else{if(k<rs){re=rs;rs=k;}else re=k;}
+  drawCal();const fmt=k=>k<=31?'2026-08-'+String(k).padStart(2,'0'):k<=61?'2026-09-'+String(k-31).padStart(2,'0'):'2026-10-'+String(k-61).padStart(2,'0');
+  const short=k=>k<=31?'Aug '+k:k<=61?'Sep '+String(k-31).padStart(2,'0'):'Oct '+String(k-61).padStart(2,'0');
+  if(re!==null){document.getElementById('calOut').textContent=fmt(rs)+' → '+fmt(re);document.getElementById('rangeLbl').textContent=short(rs)+' – '+short(re);}
+  else document.getElementById('calOut').textContent=fmt(rs)+' → …';}
+function calPreset(it,a,b){rs=a;re=b;it.parentNode.querySelectorAll('.it').forEach(x=>x.classList.remove('on'));it.classList.add('on');drawCal();
+  const fmt=k=>k<=31?'2026-08-'+String(k).padStart(2,'0'):k<=61?'2026-09-'+String(k-31).padStart(2,'0'):'2026-10-'+String(k-61).padStart(2,'0');
+  const short=k=>k<=31?'Aug '+k:k<=61?'Sep '+String(k-31).padStart(2,'0'):'Oct '+String(k-61).padStart(2,'0');
+  document.getElementById('calOut').textContent=fmt(rs)+' → '+fmt(re);document.getElementById('rangeLbl').textContent=short(rs)+' – '+short(re);}
+rs=24;re=33;drawCal();
+
+/* settings */
+function rc(el){el.parentNode.querySelectorAll('.rc').forEach(x=>x.classList.remove('on'));el.classList.add('on');}
+function pc(el){if(el.classList.contains('lock'))return;el.classList.toggle('on');}
+function confirmSlug(i){i.parentNode.querySelector('button').disabled=i.value.trim()!=='acme-prod';}
+
+/* status */
+document.querySelectorAll('.u90').forEach(u=>{const bad=(u.dataset.bad||'').split(',').filter(Boolean).map(Number);const warn=(u.dataset.warn||'').split(',').filter(Boolean).map(Number);
+  let h='';for(let d=0;d<90;d++)h+='<i class="'+(bad.includes(d)?'b':warn.includes(d)?'w':'')+'" title="Day '+(d+1)+'"></i>';u.innerHTML=h;});
+window.addEventListener('load',()=>{document.querySelectorAll('.gauge .fg').forEach(c=>{setTimeout(()=>c.style.strokeDashoffset=314-314*c.dataset.pct/100,200);});
+  document.querySelectorAll('.budget i').forEach(b=>setTimeout(()=>b.style.width=b.dataset.w+'%',200));});
+</script>
+</body>
+</html>
