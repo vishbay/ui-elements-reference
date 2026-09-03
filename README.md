@@ -42,6 +42,7 @@ files, each self-contained with a light/dark toggle:
 | 18 | Signature & Restraint | Effect budget, type pairings, accent, grid, detail signatures, checklist |
 | 19 | Backgrounds | Solid grounds, tonal gradients, ambient light, structure, photo treatment |
 | 20 | Assistant Panel | Live demo of the reusable `assistant-panel/` package |
+| 21 | Gemini-Style Mobile | Phone-frame reconstruction of the Gemini iOS "Liquid Glass" redesign |
 
 Plus `ui-motion-reference.html` / `-compat.html`, a zero-dependency motion
 pattern library (count-ups, gauges, staggered reveals, table row flash, etc).

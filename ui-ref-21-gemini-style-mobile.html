@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 21 — Gemini-Style Mobile</title>
+<style>
+:root{--r-pill:999px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+@media (prefers-reduced-motion: reduce){
+  html:not([data-motion="force"]) *,html:not([data-motion="force"]) *::before,html:not([data-motion="force"]) *::after{
+    animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+.motion-banner{display:none;align-items:center;gap:12px;background:rgba(251,191,36,.12);color:#fbbf24;
+  border:1px solid rgba(251,191,36,.35);border-radius:12px;padding:12px 16px;font-size:13px;margin:0 0 26px}
+.motion-banner.show{display:flex}
+.motion-banner button{margin-left:auto;background:#fbbf24;color:#0b1215;border:none;border-radius:8px;
+  padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:700px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding:30px 24px}
+code{font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.07);padding:1px 5px;
+  border-radius:4px;color:#c9cbd6}
+.note{background:#131519;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;
+  font-size:12.5px;color:#8b909d;line-height:1.65;max-width:900px;margin-bottom:28px}
+.note b{color:#edeef2}
+.stage{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start;justify-content:center}
+.ctl-col{display:flex;flex-direction:column;gap:12px;padding-top:8px}
+.ctl-col .lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#626775;font-weight:700}
+.tglbtn{background:#172228;border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:9px;
+  font-size:12.5px;font-weight:620;padding:9px 15px;cursor:pointer;font-family:inherit;text-align:left}
+.tglbtn:hover{border-color:#3a9ad9;color:#3a9ad9}
+.foot{max-width:1180px;margin:34px auto 0;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+.replay{position:fixed;bottom:18px;left:18px;z-index:60;background:#172228;
+  border:1px solid rgba(255,255,255,.16);color:#edeef2;border-radius:var(--r-pill);
+  padding:10px 17px;font-size:12.5px;font-weight:650;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+
+/* ============================================================
+   PHONE SHELL — decorative bezel + Dynamic Island, iPhone 15/16
+   logical size (393x852). Everything inside .g-screen is the part
+   that would actually be "the app".
+   ============================================================ */
+.phone-shell{width:393px;height:852px;background:#050505;border-radius:54px;padding:10px;
+  box-shadow:0 30px 70px rgba(0,0,0,.6),0 2px 0 rgba(255,255,255,.04) inset;position:relative;flex-shrink:0}
+.dyn-island{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:120px;height:35px;
+  background:#000;border-radius:20px;z-index:40}
+.g-screen{width:100%;height:100%;border-radius:44px;overflow:hidden;position:relative;
+  background:var(--g-bg);color:var(--g-text);font-family:"Google Sans",-apple-system,BlinkMacSystemFont,
+  "Segoe UI",Roboto,sans-serif}
+.g-screen *{box-sizing:border-box}
+
+/* ---- Gemini tokens: a deliberately different, self-contained token set ---- */
+.g-screen[data-t="dark"]{
+  --g-bg:#0b0b0c;--g-bg-2:#1e1f20;--g-bg-3:#2a2b2d;
+  --g-text:#e3e3e3;--g-text-dim:#9aa0a6;--g-text-faint:#6b6f73;
+  --g-border:rgba(255,255,255,.09);
+  --g-bubble-u:#2a2b2d;
+  --g-glass:rgba(30,31,32,.62);--g-glass-brd:rgba(255,255,255,.14);--g-glass-hi:rgba(255,255,255,.10);
+  --g-sheet:#1e1f20;--g-scrim:rgba(0,0,0,.55);
+  --g-chip:#28292b;
+}
+.g-screen[data-t="light"]{
+  --g-bg:#ffffff;--g-bg-2:#f2f4f9;--g-bg-3:#e8eaf0;
+  --g-text:#1f1f1f;--g-text-dim:#5f6368;--g-text-faint:#8a8d91;
+  --g-border:rgba(0,0,0,.08);
+  --g-bubble-u:#eef0f4;
+  --g-glass:rgba(255,255,255,.62);--g-glass-brd:rgba(255,255,255,.8);--g-glass-hi:rgba(255,255,255,.9);
+  --g-sheet:#ffffff;--g-scrim:rgba(20,20,24,.38);
+  --g-chip:#eef0f4;
+}
+/* the four Gemini brand stops, used only for the spark mark and the ambient wash */
+.g-screen{--g1:#4285f4;--g2:#9168c0;--g3:#ee5a9e;--g4:#ffa657}
+
+/* ---- ambient / thinking wash: the one deliberately loud element ---- */
+.g-wash{position:absolute;top:-140px;left:-60px;right:-60px;height:420px;pointer-events:none;z-index:0;
+  filter:blur(60px);opacity:.28;transition:opacity .6s ease;
+  background:
+    radial-gradient(closest-side at 15% 20%, var(--g1), transparent 70%),
+    radial-gradient(closest-side at 70% 10%, var(--g2), transparent 70%),
+    radial-gradient(closest-side at 90% 35%, var(--g3), transparent 70%),
+    radial-gradient(closest-side at 45% 40%, var(--g4), transparent 70%);
+  animation:gWashDrift 9s ease-in-out infinite}
+.g-screen[data-t="light"] .g-wash{opacity:.22}
+.g-wash.thinking{opacity:.62;animation:gWashPulse 1.5s ease-in-out infinite}
+.g-screen[data-t="light"] .g-wash.thinking{opacity:.5}
+@keyframes gWashDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,10px) scale(1.06)}}
+@keyframes gWashPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.09);opacity:.75}}
+
+/* ---- status bar (decorative) ---- */
+.g-statusbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:16px 26px 0;font-size:15px;font-weight:650;color:var(--g-text);height:48px}
+.g-statusicons{display:flex;align-items:center;gap:5px}
+
+/* ---- top bar: model chip + avatar ---- */
+.g-topbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:6px 16px 10px}
+.g-modelchip{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:650;color:var(--g-text);
+  background:var(--g-glass);border:1px solid var(--g-glass-brd);border-radius:var(--r-pill);
+  padding:6px 8px 6px 12px;backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%)}
+.g-modelchip svg{width:13px;height:13px;opacity:.6}
+.g-menu-ic,.g-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0}
+.g-menu-ic{background:transparent;color:var(--g-text-dim)}
+.g-avatar{background:linear-gradient(135deg,var(--g1),var(--g3));color:#fff;font-size:12.5px;font-weight:700}
+
+/* ---- scroll area ---- */
+.g-scroll{position:relative;z-index:10;height:calc(100% - 48px - 46px - 118px);overflow-y:auto;
+  padding:6px 20px 20px;-webkit-overflow-scrolling:touch}
+
+/* ---- empty / greeting state ---- */
+.g-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  height:100%;gap:14px;transition:opacity .4s ease,transform .4s ease}
+.g-empty.hide{opacity:0;transform:translateY(-14px) scale(.98);pointer-events:none;position:absolute;inset:0}
+.g-spark-lg{width:44px;height:44px}
+.g-empty h2{font-size:22px;font-weight:500;margin:0;color:var(--g-text);letter-spacing:-.01em}
+.g-empty h2 b{font-weight:650}
+
+/* ---- messages ---- */
+.g-msg{margin-bottom:22px;animation:gMsgIn .35s cubic-bezier(.22,1,.36,1)}
+@keyframes gMsgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.g-msg.user{display:flex;justify-content:flex-end}
+.g-bubble-u{background:var(--g-bubble-u);color:var(--g-text);border-radius:20px;padding:11px 16px;
+  font-size:15px;line-height:1.45;max-width:80%}
+.g-msg.assistant{display:flex;gap:10px;align-items:flex-start}
+.g-spark-sm{width:20px;height:20px;flex-shrink:0;margin-top:2px}
+.g-a-body{flex:1;min-width:0}
+.g-status-line{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--g-text-dim);
+  margin-bottom:8px;min-height:18px}
+.g-status-line .dot{width:6px;height:6px;border-radius:50%;
+  background:linear-gradient(90deg,var(--g1),var(--g3));animation:gDotPulse 1s ease-in-out infinite}
+@keyframes gDotPulse{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+.g-thinkchip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;
+  color:var(--g-text-dim);background:var(--g-bg-2);border:1px solid var(--g-border);border-radius:var(--r-pill);
+  padding:5px 12px 5px 10px;margin-bottom:10px;cursor:pointer}
+.g-thinkchip svg{width:12px;height:12px;opacity:.7}
+.g-thinkchip:hover{color:var(--g-text)}
+.g-answer{font-size:15.5px;line-height:1.6;color:var(--g-text)}
+.g-answer p{margin:0 0 10px}.g-answer p:last-child{margin:0}
+.g-answer strong{font-weight:650}
+.g-answer code{font-family:var(--mono);font-size:13px;background:var(--g-bg-3);color:var(--g-text);padding:1px 6px;border-radius:5px;font-weight:600}
+.g-caret::after{content:"\258c";color:var(--g1);animation:gBlink 1s step-end infinite;margin-left:1px}
+@keyframes gBlink{50%{opacity:0}}
+
+.g-sources-btn{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:640;
+  color:var(--g-text-dim);background:var(--g-bg-2);border:1px solid var(--g-border);border-radius:var(--r-pill);
+  padding:6px 8px 6px 8px;cursor:pointer}
+.g-sources-btn .stack{display:flex}
+.g-sources-btn .fav{width:16px;height:16px;border-radius:50%;border:2px solid var(--g-bg-2);
+  margin-left:-6px;flex-shrink:0}
+.g-sources-btn .fav:first-child{margin-left:0}
+.g-sources-btn:hover{color:var(--g-text)}
+
+.g-row-scroll{display:flex;gap:8px;overflow-x:auto;margin-top:14px;padding-bottom:2px;scrollbar-width:none}
+.g-row-scroll::-webkit-scrollbar{display:none}
+.g-chip{flex-shrink:0;font-size:13px;font-weight:600;color:var(--g-text);background:var(--g-chip);
+  border:1px solid var(--g-border);border-radius:var(--r-pill);padding:8px 14px;cursor:pointer;
+  white-space:nowrap;opacity:0;transform:translateY(6px);animation:gChipIn .35s ease forwards}
+.g-chip:hover{border-color:var(--g2)}
+@keyframes gChipIn{to{opacity:1;transform:none}}
+
+/* ---- composer: pill, liquid glass ---- */
+.g-compose-wrap{position:absolute;left:0;right:0;bottom:0;z-index:30;padding:8px 14px 8px}
+.g-composer{display:flex;align-items:center;gap:8px;background:var(--g-glass);border:1px solid var(--g-glass-brd);
+  border-radius:var(--r-pill);padding:6px 6px 6px 6px;backdrop-filter:blur(22px) saturate(180%);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);box-shadow:0 1px 0 var(--g-glass-hi) inset,0 8px 24px rgba(0,0,0,.18)}
+.g-ic-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--g-bg-2);color:var(--g-text-dim);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.g-ic-btn:hover{color:var(--g-text)}
+.g-input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--g-text);font-size:15px;
+  font-family:inherit;padding:6px 2px}
+.g-input::placeholder{color:var(--g-text-faint)}
+.g-send{width:36px;height:36px;border-radius:50%;border:none;flex-shrink:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  background:linear-gradient(135deg,var(--g1),var(--g3));transition:transform .15s}
+.g-send:active{transform:scale(.9)}
+.g-home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;
+  border-radius:3px;background:var(--g-text);opacity:.55;z-index:31}
+
+/* ---- bottom sheet (reused pattern from file 05) ---- */
+.g-sheet-scrim{position:absolute;inset:0;background:var(--g-scrim);opacity:0;pointer-events:none;
+  transition:opacity 320ms ease;z-index:50}
+.g-sheet-scrim.on{opacity:1;pointer-events:auto}
+.g-sheet{position:absolute;left:0;right:0;bottom:0;background:var(--g-sheet);border-radius:22px 22px 0 0;
+  padding:12px 20px 28px;transform:translateY(100%);transition:transform 420ms cubic-bezier(.22,1,.36,1);
+  box-shadow:0 -8px 30px rgba(0,0,0,.3);z-index:51;max-height:70%;overflow-y:auto}
+.g-sheet.on{transform:none}
+.g-sheet-grab{width:36px;height:4px;border-radius:2px;background:var(--g-border);margin:0 auto 14px}
+.g-sheet h3{font-size:16px;font-weight:650;margin:0 0 12px;color:var(--g-text)}
+.g-sheet .think-text{font-size:14px;line-height:1.65;color:var(--g-text-dim)}
+.g-src-item{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--g-border)}
+.g-src-item:first-of-type{border-top:none}
+.g-src-item .fav{width:22px;height:22px;border-radius:6px;flex-shrink:0;margin-top:1px}
+.g-src-item .t{font-size:14px;font-weight:600;color:var(--g-text);margin-bottom:2px}
+.g-src-item .u{font-size:12.5px;color:var(--g-text-faint)}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference &middot; File 21</div>
+  <h1>Gemini-Style Mobile Assistant</h1>
+  <p>A phone-frame reconstruction of the Gemini iOS app's "Neural Expressive" / "Liquid Glass" redesign
+  (rolled out iOS-first around May 2026): a translucent pill composer, a pulsing four-colour gradient wash
+  across the top of the screen while thinking instead of an inline spinner, reasoning tucked into a bottom
+  sheet rather than shown inline, and sources as a tappable chip that opens a sheet. Same conceptual data
+  &mdash; a question, reasoning, grounding/search steps, an answer, sources, follow-ups &mdash; presented in
+  a completely different visual language from files 07/20.</p>
+</div>
+<div class="wrap">
+<div class="motion-banner" id="motionBanner"><span>&#9888;</span>
+<span><b>Reduce Motion is on in your OS.</b> The pulsing wash and other animations are being suppressed.</span>
+<button onclick="forceMotion()">Enable anyway</button></div>
+
+<div class="note"><b>This file intentionally breaks the restraint rules elsewhere in this set</b> &mdash;
+multi-hue gradient, glow, motion at rest. That's deliberate: the goal here is accurately reproducing one
+specific, named product's identity, not a generic default. Built from public write-ups of the redesign
+(no App Store screenshots were available to verify pixel-for-pixel) &mdash; treat colours and exact spacing
+as a close approximation and check against your own installed app before shipping anything derived from it.</div>
+
+<div class="stage">
+  <div class="phone-shell">
+    <div class="dyn-island"></div>
+    <div class="g-screen" data-t="dark" id="gScreen">
+      <div class="g-wash" id="gWash"></div>
+      <div class="g-statusbar">
+        <span>9:41</span>
+        <span class="g-statusicons">
+          <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="4.5" y="4.5" width="3" height="7.5" rx="1"/><rect x="9" y="2" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><path d="M8 10.4a1.4 1.4 0 100-2.8 1.4 1.4 0 000 2.8zM4.5 6.6a5 5 0 017 0l-1.1 1.1a3.4 3.4 0 00-4.8 0L4.5 6.6zM2 4.1a8.4 8.4 0 0112 0L12.9 5.2a6.8 6.8 0 00-9.8 0L2 4.1z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="2.5" stroke="currentColor"/><rect x="2" y="2" width="18" height="8" rx="1.3" fill="currentColor"/><rect x="23" y="4" width="1.5" height="4" rx="0.7" fill="currentColor"/></svg>
+        </span>
+      </div>
+      <div class="g-topbar">
+        <span class="g-modelchip">2.5 Flash
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="g-menu-ic">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5.5h14M3 10h14M3 14.5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+
+      <div class="g-scroll" id="gScroll">
+        <div class="g-empty" id="gEmpty">
+          <svg class="g-spark-lg" viewBox="0 0 24 24"><defs><linearGradient id="sparkLg" x1="0" y1="0" x2="24" y2="24">
+            <stop offset="0%" stop-color="var(--g1)"/><stop offset="38%" stop-color="var(--g2)"/>
+            <stop offset="70%" stop-color="var(--g3)"/><stop offset="100%" stop-color="var(--g4)"/></linearGradient></defs>
+            <path fill="url(#sparkLg)" d="M12 0c1 8 3 11 11 12-8 1-10 4-11 12-1-8-3-11-11-12 8-1 10-4 11-12Z"/></svg>
+          <h2>Hi Vish, <b>what's on your mind?</b></h2>
+        </div>
+      </div>
+
+      <div class="g-compose-wrap">
+        <div class="g-composer">
+          <button class="g-ic-btn" aria-label="Add">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v14M2 9h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <input class="g-input" id="gInput" placeholder="Ask Gemini" autocomplete="off">
+          <button class="g-send" id="gSendBtn" aria-label="Send">
+            <svg id="gSendIcon" width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M4 10h11m0 0l-4.5-4.5M15 10l-4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="g-home-ind"></div>
+
+      <div class="g-sheet-scrim" id="gScrim" onclick="closeSheet()"></div>
+      <div class="g-sheet" id="gSheet">
+        <div class="g-sheet-grab"></div>
+        <div id="gSheetBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctl-col">
+    <span class="lbl">Controls</span>
+    <button class="tglbtn" onclick="toggleGTheme()">Toggle light / dark</button>
+    <button class="tglbtn" onclick="restart()">&#8635; Replay from empty state</button>
+    <span class="lbl" style="margin-top:8px">Try it</span>
+    <button class="tglbtn" onclick="sendCanned('What changed in the last release?')">Ask a follow-up</button>
+    <button class="tglbtn" onclick="openThinking()">Open "Show thinking" sheet</button>
+    <button class="tglbtn" onclick="openSources()">Open "Sources" sheet</button>
+  </div>
+</div>
+</div>
+<div class="foot"><b>Mapping notes.</b> Gemini has no ops-console-style bordered tool-call row &mdash; a
+search/grounding step is a single line of dim text with a small pulsing dot, replaced once the answer starts
+streaming. There is no assistant message bubble; the response is plain text starting at the left margin, marked
+only by the small spark. Reasoning is hidden by default behind a "Show thinking" chip that opens a sheet, not an
+inline collapsible. The composer's right-hand icon swaps between mic and send based on whether the field has
+text &mdash; try typing. The pulsing wash is the one loud element in the whole screen; everything else stays
+quiet specifically so that wash reads as meaningful.</div>
+<button class="replay" onclick="location.reload()">&#8635; Replay animations</button>
+<script>
+function forceMotion(){document.documentElement.dataset.motion='force';
+  document.getElementById('motionBanner').classList.remove('show');}
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.getElementById('motionBanner').classList.add('show');}
+
+function toggleGTheme(){const s=document.getElementById('gScreen');
+  s.dataset.t = s.dataset.t==='dark' ? 'light' : 'dark';}
+
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const scroll = document.getElementById('gScroll');
+const wash = document.getElementById('gWash');
+const empty = document.getElementById('gEmpty');
+let lastThinking = '', lastSources = [];
+
+function scrollBottom(){ scroll.scrollTop = scroll.scrollHeight; }
+
+function addUserBubble(text){
+  const el=document.createElement('div'); el.className='g-msg user';
+  el.innerHTML='<div class="g-bubble-u"></div>'; el.firstElementChild.textContent=text;
+  scroll.appendChild(el); scrollBottom();
+}
+
+function sparkSmSvg(){
+  const gid = 'sparkSm' + Math.random().toString(36).slice(2, 9);
+  return '<svg class="g-spark-sm" viewBox="0 0 24 24"><defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="24" y2="24">'
+  +'<stop offset="0%" stop-color="var(--g1)"/><stop offset="38%" stop-color="var(--g2)"/>'
+  +'<stop offset="70%" stop-color="var(--g3)"/><stop offset="100%" stop-color="var(--g4)"/></linearGradient></defs>'
+  +'<path fill="url(#'+gid+')" d="M12 0c1 8 3 11 11 12-8 1-10 4-11 12-1-8-3-11-11-12 8-1 10-4 11-12Z"/></svg>';
+}
+
+async function runTurn(question, answerHtml, thinkingText, sources, suggestions){
+  empty.classList.add('hide');
+  addUserBubble(question);
+  await sleep(220);
+
+  const row=document.createElement('div'); row.className='g-msg assistant';
+  row.innerHTML = sparkSmSvg() + '<div class="g-a-body">'
+    + '<div class="g-status-line" id="statusLine"><span class="dot"></span><span id="statusText">Thinking</span></div>'
+    + '<div class="g-answer" id="answerText"></div></div>';
+  scroll.appendChild(row); scrollBottom();
+
+  wash.classList.add('thinking');
+  await sleep(650);
+  document.getElementById('statusText').textContent = 'Searching the web';
+  await sleep(700);
+  document.getElementById('statusText').textContent = 'Reading ' + sources.length + ' sources';
+  await sleep(650);
+  wash.classList.remove('thinking');
+  document.getElementById('statusLine').remove();
+
+  lastThinking = thinkingText; lastSources = sources;
+  const body = row.querySelector('.g-a-body');
+  const chip = document.createElement('div'); chip.className='g-thinkchip'; chip.onclick=openThinking;
+  chip.innerHTML = '<svg viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Show thinking';
+  body.insertBefore(chip, body.querySelector('.g-answer'));
+
+  const answerEl = document.getElementById('answerText');
+  answerEl.classList.add('g-caret');
+  let acc='';
+  const plain = answerHtml.replace(/<[^>]+>/g,'');
+  for (const ch of plain){ acc+=ch; answerEl.textContent=acc; scrollBottom(); await sleep(6); }
+  answerEl.innerHTML = answerHtml;
+  answerEl.classList.remove('g-caret');
+
+  const srcBtn=document.createElement('div'); srcBtn.className='g-sources-btn'; srcBtn.onclick=openSources;
+  srcBtn.innerHTML = '<span class="stack">' + sources.map(s=>'<span class="fav" style="background:'+s.color+'"></span>').join('') + '</span><span>Sources</span>';
+  body.appendChild(srcBtn);
+
+  const sugRow=document.createElement('div'); sugRow.className='g-row-scroll';
+  suggestions.forEach((t,i)=>{
+    const c=document.createElement('button'); c.className='g-chip'; c.textContent=t;
+    c.style.animationDelay=(0.08*i)+'s'; c.onclick=()=>sendCanned(t);
+    sugRow.appendChild(c);
+  });
+  body.appendChild(sugRow);
+  scrollBottom();
+}
+
+function firstTurn(){
+  runTurn(
+    'Why did the Retail project fall behind today?',
+    '<p>It\'s volume, not failure. <strong>707 of 823 pipelines</strong> are still executing today — none have failed.</p>'
+    + '<p>Average step duration is <code>3h 13m</code> against a 14-day norm of <code>2h 41m</code>. There\'s roughly 90 minutes of margin before the SLA window closes.</p>',
+    'The user is asking about a specific project falling behind. I should check current pipeline status, compare against the historical baseline, and look for any related incidents before answering — volume-driven delay and failure look identical from the outside, so I need to rule out failure first.',
+    [ {title:'Metrics store · run_history', url:'metrics.internal/retail', color:'linear-gradient(135deg,#4285f4,#34a853)'},
+      {title:'Incident tracker · INC-4821', url:'tracker.internal/inc-4821', color:'linear-gradient(135deg,#ea4335,#fbbc05)'} ],
+    ['Show the 90-minute margin calculation', 'What changed since yesterday?', 'Notify me if it slips further']
+  );
+}
+
+function sendCanned(question){
+  runTurn(
+    question,
+    '<p>Nothing structural changed — this is the same volume-driven delay, and it\'s narrowing. About <strong>40 minutes</strong> of margin was recovered in the last hour as the queue drained.</p>',
+    'Re-checking the same pipeline and comparing the current snapshot to the one from the first answer, rather than re-deriving the whole picture from scratch.',
+    [ {title:'Metrics store · run_history', url:'metrics.internal/retail', color:'linear-gradient(135deg,#4285f4,#34a853)'} ],
+    ['Set an alert for the SLA window', 'Compare against last week']
+  );
+}
+
+function openThinking(){
+  document.getElementById('gSheetBody').innerHTML =
+    '<h3>Thinking</h3><div class="think-text">'+lastThinking+'</div>';
+  document.getElementById('gSheet').classList.add('on');
+  document.getElementById('gScrim').classList.add('on');
+}
+function openSources(){
+  document.getElementById('gSheetBody').innerHTML =
+    '<h3>Sources</h3>' + lastSources.map(s=>
+      '<div class="g-src-item"><span class="fav" style="background:'+s.color+'"></span>'
+      + '<div><div class="t">'+s.title+'</div><div class="u">'+s.url+'</div></div></div>').join('');
+  document.getElementById('gSheet').classList.add('on');
+  document.getElementById('gScrim').classList.add('on');
+}
+function closeSheet(){
+  document.getElementById('gSheet').classList.remove('on');
+  document.getElementById('gScrim').classList.remove('on');
+}
+function restart(){
+  scroll.querySelectorAll('.g-msg').forEach(m=>m.remove());
+  empty.classList.remove('hide');
+  setTimeout(firstTurn, 1200);
+}
+
+const input=document.getElementById('gInput'), sendIcon=document.getElementById('gSendIcon'), sendBtn=document.getElementById('gSendBtn');
+function refreshSendIcon(){
+  sendIcon.innerHTML = input.value.trim()
+    ? '<path d="M10 16V4M10 4l-5 5M10 4l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
+    : '<path d="M10 3a2.6 2.6 0 00-2.6 2.6v4.8a2.6 2.6 0 105.2 0V5.6A2.6 2.6 0 0010 3z" fill="currentColor"/><path d="M5.5 9.5a4.5 4.5 0 009 0M10 14v2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>';
+}
+input.addEventListener('input', refreshSendIcon);
+sendBtn.addEventListener('click', ()=>{ const v=input.value.trim(); if(!v) return; input.value=''; refreshSendIcon(); sendCanned(v); });
+input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ sendBtn.click(); } });
+refreshSendIcon();
+
+setTimeout(firstTurn, 1400);
+</script>
+</body>
+</html>
