@@ -148,7 +148,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
 .cb-strip{display:flex;gap:3px;margin-bottom:2px}
 .cb-strip span{flex:1;height:22px;border-radius:6px}
 
-/* app chrome shared by the ResolveAI reconstruction */
+/* app chrome shared by the Loopwise reconstruction */
 .rz{background:var(--tint)}
 .rz-nav{display:flex;align-items:center;gap:22px;padding:18px 30px;flex-wrap:wrap}
 .rz-brand{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:780;letter-spacing:-.01em;margin-right:8px}
@@ -168,7 +168,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
 .rz-empty{background:var(--card);border-radius:22px;padding:60px 30px;text-align:center;color:var(--ink-faint);
   font-size:13.5px;font-weight:620}
 
-/* mongi ops console */
+/* haulio ops console */
 .mg{background:var(--mg-page);display:flex;min-height:640px}
 .mg[data-t="light"]{
   --mg-page:#f4f1ec;
@@ -368,7 +368,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
         white tag pill, a hatched weekly bar chart with the current bar solid black, a
         huge numeral with a delta pill, then a row of darker-tint sub-stat chips.</p></div>
     <div class="frame">
-      <div class="frame-bar"><span class="fname">ResolveAI &middot; app shell</span>
+      <div class="frame-bar"><span class="fname">Loopwise &middot; app shell</span>
         <div class="fb-seg" id="rzSeg">
           <button class="on" onclick="rzGo(this,'dash')">Dashboard</button>
           <button onclick="rzGo(this,'gaps')">Knowledge Gaps</button>
@@ -381,7 +381,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
       </div>
       <div class="cb rz" id="cbRz" data-t="light">
         <div class="rz-nav">
-          <div class="rz-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5"/><path d="M20 12a8 8 0 0 1-14 5"/><circle cx="18" cy="7" r="1.4" style="fill:var(--circ-ink)" stroke="none"/></svg></span>Resolve<span class="sfx">AI</span></div>
+          <div class="rz-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5"/><path d="M20 12a8 8 0 0 1-14 5"/><circle cx="18" cy="7" r="1.4" style="fill:var(--circ-ink)" stroke="none"/></svg></span>Loop<span class="sfx">wise</span></div>
           <div class="rz-tabs" id="rzTabs">
             <button class="rz-tab on" data-s="dash" onclick="rzGoTab(this)">Dashboard</button>
             <button class="rz-tab" data-s="conv" onclick="rzGoTab(this)">Conversations</button>
@@ -589,27 +589,27 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
                 <span>Conversation</span><span>Reason</span><span>Resolved by</span></div>
               <div style="display:flex;flex-direction:column;gap:6px">
                 <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;background:var(--row-hl);border-radius:14px;padding:10px 4px">
-                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">JC</span><div><b style="font-size:13.5px">James Carter</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Refund request</div></div></div>
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">OM</span><div><b style="font-size:13.5px">Owen Marsh</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Refund request</div></div></div>
                   <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Action unavailable</span>
                   <span style="width:26px;height:26px;border-radius:50%;background:#d7c9ea"></span>
                 </div>
                 <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
-                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">PN</span><div><b style="font-size:13.5px">Priya Nair</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Shipping &middot; International</div></div></div>
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">RS</span><div><b style="font-size:13.5px">Reema Sethi</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Shipping &middot; International</div></div></div>
                   <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Missing knowledge</span>
                   <span style="width:26px;height:26px;border-radius:50%;background:#f3c9a6"></span>
                 </div>
                 <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
-                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">DL</span><div><b style="font-size:13.5px">David Lang</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Cancellation &middot; Still billed</div></div></div>
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">AC</span><div><b style="font-size:13.5px">Aaron Cole</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Cancellation &middot; Still billed</div></div></div>
                   <span class="cb-pill" style="background:var(--neutral-bg);color:var(--neutral-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Customer requested</span>
                   <span style="font-size:11.5px;color:var(--sub);font-weight:650">Unassigned</span>
                 </div>
                 <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
-                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f7e29a;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a6a12">NW</span><div><b style="font-size:13.5px">Noah Weber</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Invoice address</div></div></div>
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f7e29a;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a6a12">LH</span><div><b style="font-size:13.5px">Leo Hartman</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Invoice address</div></div></div>
                   <span class="cb-pill" style="background:var(--neutral-bg);color:var(--neutral-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Complex issue</span>
                   <span style="width:26px;height:26px;border-radius:50%;background:#c9c4d8"></span>
                 </div>
                 <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
-                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">HI</span><div><b style="font-size:13.5px">Hana Ito</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Account &middot; Delete my data</div></div></div>
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">MS</span><div><b style="font-size:13.5px">Mika Sato</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Account &middot; Delete my data</div></div></div>
                   <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Missing knowledge</span>
                   <span style="width:26px;height:26px;border-radius:50%;background:#a6cfc4"></span>
                 </div>
@@ -632,7 +632,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
         console: solid-fill (not hatched) stat tiles, a dual-line trend chart, a cash
         ledger and a document-expiry pill row.</p></div>
     <div class="frame">
-      <div class="frame-bar"><span class="fname">mongi &middot; Riders &middot; Sohel Rana</span>
+      <div class="frame-bar"><span class="fname">haulio &middot; Riders &middot; Farid Islam</span>
         <div class="fb-seg theme">
           <button class="on" onclick="cbTheme(this,'cbMg','light')">Light</button>
           <button onclick="cbTheme(this,'cbMg','dark')">Dark</button>
@@ -640,7 +640,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
       </div>
       <div class="cb mg" id="cbMg" data-t="light">
         <div class="mg-side">
-          <div class="mg-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M7 17 11 7h4l2 4"/><path d="M11 7H8"/></svg></span><div><b>mongi</b><small>Ops console</small></div></div>
+          <div class="mg-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M7 17 11 7h4l2 4"/><path d="M11 7H8"/></svg></span><div><b>haulio</b><small>Ops console</small></div></div>
           <div class="mg-grp">Operate</div>
           <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Control room</div>
           <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Live map</div>
@@ -655,14 +655,14 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
           <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="13" width="4" height="6" rx="1.5"/><rect x="18" y="13" width="4" height="6" rx="1.5"/></svg>Support<span class="badge">12</span></div>
           <div class="mg-grp">Insight</div>
           <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</div>
-          <div class="mg-profile"><span class="mg-avatar">MR</span><div><b>Maliha Rahman</b><small>Dispatch lead &middot; Shift B</small></div></div>
+          <div class="mg-profile"><span class="mg-avatar">NC</span><div><b>Nadia Chowdhury</b><small>Dispatch lead &middot; Shift B</small></div></div>
         </div>
 
         <div class="mg-main">
           <div class="mg-head">
             <div class="who">
               <span class="mg-back"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,4 7,12 15,20"/></svg></span>
-              <div><h2>Sohel Rana</h2><div class="meta">Rider since Mar 2026 &middot; Mohammadpur &middot; TVS Metro Plus &middot; Metro-Ha 22-5190</div></div>
+              <div><h2>Farid Islam</h2><div class="meta">Rider since Mar 2026 &middot; Mohammadpur &middot; Volt X100 &middot; Metro-Ha 22-5190</div></div>
             </div>
             <div class="mg-actions">
               <span class="mg-pill dark">On run R-14 &middot; stop 6 of 17</span>
@@ -681,25 +681,25 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
           <div class="mg-grid">
             <div class="mg-card">
               <div class="mg-cardhead"><h3 style="margin:0">On-time rate &middot; 8 weeks</h3>
-                <div class="mg-legend"><span><i style="background:var(--mg-line-me)"></i>Sohel</span><span><i style="background:var(--mg-line-city)"></i>City</span></div></div>
+                <div class="mg-legend"><span><i style="background:var(--mg-line-me)"></i>Farid</span><span><i style="background:var(--mg-line-city)"></i>City</span></div></div>
               <svg viewBox="0 0 400 90" width="100%" height="90" preserveAspectRatio="none" style="overflow:visible">
                 <polyline points="0,58 50,52 100,55 150,40 200,44 250,30 300,36 350,20 400,18" fill="none" style="stroke:var(--mg-line-city)" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round"/>
                 <polyline points="0,44 50,38 100,42 150,26 200,30 250,16 300,22 350,10 400,6" fill="none" style="stroke:var(--mg-line-me)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="400" cy="6" r="4.5" style="fill:var(--card);stroke:var(--mg-line-me)" stroke-width="2.4"/>
               </svg>
               <h3 style="margin:18px 0 2px">Recent jobs</h3>
-              <div class="mg-job"><div><b>MG-40218</b> <span class="sub">&middot; Tahmina &middot; Mirpur 10</span></div><span class="mg-status ok">Delivered 6:38 pm</span></div>
-              <div class="mg-job"><div><b>MG-40225</b> <span class="sub">&middot; Sadia &middot; Dhanmondi 27</span></div><span class="mg-status ok">Delivered 5:31 pm</span></div>
-              <div class="mg-job"><div><b>MG-40187</b> <span class="sub">&middot; Express &middot; Dhanmondi 15</span></div><span class="mg-status ok">Delivered 11:36 am</span></div>
-              <div class="mg-job"><div><b>MG-40119</b> <span class="sub">&middot; Jannatul F. &middot; Mirpur 12</span></div><span class="mg-status bad">Failed &middot; buyer not answering</span></div>
+              <div class="mg-job"><div><b>HL-40218</b> <span class="sub">&middot; Nusrat &middot; Mirpur 10</span></div><span class="mg-status ok">Delivered 6:38 pm</span></div>
+              <div class="mg-job"><div><b>HL-40225</b> <span class="sub">&middot; Farzana &middot; Dhanmondi 27</span></div><span class="mg-status ok">Delivered 5:31 pm</span></div>
+              <div class="mg-job"><div><b>HL-40187</b> <span class="sub">&middot; Express &middot; Dhanmondi 15</span></div><span class="mg-status ok">Delivered 11:36 am</span></div>
+              <div class="mg-job"><div><b>HL-40119</b> <span class="sub">&middot; Salma K. &middot; Mirpur 12</span></div><span class="mg-status bad">Failed &middot; buyer not answering</span></div>
             </div>
 
             <div class="mg-card">
               <div class="mg-cardhead"><h3 style="margin:0">Cash ledger &middot; today</h3><span class="link">Open in Money</span></div>
-              <div class="mg-ledger"><span>Stop 6 &middot; Tahmina &middot; 6:38 pm</span><b class="pos">+&#2547;1,850</b></div>
-              <div class="mg-ledger"><span>Stop 5 &middot; Nazmul &middot; 6:14 pm</span><b class="pos">+&#2547;1,720</b></div>
+              <div class="mg-ledger"><span>Stop 6 &middot; Nusrat &middot; 6:38 pm</span><b class="pos">+&#2547;1,850</b></div>
+              <div class="mg-ledger"><span>Stop 5 &middot; Rafiq &middot; 6:14 pm</span><b class="pos">+&#2547;1,720</b></div>
               <div class="mg-ledger"><span>Stops 1&ndash;4 &middot; 3:58&ndash;5:40 pm</span><b class="pos">+&#2547;5,890</b></div>
-              <div class="mg-ledger"><span>Deposit &middot; bKash &middot; 1:12 pm</span><b class="neg">&minus;&#2547;4,350</b></div>
+              <div class="mg-ledger"><span>Deposit &middot; PayNow &middot; 1:12 pm</span><b class="neg">&minus;&#2547;4,350</b></div>
               <div class="mg-ledger"><span>Morning Express cash</span><b class="pos">+&#2547;2,350</b></div>
               <h3 style="margin:16px 0 8px">Record</h3>
               <div class="mg-recordrow">
@@ -736,7 +736,7 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255
               </div>
               <div class="mg-contact">
                 <svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/></svg>
-                Emergency contact &middot; Rehana (wife) &middot; 01711-&bull;&bull;&bull;
+                Emergency contact &middot; Amina (wife) &middot; 01711-&bull;&bull;&bull;
                 <span class="link">Reveal &middot; logged</span>
               </div>
             </div>
