@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI Reference 22 — Colorblock Dashboards</title>
+<style>
+*{box-sizing:border-box}
+html,body{background:#0b1215}
+body{margin:0;padding-bottom:80px;color:#edeef2;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+.head{padding:26px 24px 22px;border-bottom:1px solid rgba(255,255,255,.08);background:#0e161a}
+.head .kicker{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.head h1{margin:6px 0;font-size:23px;font-weight:650;letter-spacing:-.01em}
+.head p{margin:0;font-size:13px;color:#9296a2;max-width:700px;line-height:1.6}
+.wrap{max-width:1280px;margin:0 auto;padding:30px 24px}
+section{margin-bottom:56px}
+.sec-head{margin-bottom:16px}
+.sec-num{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#3a9ad9;font-weight:700}
+.sec-title{font-size:19px;margin:5px 0;font-weight:640;letter-spacing:-.01em}
+.sec-desc{margin:0;font-size:13px;color:#9296a2;max-width:700px;line-height:1.6}
+.note{background:#131519;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;
+  font-size:12.5px;color:#8b909d;line-height:1.65;max-width:940px;margin-bottom:30px}
+.note b{color:#edeef2}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:rgba(255,255,255,.07);
+  padding:1px 5px;border-radius:4px;color:#c9cbd6}
+.foot{max-width:1280px;margin:0 auto;padding:0 24px;font-size:12px;color:#626775;line-height:1.75}
+.foot b{color:#9296a2}
+
+/* ---------- frame: page chrome around each composition (matches file 11) ---------- */
+.frame{border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;margin-bottom:12px;background:#0e161a}
+.frame-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:11.5px;color:#9296a2;flex-wrap:wrap}
+.frame-bar .fname{font-weight:650;color:#edeef2;margin-right:6px}
+.fb-seg{display:inline-flex;background:#172228;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:2px;gap:1px}
+.fb-seg button{background:none;border:none;color:#9296a2;font-size:11px;font-weight:620;padding:5px 10px;
+  border-radius:5px;cursor:pointer;font-family:inherit}
+.fb-seg button.on{background:#273640;color:#edeef2}
+.fb-seg.theme{margin-left:auto}
+
+/* ============================================================
+   COLORBLOCK SYSTEM — a deliberately different, self-contained
+   visual language from the house token set. Rounded geometric
+   type, saturated pastel hero cards, hatched bar charts, pill
+   navigation. Everything below is scoped under .cb so it can
+   never leak into the rest of the library. Each of the three
+   demos below carries its OWN light/dark toggle via [data-t] —
+   independent of the rest of this file and of the house chrome,
+   same pattern file 21 uses for its phone-shell reconstruction.
+   ============================================================ */
+.cb{font-family:ui-rounded,"SF Pro Rounded",-apple-system,"Segoe UI",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;transition:background-color 160ms,color 160ms}
+.cb *{box-sizing:border-box}
+.cb b,.cb strong{font-weight:750}
+.cb .ic{display:inline-block;vertical-align:middle;flex-shrink:0}
+.cb,.cb *{transition:background-color 160ms,border-color 160ms,color 160ms}
+
+.cb[data-t="light"]{
+  --ink:#15161b;--ink-soft:rgba(21,22,27,.6);--ink-faint:rgba(21,22,27,.34);--sub:#7a7a82;
+  --stage:#eef0ee;--tint:#f4eef1;
+  --card:#fff;--card-bd:rgba(20,16,20,.05);
+  --pill-bg:#fff;--pill-ink:#15161b;
+  --pill-dark-bg:#111214;--pill-dark-ink:#fff;
+  --circ-bg:#111214;--circ-ink:#fff;
+  --bar-on:#111214;--axis:rgba(21,22,27,.5);--gray-bc:#a9a9ae;
+  --sub-panel:rgba(0,0,0,.075);
+  --blue:#3a6df0;
+  --cat-1:#15161b;--cat-2:#5f8ff0;--cat-3:#8fe0a6;--cat-4:#f3b8dc;--cat-5:#d8d8dc;
+  --track:#eceaea;
+  --good-bg:#d7f2dd;--good-ink:#177a3d;
+  --bad-bg:#fbdde1;--bad-ink:#b3324a;
+  --warn-bg:#fbe0c6;--warn-ink:#a35a12;
+  --hi-bg:#ffd7c2;--hi-ink:#8a3a12;
+  --reason-bg:#dbe7fd;--reason-ink:#1d4ea8;
+  --neutral-bg:#eceaea;--neutral-ink:#3d3a33;
+  --row-hl:#eaf1ff;--on-badge:rgba(255,255,255,.2);--danger-bd:#e8b3bd;
+  --h-green:#bdeecb;--h-green-bc:#1c8a49;
+  --h-blue:#a9c8fb;
+  --h-pink:#f3c6e0;--h-pink-bc:#b5539b;
+  --h-yellow:#f6c445;--h-yellow-bc:#c99a12;
+}
+.cb[data-t="dark"]{
+  --ink:#f2f1ee;--ink-soft:rgba(242,241,238,.62);--ink-faint:rgba(242,241,238,.32);--sub:#a29db0;
+  --stage:#161420;--tint:#201e2b;
+  --card:#201f28;--card-bd:rgba(255,255,255,.08);
+  --pill-bg:#2c2a35;--pill-ink:#f2f1ee;
+  --pill-dark-bg:#f2f1ee;--pill-dark-ink:#15161b;
+  --circ-bg:#f2f1ee;--circ-ink:#15161b;
+  --bar-on:#f5f3ee;--axis:rgba(242,241,238,.45);--gray-bc:#726f7c;
+  --sub-panel:rgba(255,255,255,.13);
+  --blue:#7c9dff;
+  --cat-1:#f2f1ee;--cat-2:#7c9dff;--cat-3:#5fcf88;--cat-4:#f2a4d6;--cat-5:#57545f;
+  --track:rgba(255,255,255,.12);
+  --good-bg:rgba(52,211,153,.16);--good-ink:#34d399;
+  --bad-bg:rgba(244,112,127,.16);--bad-ink:#f4707f;
+  --warn-bg:rgba(251,191,36,.16);--warn-ink:#fbbf24;
+  --hi-bg:rgba(251,146,60,.18);--hi-ink:#fb923c;
+  --reason-bg:rgba(124,157,255,.18);--reason-ink:#9db4ff;
+  --neutral-bg:rgba(255,255,255,.08);--neutral-ink:#d7d5db;
+  --row-hl:rgba(124,157,255,.12);--on-badge:rgba(0,0,0,.14);--danger-bd:rgba(244,112,127,.4);
+  --h-green:#1f7a4c;--h-green-bc:#5fcf88;
+  --h-blue:#2f5fc4;
+  --h-pink:#8a3568;--h-pink-bc:#e17fb8;
+  --h-yellow:#a3780f;--h-yellow-bc:#e8c46a;
+}
+.cb{color:var(--ink)}
+
+/* pill primitives */
+.cb-pill{display:inline-flex;align-items:center;gap:6px;background:var(--pill-bg);color:var(--pill-ink);
+  border-radius:999px;padding:9px 15px;font-size:13px;font-weight:650;white-space:nowrap}
+.cb-pill.dark{background:var(--pill-dark-bg);color:var(--pill-dark-ink)}
+.cb-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0}
+
+/* sub-panel: darkened/lightened overlay on top of the parent hero color */
+.cb-sub{background:var(--sub-panel);border-radius:14px;padding:11px 14px}
+.cb-sub .lbl{font-size:11.5px;color:var(--ink-soft);font-weight:620;margin-bottom:3px}
+.cb-sub .val{font-size:16px;font-weight:720}
+
+/* hero stat card */
+.cb-hero{border-radius:26px;padding:26px 26px 24px;position:relative;color:var(--ink)}
+.cb-hero .top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.cb-hero .circ{width:34px;height:34px;border-radius:50%;background:var(--circ-bg);color:var(--circ-ink);display:flex;
+  align-items:center;justify-content:center;flex-shrink:0}
+.cb-num{font-size:56px;font-weight:780;letter-spacing:-.02em;line-height:1;margin:2px 0 14px}
+.cb-num .delta{display:inline-flex;align-items:center;gap:4px;background:var(--sub-panel);border-radius:999px;
+  padding:5px 10px 5px 8px;font-size:13px;font-weight:700;vertical-align:middle;margin-left:10px}
+.cb-subs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.cb-subs.two{grid-template-columns:repeat(2,1fr)}
+
+/* hatched bar chart */
+.cb-bars{display:flex;align-items:flex-end;gap:7px;height:120px;margin-bottom:6px}
+.cb-bar{flex:1;border-radius:9px 9px 3px 3px;border:1.5px solid var(--bc);opacity:.55;
+  background:repeating-linear-gradient(135deg,var(--bc) 0,var(--bc) 1.3px,transparent 1.3px 6px)}
+.cb-bar.on{background:var(--bar-on);border-color:var(--bar-on);opacity:1}
+.cb-axis{display:flex;justify-content:space-between;font-size:11.5px;color:var(--axis);font-weight:620;margin-bottom:18px}
+
+/* plain white/lavender content card */
+.cb-card{background:var(--card);border-radius:22px;padding:20px 22px;border:1px solid var(--card-bd)}
+.cb-card h3{margin:0 0 14px;font-size:15px;font-weight:700;letter-spacing:-.005em}
+
+/* legend dot list */
+.cb-legend{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.cb-legend .row{display:flex;align-items:center;font-size:13px;font-weight:620;color:var(--ink)}
+.cb-legend .row .sw{width:9px;height:9px;border-radius:50%;margin-right:9px;flex-shrink:0}
+.cb-legend .row .pct{margin-left:auto;font-weight:750}
+
+/* segment strip made of small rounded dots */
+.cb-strip{display:flex;gap:3px;margin-bottom:2px}
+.cb-strip span{flex:1;height:22px;border-radius:6px}
+
+/* app chrome shared by the ResolveAI reconstruction */
+.rz{background:var(--tint)}
+.rz-nav{display:flex;align-items:center;gap:22px;padding:18px 30px;flex-wrap:wrap}
+.rz-brand{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:780;letter-spacing:-.01em;margin-right:8px}
+.rz-brand .mark{width:28px;height:28px;border-radius:9px;background:var(--circ-bg);display:flex;align-items:center;justify-content:center}
+.rz-brand .sfx{font-weight:600;color:var(--sub)}
+.rz-tabs{display:flex;gap:2px;flex:1;flex-wrap:wrap}
+.rz-tab{border:none;background:none;font:inherit;font-size:13.5px;font-weight:650;color:var(--sub);padding:9px 15px;
+  border-radius:999px;cursor:pointer}
+.rz-tab.on{background:var(--pill-dark-bg);color:var(--pill-dark-ink)}
+.rz-body{padding:6px 30px 34px}
+.rz-screen{display:none}
+.rz-screen.on{display:block}
+.rz-h1{display:flex;align-items:baseline;gap:12px;margin:6px 0 18px}
+.rz-h1 b{font-size:19px;font-weight:780}
+.rz-h1 span{font-size:19px;font-weight:600;color:var(--ink-faint)}
+.rz-h1 .cnt{font-size:19px;font-weight:600;color:var(--ink-faint);margin-left:2px}
+.rz-empty{background:var(--card);border-radius:22px;padding:60px 30px;text-align:center;color:var(--ink-faint);
+  font-size:13.5px;font-weight:620}
+
+/* mongi ops console */
+.mg{background:var(--mg-page);display:flex;min-height:640px}
+.mg[data-t="light"]{
+  --mg-page:#f4f1ec;
+  --mg-green:#c9f2cf;--mg-blue:#b9d9fb;--mg-purple:#e3d6fb;--mg-orange:#ffd3a6;
+  --mg-avatar-bg:#dcd3ba;--mg-avatar-ink:#5c5638;
+  --mg-earn-bar:#e4e0d5;--mg-earn-today:#1e6b3e;
+  --mg-line-me:#1e6b3e;--mg-line-city:#b7b2a0;
+}
+.mg[data-t="dark"]{
+  --mg-page:#18161f;
+  --mg-green:#1f6b45;--mg-blue:#28448f;--mg-purple:#5b3fa0;--mg-orange:#a35a1e;
+  --mg-avatar-bg:#3a3742;--mg-avatar-ink:#d7d3dd;
+  --mg-earn-bar:rgba(255,255,255,.14);--mg-earn-today:#3fae74;
+  --mg-line-me:#3fae74;--mg-line-city:#7a7684;
+}
+.mg-side{width:220px;flex-shrink:0;background:var(--mg-page);border-right:1px solid var(--card-bd);
+  padding:20px 14px;display:flex;flex-direction:column}
+.mg-brand{display:flex;align-items:center;gap:9px;padding:0 8px 20px}
+.mg-brand .mark{width:28px;height:28px;border-radius:9px;background:var(--circ-bg);display:flex;align-items:center;justify-content:center}
+.mg-brand b{font-size:15px;font-weight:780}
+.mg-brand small{display:block;font-size:10.5px;color:var(--sub);font-weight:600}
+.mg-grp{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:720;
+  margin:14px 8px 6px}
+.mg-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;font-size:13px;
+  font-weight:620;color:var(--ink);cursor:default}
+.mg-item .ic{color:var(--sub)}
+.mg-item .badge{margin-left:auto;font-size:10.5px;font-weight:750;background:var(--neutral-bg);
+  border-radius:999px;padding:1px 7px;color:var(--neutral-ink)}
+.mg-item.on{background:var(--pill-dark-bg);color:var(--pill-dark-ink)}
+.mg-item.on .ic{color:var(--pill-dark-ink)}
+.mg-item.on .badge{background:var(--on-badge);color:var(--pill-dark-ink)}
+.mg-profile{margin-top:auto;display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--card-bd);
+  border-radius:14px;padding:9px 10px}
+.mg-avatar{width:30px;height:30px;border-radius:50%;background:var(--mg-avatar-bg);display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:750;color:var(--mg-avatar-ink);flex-shrink:0}
+.mg-profile b{display:block;font-size:12.5px;font-weight:700}
+.mg-profile small{font-size:11px;color:var(--sub)}
+.mg-main{flex:1;padding:22px 26px 30px;min-width:0}
+.mg-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:14px;flex-wrap:wrap}
+.mg-head .who{display:flex;align-items:center;gap:12px}
+.mg-back{width:32px;height:32px;border-radius:50%;border:1px solid var(--card-bd);background:var(--card);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink)}
+.mg-head h2{margin:0;font-size:19px;font-weight:780}
+.mg-head .meta{font-size:12.5px;color:var(--sub);margin-top:2px}
+.mg-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mg-pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 14px;font-size:12.5px;
+  font-weight:700;white-space:nowrap;border:1px solid transparent}
+.mg-pill.dark{background:var(--pill-dark-bg);color:var(--pill-dark-ink)}
+.mg-pill.ghost{background:var(--card);border-color:var(--card-bd);color:var(--ink)}
+.mg-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.mg-tile{border-radius:20px;padding:16px 17px;color:var(--ink)}
+.mg-tile .lbl{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:9px}
+.mg-tile .val{font-size:25px;font-weight:780;letter-spacing:-.01em}
+.mg-tile .sub{font-size:11.5px;font-weight:650;color:var(--ink-soft);margin-top:4px}
+.mg-tile.g{background:var(--mg-green)}
+.mg-tile.b{background:var(--mg-blue)}
+.mg-tile.p{background:var(--mg-purple)}
+.mg-tile.o{background:var(--mg-orange)}
+.mg-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px}
+.mg-card{background:var(--card);border:1px solid var(--card-bd);border-radius:20px;padding:18px 20px}
+.mg-card h3{margin:0 0 12px;font-size:14px;font-weight:750}
+.mg-card .link{font-size:12px;font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+.mg-cardhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mg-legend{display:flex;gap:14px;font-size:11.5px;color:var(--sub);font-weight:650}
+.mg-legend span{display:inline-flex;align-items:center;gap:5px}
+.mg-legend i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.mg-job{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid var(--card-bd);
+  font-size:12.5px}
+.mg-job:first-child{border-top:none}
+.mg-job b{font-weight:700}
+.mg-job .sub{color:var(--sub);font-weight:600}
+.mg-status{font-size:10.5px;font-weight:750;border-radius:999px;padding:3px 9px}
+.mg-status.ok{background:var(--good-bg);color:var(--good-ink)}
+.mg-status.bad{background:var(--bad-bg);color:var(--bad-ink)}
+.mg-ledger{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--card-bd);
+  font-size:12.5px}
+.mg-ledger:first-child{border-top:none}
+.mg-ledger .sub{color:var(--sub);font-weight:600}
+.mg-ledger b.pos{color:var(--good-ink);font-weight:750}
+.mg-ledger b.neg{color:var(--bad-ink);font-weight:750}
+.mg-recordrow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.mg-tag{font-size:11px;font-weight:700;border-radius:999px;padding:5px 10px;background:var(--tint);color:var(--neutral-ink)}
+.mg-tag.good{background:var(--good-bg);color:var(--good-ink)}
+.mg-btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.mg-btnrow .mg-pill{flex:1;justify-content:center}
+.mg-pill.danger{border-color:var(--danger-bd);color:var(--bad-ink);background:var(--card)}
+.mg-earn{display:flex;align-items:flex-end;gap:10px;height:90px;margin:14px 0 8px}
+.mg-earn .b{flex:1;background:var(--mg-earn-bar);border-radius:7px 7px 3px 3px}
+.mg-earn .b.today{background:var(--mg-earn-today)}
+.mg-days{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);font-weight:650}
+.mg-docs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.mg-doc{font-size:11.5px;font-weight:700;border-radius:999px;padding:6px 11px}
+.mg-doc.good{background:var(--good-bg);color:var(--good-ink)}
+.mg-doc.warn{background:var(--warn-bg);color:var(--warn-ink)}
+.mg-contact{display:flex;align-items:center;gap:10px;background:var(--tint);border-radius:14px;padding:10px 14px;font-size:12.5px;font-weight:650}
+.mg-contact .ic{color:var(--sub)}
+.mg-contact .link{margin-left:auto;text-decoration:underline;text-underline-offset:2px;font-weight:700;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="kicker">UI Reference 22 &middot; Colorblock Dashboards</div>
+  <h1>Colorblock Dashboards &amp; Onboarding</h1>
+  <p>Reconstruction of a distinct, deliberately loud visual language — saturated pastel hero
+  cards, huge rounded numerals, hatched bar charts and pill navigation — pulled from five
+  reference screenshots of two real products (a support-AI analytics app and a delivery
+  ops console) plus a standalone onboarding checklist card.</p>
+</div>
+<div class="wrap">
+  <div class="note"><b>This file is intentionally off-system.</b> It does not use the house
+  <code>--accent</code>/obsidian token set from files 01&ndash;19 — four simultaneous hues,
+  solid-fill bar charts, its own light/dark toggle per demo rather than the shared
+  <code>[data-t]</code> convention. It exists because the source screenshots are a coherent,
+  well-executed alternative to the restrained azure system: reach for it when a brief
+  explicitly wants a warmer, more playful analytics or consumer-ops look, not as a default.
+  Dark mode below is an original extension — the source products were only ever photographed
+  in light mode, so the jewel-tone hero cards and inverted pill/circle chips are this file's
+  own design decision, not a screenshot match. The hatch-fill bar (<code>.cb-bar</code>),
+  sub-panel stat chip (<code>.cb-sub</code>) and pill nav (<code>.rz-tab</code>) are the
+  reusable pieces; copy the <code>.cb</code> block wholesale if you adopt the look.</div>
+
+  <section>
+    <div class="sec-head"><div class="sec-num">01 &middot; Component</div>
+      <div class="sec-title">Onboarding Checklist Card</div>
+      <p class="sec-desc">A "next steps" card: one high-priority item in the hero hue, the
+        rest as plain outlined rows. Meta pills for effort/time and an avatar-stack overflow
+        counter.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><span class="fname">Onboarding &middot; Next steps</span>
+        <div class="fb-seg theme">
+          <button class="on" onclick="cbTheme(this,'cbOnboard','light')">Light</button>
+          <button onclick="cbTheme(this,'cbOnboard','dark')">Dark</button>
+        </div>
+      </div>
+      <div class="cb" id="cbOnboard" data-t="light" style="background:var(--stage);padding:48px 24px;display:flex;justify-content:center">
+        <div style="width:100%;max-width:520px;background:var(--card);border:1px solid var(--card-bd);border-radius:28px;padding:30px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+            <div style="font-size:27px;font-weight:780;letter-spacing:-.01em">Next steps</div>
+            <div class="cb-pill" style="background:var(--stage);padding:9px 14px">
+              <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8,7 17,7 17,16"/></svg>
+              View all
+            </div>
+          </div>
+
+          <div class="cb-hero" style="--bc:var(--h-yellow-bc);background:var(--h-yellow);margin-bottom:14px;padding:22px 22px 20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+              <div style="font-size:19px;font-weight:750">Name your workflows</div>
+              <div class="cb-pill" style="padding:7px 13px 7px 11px;font-size:12.5px"><span class="cb-dot"></span>Do first</div>
+            </div>
+            <div style="font-size:13.5px;font-weight:620;color:var(--ink-soft);margin-bottom:18px">
+              Runtime IDs are hard to read in an incident.</div>
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+              <div class="cb-pill" style="font-size:12.5px;padding:8px 13px">
+                <svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="8" height="8" rx="2"/><path d="M11 13h4a2 2 0 0 0 2-2V9"/><rect x="15" y="5" width="6" height="6" rx="2"/></svg>
+                2 workflows</div>
+              <div class="cb-pill" style="font-size:12.5px;padding:8px 13px">
+                <svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+                ~2 min</div>
+              <div style="display:flex;margin-left:auto">
+                <div style="width:30px;height:30px;border-radius:50%;background:#bdeecb;border:2px solid var(--h-yellow);display:flex;align-items:center;justify-content:center;margin-right:-9px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#177a3d" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
+                <div style="width:30px;height:30px;border-radius:50%;background:#e4d6fb;border:2px solid var(--h-yellow);display:flex;align-items:center;justify-content:center;margin-right:-9px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6a3fb0" stroke-width="2" stroke-linecap="round"><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></div>
+                <div style="width:30px;height:30px;border-radius:50%;background:var(--pill-bg);border:2px solid var(--h-yellow);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:750">6</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--card-bd);border-radius:22px;padding:20px 22px;margin-bottom:14px">
+            <div style="font-size:18px;font-weight:750;margin-bottom:9px">Set a cost budget</div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--sub);margin-bottom:16px">
+              So anomaly detection has a baseline from day one.</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <div class="cb-pill" style="border:1px solid var(--card-bd);font-size:12.5px;padding:8px 13px">
+                <svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v12M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1-3 2.3c0 3 6 1.4 6 4.4 0 1.4-1.3 2.5-3 2.5s-3-1-3-2.4"/></svg>
+                $0 / day</div>
+              <div class="cb-pill" style="border:1px solid var(--card-bd);font-size:12.5px;padding:8px 13px">
+                <svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+                Sep 9</div>
+            </div>
+          </div>
+
+          <div style="border:1px solid var(--card-bd);border-radius:22px;padding:20px 22px">
+            <div style="font-size:18px;font-weight:750;margin-bottom:9px">Invite your on-call</div>
+            <div style="font-size:13.5px;font-weight:600;color:var(--sub)">
+              Incidents need an owner before the first one opens.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="sec-num">02 &middot; Screen</div>
+      <div class="sec-title">Support Analytics App</div>
+      <p class="sec-desc">Three working tabs. Every hero stat repeats the same shape: a
+        white tag pill, a hatched weekly bar chart with the current bar solid black, a
+        huge numeral with a delta pill, then a row of darker-tint sub-stat chips.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><span class="fname">ResolveAI &middot; app shell</span>
+        <div class="fb-seg" id="rzSeg">
+          <button class="on" onclick="rzGo(this,'dash')">Dashboard</button>
+          <button onclick="rzGo(this,'gaps')">Knowledge Gaps</button>
+          <button onclick="rzGo(this,'handoffs')">Handoffs</button>
+        </div>
+        <div class="fb-seg theme">
+          <button class="on" onclick="cbTheme(this,'cbRz','light')">Light</button>
+          <button onclick="cbTheme(this,'cbRz','dark')">Dark</button>
+        </div>
+      </div>
+      <div class="cb rz" id="cbRz" data-t="light">
+        <div class="rz-nav">
+          <div class="rz-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5"/><path d="M20 12a8 8 0 0 1-14 5"/><circle cx="18" cy="7" r="1.4" style="fill:var(--circ-ink)" stroke="none"/></svg></span>Resolve<span class="sfx">AI</span></div>
+          <div class="rz-tabs" id="rzTabs">
+            <button class="rz-tab on" data-s="dash" onclick="rzGoTab(this)">Dashboard</button>
+            <button class="rz-tab" data-s="conv" onclick="rzGoTab(this)">Conversations</button>
+            <button class="rz-tab" data-s="handoffs" onclick="rzGoTab(this)">Handoffs</button>
+            <button class="rz-tab" data-s="gaps" onclick="rzGoTab(this)">Knowledge Gaps</button>
+            <button class="rz-tab" data-s="kb" onclick="rzGoTab(this)">Knowledge Base</button>
+          </div>
+        </div>
+
+        <div class="rz-body">
+          <!-- ================= DASHBOARD ================= -->
+          <div class="rz-screen on" data-screen="dash">
+            <div class="rz-h1"><b>Support</b><span>Resolution</span></div>
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+              <div class="cb-hero" style="--bc:var(--h-green-bc);background:var(--h-green)">
+                <div class="top">
+                  <div class="cb-pill" style="font-size:13px"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8,12.5 10.7,15 16,9"/></svg>Resolution rate</div>
+                  <div class="circ"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8,7 17,7 17,16"/></svg></div>
+                </div>
+                <div class="cb-bars">
+                  <div class="cb-bar" style="height:58%"></div><div class="cb-bar" style="height:66%"></div>
+                  <div class="cb-bar" style="height:76%"></div><div class="cb-bar" style="height:70%"></div>
+                  <div class="cb-bar" style="height:86%"></div><div class="cb-bar" style="height:92%"></div>
+                  <div class="cb-bar on" style="height:100%"></div>
+                </div>
+                <div class="cb-axis"><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span></div>
+                <div class="cb-num">84.8%<span class="delta"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,15 10,9 14,13 20,6"/></svg>4.2%</span></div>
+                <div class="cb-subs">
+                  <div class="cb-sub"><div class="lbl">Resolved</div><div class="val">20,912 of 24,661</div></div>
+                  <div class="cb-sub"><div class="lbl">AI share of resolved</div><div class="val">72.4%</div></div>
+                  <div class="cb-sub"><div class="lbl">Goal this quarter</div><div class="val">85%</div></div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div class="cb-hero" style="background:var(--h-blue);padding:20px 22px">
+                  <div class="cb-pill" style="font-size:12.5px;margin-bottom:14px"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="14" height="10" rx="3"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/><circle cx="9.5" cy="14" r="1"/><circle cx="14.5" cy="14" r="1"/></svg>AI resolution</div>
+                  <div class="cb-num" style="font-size:38px;margin-bottom:9px">72.4%</div>
+                  <div style="font-size:12px;font-weight:650;color:var(--ink-soft)">vs last week<br><b style="color:var(--ink);font-size:13px">+6.1%</b></div>
+                </div>
+                <div class="cb-hero" style="background:var(--card);border:1px solid var(--card-bd);padding:20px 22px">
+                  <div class="cb-pill" style="background:var(--tint);font-size:12.5px;margin-bottom:14px"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 20h18Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg>Unresolved</div>
+                  <div class="cb-num" style="font-size:38px;margin-bottom:9px">143</div>
+                  <div class="cb-sub" style="display:inline-block;background:var(--tint)"><div class="lbl">Older than 24h</div><div class="val">31</div></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px">
+              <div class="cb-card">
+                <div class="mg-cardhead"><h3 style="margin:0">Handoff reasons</h3>
+                  <svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--sub)" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/></svg></div>
+                <div style="font-size:27px;font-weight:780;margin-bottom:2px">4,821</div>
+                <div style="font-size:12.5px;color:var(--sub);font-weight:620;margin-bottom:14px">handoffs, last 30 days</div>
+                <div class="cb-strip">
+                  <span style="flex:3.8;background:var(--cat-1)"></span><span style="flex:2.4;background:var(--cat-2)"></span>
+                  <span style="flex:1.8;background:var(--cat-3)"></span><span style="flex:1.2;background:var(--cat-4)"></span>
+                  <span style="flex:.8;background:var(--cat-5)"></span>
+                </div>
+                <div class="cb-legend" style="margin-top:16px">
+                  <div class="row"><span class="sw" style="background:var(--cat-1)"></span>Missing information<span class="pct">38%</span></div>
+                  <div class="row"><span class="sw" style="background:var(--cat-2)"></span>Complex issue<span class="pct">24%</span></div>
+                  <div class="row"><span class="sw" style="background:var(--cat-3)"></span>Customer requested human<span class="pct">18%</span></div>
+                  <div class="row"><span class="sw" style="background:var(--cat-4)"></span>AI uncertainty<span class="pct">12%</span></div>
+                  <div class="row"><span class="sw" style="background:var(--cat-5)"></span>Other<span class="pct">8%</span></div>
+                </div>
+              </div>
+              <div class="cb-card">
+                <div class="mg-cardhead"><h3 style="margin:0">Improvement loop</h3>
+                  <div class="cb-pill" style="background:var(--tint);font-size:11.5px;padding:6px 11px"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v13"/><path d="M4 19.5A1.5 1.5 0 0 1 5.5 18H19"/></svg>Delivery</div></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <div style="background:var(--tint);border-radius:14px;padding:14px">
+                    <div class="cb-bars" style="height:64px;gap:8px"><div class="cb-bar" style="--bc:var(--gray-bc);height:70%"></div><div class="cb-bar on" style="height:88%"></div></div>
+                    <div style="font-size:12px;font-weight:650;color:var(--sub)">Shipping resolution</div>
+                    <div style="font-size:13.5px;font-weight:750;margin-top:2px">66% <span style="color:var(--gray-bc);font-weight:650">&rsaquo;</span> 74%</div>
+                  </div>
+                  <div style="background:var(--tint);border-radius:14px;padding:14px">
+                    <div class="cb-bars" style="height:64px;gap:8px"><div class="cb-bar" style="--bc:var(--gray-bc);height:80%"></div><div class="cb-bar on" style="height:58%"></div></div>
+                    <div style="font-size:12px;font-weight:650;color:var(--sub)">Human handoff</div>
+                    <div style="font-size:13.5px;font-weight:750;margin-top:2px">27% <span style="color:var(--gray-bc);font-weight:650">&rsaquo;</span> 20%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= KNOWLEDGE GAPS ================= -->
+          <div class="rz-screen" data-screen="gaps">
+            <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:16px">
+              <div>
+                <div class="rz-h1"><b>Highest impact</b><div class="cb-pill dark" style="margin-left:auto;font-size:12px;padding:7px 13px">Rank 1 of 142</div></div>
+                <div class="cb-hero" style="--bc:var(--h-pink-bc);background:var(--h-pink);margin-bottom:14px">
+                  <div class="top">
+                    <div class="cb-pill" style="font-size:13px"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M8 14h3"/></svg>Refunds</div>
+                    <div class="circ"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></div>
+                  </div>
+                  <div style="font-size:23px;font-weight:750;margin-bottom:18px">Refund eligibility</div>
+                  <div class="cb-bars">
+                    <div class="cb-bar" style="height:42%"></div><div class="cb-bar" style="height:58%"></div>
+                    <div class="cb-bar" style="height:38%"></div><div class="cb-bar" style="height:64%"></div>
+                    <div class="cb-bar" style="height:52%"></div><div class="cb-bar" style="height:78%"></div>
+                    <div class="cb-bar" style="height:70%"></div><div class="cb-bar on" style="height:100%"></div>
+                  </div>
+                  <div class="cb-axis"><span>Aug 23</span><span>Sep 21</span></div>
+                  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px">
+                    <div class="cb-num" style="margin:0">92</div>
+                    <div style="font-size:13.5px;font-weight:650;color:var(--ink-soft)">/ 100 impact score</div>
+                  </div>
+                  <div class="cb-subs" style="margin-bottom:16px">
+                    <div class="cb-sub"><div class="lbl">Conversations</div><div class="val">86</div></div>
+                    <div class="cb-sub"><div class="lbl">Handoffs</div><div class="val">42</div></div>
+                    <div class="cb-sub"><div class="lbl">Unresolved</div><div class="val">31</div></div>
+                  </div>
+                  <button class="cb-pill dark" style="width:100%;justify-content:center;border:none;font:inherit;cursor:pointer;padding:13px">
+                    <svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--pill-dark-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9,5 16,12 9,19"/></svg>Investigate</button>
+                </div>
+                <div class="cb-card">
+                  <div class="mg-cardhead"><h3 style="margin:0"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:5px"><circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r=".6" fill="currentColor"/></svg>How impact is scored</h3>
+                    <svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--sub)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.6"/><path d="M19.4 13a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V19a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H4a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3H10a1.7 1.7 0 0 0 1-1.5V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9V10a1.7 1.7 0 0 0 1.5 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></div>
+                  <div class="cb-strip">
+                    <span style="flex:7;background:var(--cat-1)"></span><span style="flex:6;background:var(--cat-2)"></span>
+                    <span style="flex:5;background:var(--cat-3)"></span><span style="flex:4;background:var(--cat-4)"></span>
+                    <span style="flex:2;background:var(--cat-5)"></span>
+                  </div>
+                  <div class="cb-legend" style="margin-top:16px">
+                    <div class="row"><span class="sw" style="background:var(--cat-1)"></span>Conversation volume<span class="pct">30%</span></div>
+                    <div class="row"><span class="sw" style="background:var(--cat-2)"></span>Handoff rate<span class="pct">25%</span></div>
+                    <div class="row"><span class="sw" style="background:var(--cat-3)"></span>Unresolved rate<span class="pct">20%</span></div>
+                    <div class="row"><span class="sw" style="background:var(--cat-4)"></span>Customer frustration<span class="pct">15%</span></div>
+                    <div class="row"><span class="sw" style="background:var(--cat-5)"></span>Business importance<span class="pct">10%</span></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="rz-h1"><b>Knowledge Gaps</b><span class="cnt">142</span></div>
+                <div style="display:flex;gap:8px;margin-bottom:14px">
+                  <div class="cb-pill dark" style="font-size:12.5px;padding:8px 14px"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" style="stroke:var(--pill-dark-ink)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,13 9,18 20,6"/></svg>All 142</div>
+                  <div class="cb-pill" style="background:var(--hi-bg);color:var(--hi-ink);font-size:12.5px;padding:8px 14px">High impact 18</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div class="cb-card">
+                    <div class="cb-pill" style="background:var(--tint);font-size:12px;padding:6px 11px;margin-bottom:11px"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="8" height="8" rx="2"/><path d="M11 13h4a2 2 0 0 0 2-2V9"/><rect x="15" y="5" width="6" height="6" rx="2"/></svg>Shipping</div>
+                    <div style="font-size:16.5px;font-weight:750;margin-bottom:10px">International shipping</div>
+                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><div class="cb-num" style="font-size:34px;margin:0">71</div><span style="font-size:12.5px;font-weight:650;color:var(--sub)">Medium impact</span></div>
+                    <div class="cb-subs two"><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Conversations</div><div class="val">54</div></div><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Handoffs</div><div class="val">28</div></div></div>
+                  </div>
+                  <div class="cb-card">
+                    <div class="cb-pill" style="background:var(--tint);font-size:12px;padding:6px 11px;margin-bottom:11px"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/></svg>Account</div>
+                    <div style="font-size:16.5px;font-weight:750;margin-bottom:10px">Account deletion</div>
+                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><div class="cb-num" style="font-size:34px;margin:0">58</div><span style="font-size:12.5px;font-weight:650;color:var(--sub)">Medium impact</span></div>
+                    <div class="cb-subs two"><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Conversations</div><div class="val">32</div></div><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Handoffs</div><div class="val">17</div></div></div>
+                  </div>
+                  <div class="cb-card">
+                    <div class="cb-pill" style="background:var(--tint);font-size:12px;padding:6px 11px;margin-bottom:11px"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="8" height="8" rx="2"/><path d="M11 13h4a2 2 0 0 0 2-2V9"/><rect x="15" y="5" width="6" height="6" rx="2"/></svg>Shipping</div>
+                    <div style="font-size:16.5px;font-weight:750;margin-bottom:10px">Delivery to PO boxes</div>
+                    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px"><div class="cb-num" style="font-size:34px;margin:0">22</div><span style="font-size:12.5px;font-weight:650;color:var(--sub)">Low impact</span></div>
+                    <div class="cb-subs two"><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Conversations</div><div class="val">12</div></div><div class="cb-sub" style="background:var(--tint)"><div class="lbl">Handoffs</div><div class="val">3</div></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= HANDOFFS ================= -->
+          <div class="rz-screen" data-screen="handoffs">
+            <div class="rz-h1"><b>Human Handoffs</b><span class="cnt">4,821</span></div>
+            <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-bottom:14px">
+              <div class="cb-hero" style="--bc:var(--h-yellow-bc);background:var(--h-yellow)">
+                <div class="top">
+                  <div class="cb-pill" style="font-size:13px"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="14" width="4" height="6" rx="1.5"/><rect x="18" y="14" width="4" height="6" rx="1.5"/></svg>Handoff rate</div>
+                  <div class="circ"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8,7 17,7 17,16"/></svg></div>
+                </div>
+                <div class="cb-bars">
+                  <div class="cb-bar" style="height:96%"></div><div class="cb-bar" style="height:90%"></div>
+                  <div class="cb-bar" style="height:94%"></div><div class="cb-bar" style="height:82%"></div>
+                  <div class="cb-bar" style="height:74%"></div><div class="cb-bar" style="height:60%"></div>
+                  <div class="cb-bar" style="height:54%"></div><div class="cb-bar" style="height:46%"></div>
+                  <div class="cb-bar" style="height:40%"></div><div class="cb-bar on" style="height:64%"></div>
+                </div>
+                <div class="cb-axis"><span>Aug 23</span><span>Sep 1</span><span>Sep 21</span></div>
+                <div class="cb-num">18.6%<span class="delta"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,9 10,15 14,11 20,18"/></svg>3.4%</span></div>
+                <div class="cb-subs two">
+                  <div class="cb-sub"><div class="lbl">When and why AI needed a human</div><div class="val">Last 30 days</div></div>
+                  <div class="cb-sub"><div class="lbl">Since Delivery Times update, Sep 1</div><div class="val">-3.0 pts</div></div>
+                </div>
+              </div>
+              <div class="cb-card">
+                <div class="mg-cardhead"><h3 style="margin:0"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="9" cy="6" r="1.6" style="fill:var(--card)" stroke-width="0"/></svg>Handoff reasons</h3>
+                  <span style="font-size:11.5px;font-weight:700;color:var(--blue)"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--blue);margin-right:5px"></span>Fixable</span></div>
+                <div style="display:flex;flex-direction:column;gap:16px">
+                  <div><div style="font-size:13px;font-weight:650;margin-bottom:7px">Customer requested human</div>
+                    <div style="height:8px;border-radius:999px;background:var(--track);width:88%"></div></div>
+                  <div><div style="font-size:13px;font-weight:650;margin-bottom:7px">Missing knowledge</div>
+                    <div style="height:8px;border-radius:999px;background:var(--track);width:88%;position:relative"><div style="position:absolute;inset:0;width:92%;background:var(--blue);border-radius:999px"></div></div></div>
+                  <div><div style="font-size:13px;font-weight:650;margin-bottom:7px">AI uncertainty</div>
+                    <div style="height:8px;border-radius:999px;background:var(--track);width:88%"></div></div>
+                  <div><div style="font-size:13px;font-weight:650;margin-bottom:7px">Complex issue</div>
+                    <div style="height:8px;border-radius:999px;background:var(--track);width:88%"></div></div>
+                  <div><div style="font-size:13px;font-weight:650;margin-bottom:7px">Action unavailable</div>
+                    <div style="height:8px;border-radius:999px;background:var(--track);width:88%;position:relative"><div style="position:absolute;inset:0;width:52%;background:var(--blue);border-radius:999px"></div></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="cb-card">
+              <h3>Recent handoffs</h3>
+              <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;font-size:11.5px;font-weight:700;color:var(--sub);padding:0 4px 10px">
+                <span>Conversation</span><span>Reason</span><span>Resolved by</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;background:var(--row-hl);border-radius:14px;padding:10px 4px">
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">JC</span><div><b style="font-size:13.5px">James Carter</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Refund request</div></div></div>
+                  <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Action unavailable</span>
+                  <span style="width:26px;height:26px;border-radius:50%;background:#d7c9ea"></span>
+                </div>
+                <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">PN</span><div><b style="font-size:13.5px">Priya Nair</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Shipping &middot; International</div></div></div>
+                  <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Missing knowledge</span>
+                  <span style="width:26px;height:26px;border-radius:50%;background:#f3c9a6"></span>
+                </div>
+                <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#b9d3fb;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#1d4ea8">DL</span><div><b style="font-size:13.5px">David Lang</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Cancellation &middot; Still billed</div></div></div>
+                  <span class="cb-pill" style="background:var(--neutral-bg);color:var(--neutral-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Customer requested</span>
+                  <span style="font-size:11.5px;color:var(--sub);font-weight:650">Unassigned</span>
+                </div>
+                <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f7e29a;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a6a12">NW</span><div><b style="font-size:13.5px">Noah Weber</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Billing &middot; Invoice address</div></div></div>
+                  <span class="cb-pill" style="background:var(--neutral-bg);color:var(--neutral-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Complex issue</span>
+                  <span style="width:26px;height:26px;border-radius:50%;background:#c9c4d8"></span>
+                </div>
+                <div style="display:grid;grid-template-columns:2.4fr 1.3fr .6fr;align-items:center;padding:10px 4px">
+                  <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:#f6cfe4;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:750;color:#8a3a67">HI</span><div><b style="font-size:13.5px">Hana Ito</b><div style="font-size:11.5px;color:var(--sub);font-weight:600">Account &middot; Delete my data</div></div></div>
+                  <span class="cb-pill" style="background:var(--reason-bg);color:var(--reason-ink);font-size:11.5px;padding:5px 11px;width:fit-content">Missing knowledge</span>
+                  <span style="width:26px;height:26px;border-radius:50%;background:#a6cfc4"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- stub screens -->
+          <div class="rz-screen" data-screen="conv"><div class="rz-empty">Conversations — not reconstructed from the source screenshots.</div></div>
+          <div class="rz-screen" data-screen="kb"><div class="rz-empty">Knowledge Base — not reconstructed from the source screenshots.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><div class="sec-num">03 &middot; Screen</div>
+      <div class="sec-title">Ops Console — Rider Profile</div>
+      <p class="sec-desc">Same pastel-hero language dropped into a conventional sidebar
+        console: solid-fill (not hatched) stat tiles, a dual-line trend chart, a cash
+        ledger and a document-expiry pill row.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><span class="fname">mongi &middot; Riders &middot; Sohel Rana</span>
+        <div class="fb-seg theme">
+          <button class="on" onclick="cbTheme(this,'cbMg','light')">Light</button>
+          <button onclick="cbTheme(this,'cbMg','dark')">Dark</button>
+        </div>
+      </div>
+      <div class="cb mg" id="cbMg" data-t="light">
+        <div class="mg-side">
+          <div class="mg-brand"><span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:var(--circ-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="17" cy="17" r="3"/><path d="M7 17 11 7h4l2 4"/><path d="M11 7H8"/></svg></span><div><b>mongi</b><small>Ops console</small></div></div>
+          <div class="mg-grp">Operate</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Control room</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Live map</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13,2 4,14 11,14 9,22 20,9 13,9"/></svg>Dispatch<span class="badge">7</span></div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8 6h8a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H8a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3"/></svg>Runs</div>
+          <div class="mg-grp">Manage</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8 12 3l9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Orders</div>
+          <div class="mg-item on"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3.2"/><circle cx="17" cy="17" r="3.2"/><path d="M6 17 9.5 8h3.5l2 4.2H19"/><path d="M9.5 8H7"/></svg>Riders<span class="badge">17</span></div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10 12 3l8 7"/><path d="M5 9v11h14V9"/><path d="M10 20v-6h4v6"/></svg>Merchants</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12 12 4 4 12l8 8Z"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Zones &amp; pricing</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="17" cy="14" r="1.3" fill="currentColor" stroke="none"/></svg>Money<span class="badge">3</span></div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="13" width="4" height="6" rx="1.5"/><rect x="18" y="13" width="4" height="6" rx="1.5"/></svg>Support<span class="badge">12</span></div>
+          <div class="mg-grp">Insight</div>
+          <div class="mg-item"><svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="20" x2="5" y2="11"/><line x1="12" y1="20" x2="12" y2="5"/><line x1="19" y1="20" x2="19" y2="14"/></svg>Reports</div>
+          <div class="mg-profile"><span class="mg-avatar">MR</span><div><b>Maliha Rahman</b><small>Dispatch lead &middot; Shift B</small></div></div>
+        </div>
+
+        <div class="mg-main">
+          <div class="mg-head">
+            <div class="who">
+              <span class="mg-back"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,4 7,12 15,20"/></svg></span>
+              <div><h2>Sohel Rana</h2><div class="meta">Rider since Mar 2026 &middot; Mohammadpur &middot; TVS Metro Plus &middot; Metro-Ha 22-5190</div></div>
+            </div>
+            <div class="mg-actions">
+              <span class="mg-pill dark">On run R-14 &middot; stop 6 of 17</span>
+              <span class="mg-pill ghost"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H7l-3 3Z"/></svg>Message</span>
+              <span class="mg-pill ghost"><svg class="ic" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h4l2 5-2.5 1.5a12 12 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2C10.5 20 4 13.5 4 5a2 2 0 0 1 2-2Z"/></svg>Call</span>
+            </div>
+          </div>
+
+          <div class="mg-stats">
+            <div class="mg-tile g"><div class="lbl">Rating</div><div class="val">4.92</div><div class="sub">1,284 deliveries</div></div>
+            <div class="mg-tile b"><div class="lbl">On time &middot; 30 days</div><div class="val">96%</div><div class="sub">City 93%</div></div>
+            <div class="mg-tile p"><div class="lbl">Runs kept</div><div class="val">22 / 22</div><div class="sub">Priority booking on</div></div>
+            <div class="mg-tile o"><div class="lbl">Cash held now</div><div class="val">&#2547;7,460</div><div class="sub">93% of &#2547;8,000 limit</div></div>
+          </div>
+
+          <div class="mg-grid">
+            <div class="mg-card">
+              <div class="mg-cardhead"><h3 style="margin:0">On-time rate &middot; 8 weeks</h3>
+                <div class="mg-legend"><span><i style="background:var(--mg-line-me)"></i>Sohel</span><span><i style="background:var(--mg-line-city)"></i>City</span></div></div>
+              <svg viewBox="0 0 400 90" width="100%" height="90" preserveAspectRatio="none" style="overflow:visible">
+                <polyline points="0,58 50,52 100,55 150,40 200,44 250,30 300,36 350,20 400,18" fill="none" style="stroke:var(--mg-line-city)" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round"/>
+                <polyline points="0,44 50,38 100,42 150,26 200,30 250,16 300,22 350,10 400,6" fill="none" style="stroke:var(--mg-line-me)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="400" cy="6" r="4.5" style="fill:var(--card);stroke:var(--mg-line-me)" stroke-width="2.4"/>
+              </svg>
+              <h3 style="margin:18px 0 2px">Recent jobs</h3>
+              <div class="mg-job"><div><b>MG-40218</b> <span class="sub">&middot; Tahmina &middot; Mirpur 10</span></div><span class="mg-status ok">Delivered 6:38 pm</span></div>
+              <div class="mg-job"><div><b>MG-40225</b> <span class="sub">&middot; Sadia &middot; Dhanmondi 27</span></div><span class="mg-status ok">Delivered 5:31 pm</span></div>
+              <div class="mg-job"><div><b>MG-40187</b> <span class="sub">&middot; Express &middot; Dhanmondi 15</span></div><span class="mg-status ok">Delivered 11:36 am</span></div>
+              <div class="mg-job"><div><b>MG-40119</b> <span class="sub">&middot; Jannatul F. &middot; Mirpur 12</span></div><span class="mg-status bad">Failed &middot; buyer not answering</span></div>
+            </div>
+
+            <div class="mg-card">
+              <div class="mg-cardhead"><h3 style="margin:0">Cash ledger &middot; today</h3><span class="link">Open in Money</span></div>
+              <div class="mg-ledger"><span>Stop 6 &middot; Tahmina &middot; 6:38 pm</span><b class="pos">+&#2547;1,850</b></div>
+              <div class="mg-ledger"><span>Stop 5 &middot; Nazmul &middot; 6:14 pm</span><b class="pos">+&#2547;1,720</b></div>
+              <div class="mg-ledger"><span>Stops 1&ndash;4 &middot; 3:58&ndash;5:40 pm</span><b class="pos">+&#2547;5,890</b></div>
+              <div class="mg-ledger"><span>Deposit &middot; bKash &middot; 1:12 pm</span><b class="neg">&minus;&#2547;4,350</b></div>
+              <div class="mg-ledger"><span>Morning Express cash</span><b class="pos">+&#2547;2,350</b></div>
+              <h3 style="margin:16px 0 8px">Record</h3>
+              <div class="mg-recordrow">
+                <span class="mg-tag good">0 complaints &middot; 30 days</span>
+                <span class="mg-tag good">0 late cancels</span>
+                <span class="mg-tag">1 transit damage &middot; no fault</span>
+              </div>
+              <div class="mg-btnrow">
+                <span class="mg-pill ghost"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Adjust pay</span>
+                <span class="mg-pill ghost"><svg class="ic" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h10M8 6 5 9M8 6 5 3"/><path d="M16 18H6M16 18l3-3M16 18l3 3"/></svg>Move stops</span>
+                <span class="mg-pill danger">Suspend rider</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mg-grid">
+            <div class="mg-card">
+              <div class="mg-cardhead"><h3 style="margin:0">Earnings &middot; this week</h3><b style="font-size:16px">&#2547;7,350</b></div>
+              <div class="mg-earn">
+                <div class="b" style="height:64%"></div><div class="b" style="height:78%"></div>
+                <div class="b" style="height:44%"></div><div class="b" style="height:70%"></div>
+                <div class="b" style="height:84%"></div><div class="b today" style="height:100%"></div>
+              </div>
+              <div class="mg-days"><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span></div>
+            </div>
+            <div class="mg-card">
+              <div class="mg-cardhead"><h3 style="margin:0">Documents</h3><span style="font-size:11.5px;color:var(--sub);font-weight:650">Next expiry in 24 days</span></div>
+              <div class="mg-docs">
+                <span class="mg-doc good">NID verified</span>
+                <span class="mg-doc good">Licence to Aug 2028</span>
+                <span class="mg-doc good">Registration to Mar 2031</span>
+                <span class="mg-doc warn">Tax token &middot; 4 Oct 2026</span>
+                <span class="mg-doc good">Fitness to Jan 2027</span>
+              </div>
+              <div class="mg-contact">
+                <svg class="ic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.5 3.5-6 8-6s8 2.5 8 6"/></svg>
+                Emergency contact &middot; Rehana (wife) &middot; 01711-&bull;&bull;&bull;
+                <span class="link">Reveal &middot; logged</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="foot"><b>Source.</b> Reconstructed from five reference screenshots (an onboarding
+  checklist card, three screens of a support-AI analytics product, one ops-console rider
+  profile), all photographed in light mode only — the dark variant on each Light/Dark toggle
+  is this file's own extension, not a screenshot match. Not part of the house token system —
+  see the note above before reusing pieces in a project that also uses files 01&ndash;19.
+  Files are numbered contiguously.</div>
+<script>
+function rzGo(btn,screen){
+  document.querySelectorAll('#rzSeg button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('#rzTabs .rz-tab').forEach(b=>b.classList.toggle('on',b.dataset.s===screen));
+  document.querySelectorAll('.rz-screen').forEach(s=>s.classList.toggle('on',s.dataset.screen===screen));
+}
+function rzGoTab(btn){
+  const screen=btn.dataset.s;
+  document.querySelectorAll('#rzTabs .rz-tab').forEach(b=>b.classList.toggle('on',b===btn));
+  document.querySelectorAll('.rz-screen').forEach(s=>s.classList.toggle('on',s.dataset.screen===screen));
+  document.querySelectorAll('#rzSeg button').forEach(b=>b.classList.toggle('on',b.textContent.trim()===btn.textContent.trim()));
+}
+function cbTheme(btn,id,t){
+  document.getElementById(id).dataset.t=t;
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+</script>
+</body>
+</html>

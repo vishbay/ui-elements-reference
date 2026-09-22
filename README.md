@@ -4,6 +4,10 @@ A personal reference library of zero-dependency HTML files for building operatio
 consoles and modern SaaS UI without the generic AI-generated look. Open `index.html`
 to browse everything, or jump straight to `PROMPTS.md`.
 
+Every file uses the shared house token system described below, with one deliberate
+exception — file 22 reconstructs a different, off-system visual language wholesale
+(see that file's own note).
+
 ## Start here
 
 - **[PROMPTS.md](PROMPTS.md)** — fifteen copy-paste prompts for Claude Code and
@@ -43,6 +47,7 @@ files, each self-contained with a light/dark toggle:
 | 19 | Backgrounds | Solid grounds, tonal gradients, ambient light, structure, photo treatment |
 | 20 | Assistant Panel | Live demo of the reusable `assistant-panel/` package |
 | 21 | Gemini-Style Mobile | Phone-frame reconstruction of the Gemini iOS "Liquid Glass" redesign |
+| 22 | Colorblock Dashboards | Off-system reconstruction: onboarding checklist card, a support-AI analytics app (hatched bar charts, pastel hero stats), an ops-console rider profile |
 
 Plus `ui-motion-reference.html` / `-compat.html`, a zero-dependency motion
 pattern library (count-ups, gauges, staggered reveals, table row flash, etc).
